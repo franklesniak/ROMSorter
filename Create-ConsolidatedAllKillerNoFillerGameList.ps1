@@ -1,7 +1,8 @@
 # Create-ConsolidatedAllKillerNoFillerGameList.ps1 is designed to take each of the "All Killer
-# No Filler" game lists and merge them into one consolidated output file with the name of the
-# ROM as the primary key of the CSV/table. The resulting output file can be joined using Power
-# BI or another tool of choice to pull in additional ROM metadata.
+# No Filler" game lists and merge them into one consolidated, tabular CSV output file with the
+# name of the ROM as the primary key of the CSV/table. The resulting output file can be joined
+# using Join-Object in PowerShell, Power BI, SQL Server, or another tool of choice to pull in
+# additional ROM metadata.
 
 #region License
 ###############################################################################################
@@ -63,25 +64,38 @@ function Split-StringOnLiteralString {
     if ($args.Length -ne 2) {
         Write-Error "Split-StringOnLiteralString was called without supplying two arguments. The first argument should be the string to be split, and the second should be the string or character on which to split the string."
     } else {
-        if (($args[0]).GetType().Name -ne "String") {
-            Write-Warning "The first argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
-            $strToSplit = [string]$args[0]
+        if ($null -eq $args[0]) {
+            # String to be split was $null; return an empty array. Leading comma ensures that
+            # PowerShell cooperates and returns the array as desired (without collapsing it)
+            , @()
+        } elseif ($null -eq $args[1]) {
+            # Splitter was $null; return string to be split within an array (of one element).
+            # Leading comma ensures that PowerShell cooperates and returns the array as desired
+            # (without collapsing it
+            , ($args[0])
         } else {
-            $strToSplit = $args[0]
+            if (($args[0]).GetType().Name -ne "String") {
+                Write-Warning "The first argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
+                $strToSplit = [string]$args[0]
+            } else {
+                $strToSplit = $args[0]
+            }
+
+            if ((($args[1]).GetType().Name -ne "String") -and (($args[1]).GetType().Name -ne "Char")) {
+                Write-Warning "The second argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
+                $strSplitter = [string]$args[1]
+            } elseif (($args[1]).GetType().Name -eq "Char") {
+                $strSplitter = [string]$args[1]
+            } else {
+                $strSplitter = $args[1]
+            }
+
+            $strSplitterInRegEx = [regex]::Escape($strSplitter)
+
+            # With the leading comma, force encapsulation into an array so that an array is
+            # returned even when there is one element:
+            , [regex]::Split($strToSplit, $strSplitterInRegEx)
         }
-
-        if ((($args[1]).GetType().Name -ne "String") -and (($args[1]).GetType().Name -ne "Char")) {
-            Write-Warning "The second argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
-            $strSplitter = [string]$args[1]
-        } elseif (($args[1]).GetType().Name -eq "Char") {
-            $strSplitter = [string]$args[1]
-        } else {
-            $strSplitter = $args[1]
-        }
-
-        $strSplitterInRegEx = [regex]::Escape($strSplitter)
-
-        [regex]::Split($strToSplit, $strSplitterInRegEx)
     }
 }
 
@@ -92,7 +106,7 @@ function Merge-AllKillerNoFillerFile {
     # The fourth parameter is a string representing the screen orientation, according to the All Killer No Filler batch file
 
     # Example: Merge-AllKillerNoFillerFile ([ref]$csvCurrentRomList) $strCurrentFilePath $strCurrentFileCategory $strCurrentFileScreenOrientation
-    
+
     $refCsvCurrentRomList = $args[0]
     $strCurrentFilePath = $args[1]
     $strCurrentFileCategory = $args[2]
@@ -155,14 +169,14 @@ function Merge-AllKillerNoFillerFile {
                 $arrTempResultTwo[0] # Return just the ROM name
             }
         })
-    
+
     $arrStrRomList | `
         ForEach-Object {
             $strThisROMName = $_
-            $result = @($refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName})
+            $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
             if ($result.Count -ne 0) {
                 # ROM is already on the list
-                $refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName} | `
+                $refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName } | `
                     ForEach-Object {
                         $_.AllKillerNoFillerList = "True"
                         if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
@@ -190,16 +204,16 @@ function Merge-ROMManuallyOntoAllKillerNoFillerList {
     # The fourth parameter is a string representing the screen orientation, according to the All Killer No Filler batch file
 
     # Example: Merge-ROMManuallyOntoAllKillerNoFillerList ([ref]$csvCurrentRomList) $strThisROMName $strCurrentFileCategory $strCurrentFileScreenOrientation
-    
+
     $refCsvCurrentRomList = $args[0]
     $strThisROMName = ($args[1]).ToLower()
     $strCurrentFileCategory = $args[2]
     $strCurrentFileScreenOrientation = $args[3]
 
-    $result = @($refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName})
+    $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
     if ($result.Count -ne 0) {
         # ROM is already on the list
-        $refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName} | `
+        $refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName } | `
             ForEach-Object {
                 $_.AllKillerNoFillerList = "True"
                 if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
