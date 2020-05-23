@@ -57,6 +57,14 @@ if ($boolErrorOccurred -eq $false) {
     # Import as semicolon-separated values "CSV"
     $csvCurrentRomList = Import-Csv $strFilePathArcadeManagerClassicsAllSemicolonSeparated -Delimiter ";"
 
+    # Add another column to the CSV indicating that the ROM was listed as classic in Arcade
+    # Manager. It's redundant, but it makes certain analysis easier.
+    $csvCurrentRomList = $csvCurrentRomList | `
+        ForEach-Object {
+            $_ | Add-Member -MemberType NoteProperty -Name "ArcadeManagerListedAsClassic" -Value "True"
+            $_
+        }
+
     # Export as comma-separated values (true CSV)
     $csvCurrentRomList | Export-Csv $strCSVOutputFile -NoTypeInformation
 }
