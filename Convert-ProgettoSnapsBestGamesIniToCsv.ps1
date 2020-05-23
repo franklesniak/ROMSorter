@@ -1,7 +1,8 @@
 # Convert-ProgettoSnapsBestGamesIniToCsv.ps1 is designed to take each of the "bestgames.ini"
 # file from AntoPisa's website progettosnaps.net and convert it to a tabular CSV format. In
 # doing so, the "quality score" that AntoPisa has assigned each game can be combined with other
-# data sources (e.g., using Power BI) to make a ROM list.
+# data sources (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another tool of
+# choice) to make a ROM list.
 
 #region License
 ###############################################################################################
@@ -57,159 +58,38 @@ function Split-StringOnLiteralString {
     if ($args.Length -ne 2) {
         Write-Error "Split-StringOnLiteralString was called without supplying two arguments. The first argument should be the string to be split, and the second should be the string or character on which to split the string."
     } else {
-        if (($args[0]).GetType().Name -ne "String") {
-            Write-Warning "The first argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
-            $strToSplit = [string]$args[0]
+        if ($null -eq $args[0]) {
+            # String to be split was $null; return an empty array. Leading comma ensures that
+            # PowerShell cooperates and returns the array as desired (without collapsing it)
+            , @()
+        } elseif ($null -eq $args[1]) {
+            # Splitter was $null; return string to be split within an array (of one element).
+            # Leading comma ensures that PowerShell cooperates and returns the array as desired
+            # (without collapsing it
+            , ($args[0])
         } else {
-            $strToSplit = $args[0]
+            if (($args[0]).GetType().Name -ne "String") {
+                Write-Warning "The first argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
+                $strToSplit = [string]$args[0]
+            } else {
+                $strToSplit = $args[0]
+            }
+
+            if ((($args[1]).GetType().Name -ne "String") -and (($args[1]).GetType().Name -ne "Char")) {
+                Write-Warning "The second argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
+                $strSplitter = [string]$args[1]
+            } elseif (($args[1]).GetType().Name -eq "Char") {
+                $strSplitter = [string]$args[1]
+            } else {
+                $strSplitter = $args[1]
+            }
+
+            $strSplitterInRegEx = [regex]::Escape($strSplitter)
+
+            # With the leading comma, force encapsulation into an array so that an array is
+            # returned even when there is one element:
+            , [regex]::Split($strToSplit, $strSplitterInRegEx)
         }
-
-        if ((($args[1]).GetType().Name -ne "String") -and (($args[1]).GetType().Name -ne "Char")) {
-            Write-Warning "The second argument supplied to Split-StringOnLiteralString was not a string. It will be attempted to be converted to a string. To avoid this warning, cast arguments to a string before calling Split-StringOnLiteralString."
-            $strSplitter = [string]$args[1]
-        } elseif (($args[1]).GetType().Name -eq "Char") {
-            $strSplitter = [string]$args[1]
-        } else {
-            $strSplitter = $args[1]
-        }
-
-        $strSplitterInRegEx = [regex]::Escape($strSplitter)
-
-        [regex]::Split($strToSplit, $strSplitterInRegEx)
-    }
-}
-
-function Merge-AllKillerNoFillerFile {
-    # The first parameter is a reference to an array
-    # The second parameter is a string representing the path to the All Killer No Filler batch file
-    # The third parameter is a string representing the category, according to the All Killer No Filler batch file
-    # The fourth parameter is a string representing the screen orientation, according to the All Killer No Filler batch file
-
-    # Example: Merge-AllKillerNoFillerFile ([ref]$csvCurrentRomList) $strCurrentFilePath $strCurrentFileCategory $strCurrentFileScreenOrientation
-    
-    $refCsvCurrentRomList = $args[0]
-    $strCurrentFilePath = $args[1]
-    $strCurrentFileCategory = $args[2]
-    $strCurrentFileScreenOrientation = $args[3]
-
-    $arrStrFileContent = @(Get-Content $strCurrentFilePath)
-    $arrStrRomList = @($arrStrFileContent | `
-        ForEach-Object {
-            if ($_.Length -ge 2) {
-                if ($_.Substring(0, 2) -ne "::") {
-                    $_ # Not commented-out -- send down pipeline
-                }
-            } else {
-                $_
-            }
-        } | `
-        ForEach-Object {
-            if ($_.Length -ge 4) {
-                if ($_.Substring(0, 4) -ne "rem ") {
-                    $_ # Not commented-out -- send down pipeline
-                }
-            } else {
-                $_
-            }
-        } | `
-        ForEach-Object {
-            if ($_.Length -ge 3) {
-                if ($_.Substring(0, 3) -ne "md ") {
-                    $_ # Not a "make directory" command -- send down pipeline
-                }
-            } else {
-                $_
-            }
-        } | `
-        ForEach-Object {
-            if ($_.Length -ge 6) {
-                if ($_.Substring(0, 6) -ne "mkdir ") {
-                    $_ # Not a "make directory" command -- send down pipeline
-                }
-            } else {
-                $_
-            }
-        } | `
-        ForEach-Object {
-            if ($_.Length -ge 5) {
-                if ($_.Substring(0, 5) -eq "copy ") {
-                    $_ # It's a copy command -- send down pipeline
-                }
-            }
-        } | `
-        ForEach-Object {
-            if ($_.ToLower().Contains(".zip")) {
-                $_ # Contains .zip string --- well-formatted line for us to process -- send down pipeline
-            }
-        } | `
-        ForEach-Object {
-            $arrTempResult = @(Split-StringOnLiteralString ($_.ToLower()) "copy ")
-            if ($arrTempResult.Count -ge 2) {
-                $arrTempResultTwo = @(Split-StringOnLiteralString ($arrTempResult[1]) ".zip")
-                $arrTempResultTwo[0] # Return just the ROM name
-            }
-        })
-    
-    $arrStrRomList | `
-        ForEach-Object {
-            $strThisROMName = $_
-            $result = @($refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName})
-            if ($result.Count -ne 0) {
-                # ROM is already on the list
-                $refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName} | `
-                    ForEach-Object {
-                        $_.AllKillerNoFillerList = "True"
-                        if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
-                            $_.AllKillerNoFillerCategory = $_.AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
-                        }
-                        if (($_.AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
-                            $_.AllKillerNoFillerScreenOrientation = $_.AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
-                        }
-                    }
-            } else {
-                $PSCustomObjectROMMetadata = New-Object PSCustomObject
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerList" -Value "True"
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerCategory" -Value $strCurrentFileCategory
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerScreenOrientation" -Value $strCurrentFileScreenOrientation
-                ($refCsvCurrentRomList.Value) = ($refCsvCurrentRomList.Value) + $PSCustomObjectROMMetadata
-            }
-        }
-}
-
-function Merge-ROMManuallyOntoAllKillerNoFillerList {
-    # The first parameter is a reference to an array
-    # The second parameter is a string representing the name of the ROM to merge onto the list manually (i.e., as an override)
-    # The third parameter is a string representing the category, according to the All Killer No Filler batch file
-    # The fourth parameter is a string representing the screen orientation, according to the All Killer No Filler batch file
-
-    # Example: Merge-ROMManuallyOntoAllKillerNoFillerList ([ref]$csvCurrentRomList) $strThisROMName $strCurrentFileCategory $strCurrentFileScreenOrientation
-    
-    $refCsvCurrentRomList = $args[0]
-    $strThisROMName = ($args[1]).ToLower()
-    $strCurrentFileCategory = $args[2]
-    $strCurrentFileScreenOrientation = $args[3]
-
-    $result = @($refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName})
-    if ($result.Count -ne 0) {
-        # ROM is already on the list
-        $refCsvCurrentRomList.Value | Where-Object {$_.ROM -eq $strThisROMName} | `
-            ForEach-Object {
-                $_.AllKillerNoFillerList = "True"
-                if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
-                    $_.AllKillerNoFillerCategory = $_.AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
-                }
-                if (($_.AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
-                    $_.AllKillerNoFillerScreenOrientation = $_.AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
-                }
-            }
-    } else {
-        $PSCustomObjectROMMetadata = New-Object PSCustomObject
-        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
-        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerList" -Value "True"
-        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerCategory" -Value $strCurrentFileCategory
-        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "AllKillerNoFillerScreenOrientation" -Value $strCurrentFileScreenOrientation
-        ($refCsvCurrentRomList.Value) = ($refCsvCurrentRomList.Value) + $PSCustomObjectROMMetadata
     }
 }
 
@@ -270,10 +150,10 @@ if ($boolErrorOccurred -eq $false) {
                     # We are in a section that we care about and this line has data
                     # Let's assume it's a ROM
                     $strThisROMName = ($arrStrFileContent[$intLineCounter])
-                    $result = @($csvCurrentRomList | Where-Object {$_.ROM -eq $strThisROMName})
+                    $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                     if ($result.Count -ne 0) {
                         # ROM is already on the list
-                        $csvCurrentRomList | Where-Object {$_.ROM -eq $strThisROMName} | `
+                        $csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName } | `
                             ForEach-Object {
                                 $_.ProgettoSnapsQualityList = "True"
                                 if (($_.ProgettoSnapsQualityScore).Contains("`n" + ([string]$intCurrentScore) + "`n") -eq $false) {
