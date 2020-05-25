@@ -45,11 +45,16 @@ function Split-StringOnLiteralString {
     # The first argument is a string, and the string to be split
     # The second argument is a string or char, and it is that which is to split the string in the first parameter
     #
-    # Wrap this function call in "a cast to array" to ensure that it always returns an array even when the result is a single string.
+    # Note: This function always returns an array, even when there is zero or one element in it.
+    #
     # Example:
-    # $result = @(Split-StringOnLiteralString "foo" " ")
+    # $result = Split-StringOnLiteralString "foo" " "
     # # $result.GetType().FullName is System.Object[]
     # # $result.Count is 1
+    #
+    # Example 2:
+    # $result = Split-StringOnLiteralString "What do you think of this function?" " "
+    # # $result.Count is 7
 
     trap {
         Write-Error "An error occurred using the Split-StringOnLiteralString function. This was most likely caused by the arguments supplied not being strings"
@@ -126,16 +131,16 @@ if ($boolErrorOccurred -eq $false) {
                     $boolWasValidSectionHeaderLine = $true
                     # Question is: is it a section that we care about?
                     $strHeaderMinusSquareBraces = ($arrStrFileContent[$intLineCounter]).Substring(1, ($arrStrFileContent[$intLineCounter]).Length - 2)
-                    $arrLineInProgress = @(Split-StringOnLiteralString ($strHeaderMinusSquareBraces.ToLower()) " to ")
+                    $arrLineInProgress = Split-StringOnLiteralString ($strHeaderMinusSquareBraces.ToLower()) " to "
                     if ($arrLineInProgress.Count -ge 2) {
                         # Header is in the format "x to y"
                         $intLowerScoreBoundary = [int]($arrLineInProgress[0])
-                        $arrLineInProgress = @(Split-StringOnLiteralString ($arrLineInProgress[1]) " ")
+                        $arrLineInProgress = Split-StringOnLiteralString ($arrLineInProgress[1]) " "
                         if ($arrLineInProgress.Count -ge 2) {
                             $intUpperScoreBoundary = [int]($arrLineInProgress[0])
                             # Captured the upper and lower boundary; now, let's get the description
-                            $arrLineInProgress = @(Split-StringOnLiteralString $strHeaderMinusSquareBraces "(")
-                            $arrLineInProgress = @(Split-StringOnLiteralString ($arrLineInProgress[$arrLineInProgress.Count - 1]) ")")
+                            $arrLineInProgress = Split-StringOnLiteralString $strHeaderMinusSquareBraces "("
+                            $arrLineInProgress = Split-StringOnLiteralString ($arrLineInProgress[$arrLineInProgress.Count - 1]) ")"
                             if ($arrLineInProgress.Count -ge 2) {
                                 $intCurrentScore = ($intLowerScoreBoundary + $intUpperScoreBoundary) / 2
                                 $strCurrentScoreDescription = $arrLineInProgress[$arrLineInProgress.Count - 2]
@@ -153,16 +158,17 @@ if ($boolErrorOccurred -eq $false) {
                     $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                     if ($result.Count -ne 0) {
                         # ROM is already on the list
-                        $csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName } | `
-                            ForEach-Object {
-                                $_.ProgettoSnapsQualityList = "True"
-                                if (($_.ProgettoSnapsQualityScore).Contains("`n" + ([string]$intCurrentScore) + "`n") -eq $false) {
-                                    $_.ProgettoSnapsQualityScore = $_.ProgettoSnapsQualityScore + ([string]$intCurrentScore) + "`n"
+                        for ($intCounterA = 0; $intCounterA -lt $result.Count; $intCounterA++) {
+                            if (($result[$intCounterA]).ROM -eq $strThisROMName) {
+                                ($result[$intCounterA]).ProgettoSnapsQualityList = "True"
+                                if ((($result[$intCounterA]).ProgettoSnapsQualityScore).Contains("`n" + ([string]$intCurrentScore) + "`n") -eq $false) {
+                                    ($result[$intCounterA]).ProgettoSnapsQualityScore = ($result[$intCounterA]).ProgettoSnapsQualityScore + ([string]$intCurrentScore) + "`n"
                                 }
-                                if (($_.ProgettoSnapsQualityDescription).Contains("`n" + $strCurrentScoreDescription + "`n") -eq $false) {
-                                    $_.ProgettoSnapsQualityDescription = $_.ProgettoSnapsQualityDescription + $strCurrentScoreDescription + "`n"
+                                if ((($result[$intCounterA]).ProgettoSnapsQualityDescription).Contains("`n" + $strCurrentScoreDescription + "`n") -eq $false) {
+                                    ($result[$intCounterA]).ProgettoSnapsQualityDescription = ($result[$intCounterA]).ProgettoSnapsQualityDescription + $strCurrentScoreDescription + "`n"
                                 }
                             }
+                        }
                     } else {
                         $PSCustomObjectROMMetadata = New-Object PSCustomObject
                         $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName

@@ -51,11 +51,16 @@ function Split-StringOnLiteralString {
     # The first argument is a string, and the string to be split
     # The second argument is a string or char, and it is that which is to split the string in the first parameter
     #
-    # Wrap this function call in "a cast to array" to ensure that it always returns an array even when the result is a single string.
+    # Note: This function always returns an array, even when there is zero or one element in it.
+    #
     # Example:
-    # $result = @(Split-StringOnLiteralString "foo" " ")
+    # $result = Split-StringOnLiteralString "foo" " "
     # # $result.GetType().FullName is System.Object[]
     # # $result.Count is 1
+    #
+    # Example 2:
+    # $result = Split-StringOnLiteralString "What do you think of this function?" " "
+    # # $result.Count is 7
 
     trap {
         Write-Error "An error occurred using the Split-StringOnLiteralString function. This was most likely caused by the arguments supplied not being strings"
@@ -163,9 +168,9 @@ function Merge-AllKillerNoFillerFile {
             }
         } | `
         ForEach-Object {
-            $arrTempResult = @(Split-StringOnLiteralString ($_.ToLower()) "copy ")
+            $arrTempResult = Split-StringOnLiteralString ($_.ToLower()) "copy "
             if ($arrTempResult.Count -ge 2) {
-                $arrTempResultTwo = @(Split-StringOnLiteralString ($arrTempResult[1]) ".zip")
+                $arrTempResultTwo = Split-StringOnLiteralString ($arrTempResult[1]) ".zip"
                 $arrTempResultTwo[0] # Return just the ROM name
             }
         })
@@ -176,16 +181,17 @@ function Merge-AllKillerNoFillerFile {
             $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
             if ($result.Count -ne 0) {
                 # ROM is already on the list
-                $refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName } | `
-                    ForEach-Object {
-                        $_.AllKillerNoFillerList = "True"
-                        if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
-                            $_.AllKillerNoFillerCategory = $_.AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
+                for ($intCounterA = 0; $intCounterA -lt ($refCsvCurrentRomList.Value).Count; $intCounterA++) {
+                    if ((($refCsvCurrentRomList.Value)[$intCounterA]).ROM -eq $strThisROMName) {
+                        (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerList = "True"
+                        if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
+                            (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
                         }
-                        if (($_.AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
-                            $_.AllKillerNoFillerScreenOrientation = $_.AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
+                        if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
+                            (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
                         }
                     }
+                }
             } else {
                 $PSCustomObjectROMMetadata = New-Object PSCustomObject
                 $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
@@ -213,16 +219,17 @@ function Merge-ROMManuallyOntoAllKillerNoFillerList {
     $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
     if ($result.Count -ne 0) {
         # ROM is already on the list
-        $refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName } | `
-            ForEach-Object {
-                $_.AllKillerNoFillerList = "True"
-                if (($_.AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
-                    $_.AllKillerNoFillerCategory = $_.AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
+        for ($intCounterA = 0; $intCounterA -lt ($refCsvCurrentRomList.Value).Count; $intCounterA++) {
+            if ((($refCsvCurrentRomList.Value)[$intCounterA]).ROM -eq $strThisROMName) {
+                (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerList = "True"
+                if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
+                    (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory + ";" + $strCurrentFileCategory
                 }
-                if (($_.AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
-                    $_.AllKillerNoFillerScreenOrientation = $_.AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
+                if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
+                    (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation + ";" + $strCurrentFileScreenOrientation
                 }
             }
+        }
     } else {
         $PSCustomObjectROMMetadata = New-Object PSCustomObject
         $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
