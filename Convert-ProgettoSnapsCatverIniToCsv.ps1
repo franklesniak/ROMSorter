@@ -38,9 +38,9 @@
 $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
 
 # The file will be processed and output as a CSV to
-# .\Progetto_Snaps_Category_Information.csv
-# or if on Linux / MacOS: ./Progetto_Snaps_Category_Information.csv
-$strCSVOutputFile = Join-Path "." "Progetto_Snaps_Category_Information.csv"
+# .\Progetto_Snaps_Category_and_MAME_Version_Information.csv
+# or if on Linux / MacOS: ./Progetto_Snaps_Category_and_MAME_Version_Information.csv
+$strCSVOutputFile = Join-Path "." "Progetto_Snaps_Category_and_MAME_Version_Information.csv"
 
 ###############################################################################################
 
