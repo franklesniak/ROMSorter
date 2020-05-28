@@ -161,11 +161,11 @@ if ($boolErrorOccurred -eq $false) {
                             $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                             if ($result.Count -ne 0) {
                                 # ROM is already on the list
-                                for ($intCounterA = 0; $intCounterA -lt $result.Count; $intCounterA++) {
-                                    if (($result[$intCounterA]).ROM -eq $strThisROMName) {
-                                        ($result[$intCounterA]).ArcadeBelgiumNumberOfPlayersList = "True"
-                                        if ((($result[$intCounterA]).ArcadeBelgiumNumberOfPlayers).Contains("`n" + ([string]::Join("`n", $arrNumberOfPlayersForThisROM)) + "`n") -eq $false) {
-                                            ($result[$intCounterA]).ArcadeBelgiumNumberOfPlayers = ($result[$intCounterA]).ArcadeBelgiumNumberOfPlayers + ([string]::Join("`n", $arrNumberOfPlayersForThisROM)) + "`n"
+                                for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
+                                    if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
+                                        ($csvCurrentRomList[$intCounterA]).ArcadeBelgiumNumberOfPlayersList = "True"
+                                        if ((($csvCurrentRomList[$intCounterA]).ArcadeBelgiumNumberOfPlayers).Contains("`n" + ([string]::Join("`n", $arrNumberOfPlayersForThisROM)) + "`n") -eq $false) {
+                                            ($csvCurrentRomList[$intCounterA]).ArcadeBelgiumNumberOfPlayers = ($csvCurrentRomList[$intCounterA]).ArcadeBelgiumNumberOfPlayers + ([string]::Join("`n", $arrNumberOfPlayersForThisROM)) + "`n"
                                         }
                                     }
                                 }
