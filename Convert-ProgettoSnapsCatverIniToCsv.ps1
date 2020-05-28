@@ -184,33 +184,33 @@ if ($boolErrorOccurred -eq $false) {
                                 $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                                 if ($result.Count -ne 0) {
                                     # ROM is already on the list
-                                    for ($intCounterA = 0; $intCounterA -lt $result.Count; $intCounterA++) {
-                                        if (($result[$intCounterA]).ROM -eq $strThisROMName) {
-                                            ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
+                                    for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
+                                        if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
+                                            ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
 
-                                            if ("" -eq ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory) {
-                                                ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = "`n" + $strCategory + "`n"
+                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory) {
+                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = "`n" + $strCategory + "`n"
                                             } else {
-                                                if ((($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory).Contains("`n" + $strCategory + "`n") -eq $false) {
-                                                    ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory + $strCategory + "`n"
+                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory).Contains("`n" + $strCategory + "`n") -eq $false) {
+                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory + $strCategory + "`n"
                                                 }
                                             }
 
                                             if ("" -ne $strSubcategory) {
-                                                if ("" -eq ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory) {
-                                                    ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = "`n" + $strSubcategory + "`n"
+                                                if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory) {
+                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = "`n" + $strSubcategory + "`n"
                                                 } else {
-                                                    if ((($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory).Contains("`n" + $strSubcategory + "`n") -eq $false) {
-                                                        ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory + $strSubcategory + "`n"
+                                                    if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory).Contains("`n" + $strSubcategory + "`n") -eq $false) {
+                                                        ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory + $strSubcategory + "`n"
                                                     }
                                                 }
                                             }
 
-                                            if ("" -eq ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature) {
-                                                ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = "`n" + $strMature + "`n"
+                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature) {
+                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = "`n" + $strMature + "`n"
                                             } else {
-                                                if ((($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature).Contains("`n" + $strMature + "`n") -eq $false) {
-                                                    ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature + $strMature + "`n"
+                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature).Contains("`n" + $strMature + "`n") -eq $false) {
+                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature + $strMature + "`n"
                                                 }
                                             }
                                         }
@@ -235,15 +235,15 @@ if ($boolErrorOccurred -eq $false) {
                                 $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                                 if ($result.Count -ne 0) {
                                     # ROM is already on the list
-                                    for ($intCounterA = 0; $intCounterA -lt $result.Count; $intCounterA++) {
-                                        if (($result[$intCounterA]).ROM -eq $strThisROMName) {
-                                            ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
+                                    for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
+                                        if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
+                                            ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
 
-                                            if ("" -eq ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion) {
-                                                ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = "`n" + $strROMDescription + "`n"
+                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion) {
+                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = "`n" + $strROMDescription + "`n"
                                             } else {
-                                                if ((($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion).Contains("`n" + $strROMDescription + "`n") -eq $false) {
-                                                    ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = ($result[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion + $strROMDescription + "`n"
+                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion).Contains("`n" + $strROMDescription + "`n") -eq $false) {
+                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion + $strROMDescription + "`n"
                                                 }
                                             }
                                         }
