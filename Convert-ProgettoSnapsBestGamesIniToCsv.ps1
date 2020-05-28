@@ -1,8 +1,8 @@
-# Convert-ProgettoSnapsBestGamesIniToCsv.ps1 is designed to take each of the "bestgames.ini"
-# file from AntoPisa's website progettosnaps.net and convert it to a tabular CSV format. In
-# doing so, the "quality score" that AntoPisa has assigned each game can be combined with other
-# data sources (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another tool of
-# choice) to make a ROM list.
+# Convert-ProgettoSnapsBestGamesIniToCsv.ps1 is designed to take the "bestgames.ini" file from
+# AntoPisa's website progettosnaps.net and convert it to a tabular CSV format. In doing so, the
+# "quality score" that AntoPisa has assigned each game can be combined with other data sources
+# (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another tool of choice) to
+# make a ROM list.
 
 #region License
 ###############################################################################################
