@@ -123,6 +123,10 @@ if ($boolErrorOccurred -eq $false) {
         if (($arrStrFileContent[$intLineCounter]).Length -ge 1) {
             # There is data on this line (it's not just blank)
 
+            if ($intLineCounter -ge 10) {
+                Write-Progress -Activity "Converting Progetto Snaps bestgames.ini file to CSV" -Status "Processing" -PercentComplete (($intLineCounter) / ($arrStrFileContent.Length) * 100)
+            }
+
             $boolWasValidSectionHeaderLine = $false
             if (($arrStrFileContent[$intLineCounter]).Substring(0, 1) -eq "[") {
                 # Possible start of a new ini section
@@ -158,14 +162,14 @@ if ($boolErrorOccurred -eq $false) {
                     $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
                     if ($result.Count -ne 0) {
                         # ROM is already on the list
-                        for ($intCounterA = 0; $intCounterA -lt $result.Count; $intCounterA++) {
-                            if (($result[$intCounterA]).ROM -eq $strThisROMName) {
-                                ($result[$intCounterA]).ProgettoSnapsQualityList = "True"
-                                if ((($result[$intCounterA]).ProgettoSnapsQualityScore).Contains("`n" + ([string]$intCurrentScore) + "`n") -eq $false) {
-                                    ($result[$intCounterA]).ProgettoSnapsQualityScore = ($result[$intCounterA]).ProgettoSnapsQualityScore + ([string]$intCurrentScore) + "`n"
+                        for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
+                            if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
+                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityList = "True"
+                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityScore).Contains("`n" + ([string]$intCurrentScore) + "`n") -eq $false) {
+                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityScore = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityScore + ([string]$intCurrentScore) + "`n"
                                 }
-                                if ((($result[$intCounterA]).ProgettoSnapsQualityDescription).Contains("`n" + $strCurrentScoreDescription + "`n") -eq $false) {
-                                    ($result[$intCounterA]).ProgettoSnapsQualityDescription = ($result[$intCounterA]).ProgettoSnapsQualityDescription + $strCurrentScoreDescription + "`n"
+                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityDescription).Contains("`n" + $strCurrentScoreDescription + "`n") -eq $false) {
+                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityDescription = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsQualityDescription + $strCurrentScoreDescription + "`n"
                                 }
                             }
                         }
@@ -183,8 +187,12 @@ if ($boolErrorOccurred -eq $false) {
     }
 
     # Clean up the tabular data
+    $intLineCounter = 0
     $csvCurrentRomList = $csvCurrentRomList | `
         ForEach-Object {
+            if ($intLineCounter -ge 10) {
+                Write-Progress -Activity "Converting Progetto Snaps bestgames.ini file to CSV" -Status "Cleaning up" -PercentComplete (($intLineCounter) / ($csvCurrentRomList.Count) * 100)
+            }
             $doubleTotalScores = 0
             $intCountOfScores = 0
             $arrLineInProgress = Split-StringOnLiteralString ($_.ProgettoSnapsQualityScore) "`n"
@@ -208,6 +216,8 @@ if ($boolErrorOccurred -eq $false) {
             if ("" -ne $strDescriptionLine) {
                 $_.ProgettoSnapsQualityDescription = $strDescriptionLine
             }
+
+            $intLineCounter++
 
             $_
         }
