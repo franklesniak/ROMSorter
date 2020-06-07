@@ -38,6 +38,10 @@ $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
 # or if on Linux / MacOS: ./Progetto_Snaps_Quality_Scores.csv
 $strCSVOutputFile = Join-Path "." "Progetto_Snaps_Quality_Scores.csv"
 
+# Display verbose output
+$actionPreferenceFormerVerbose = $VerbosePreference
+$VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
+
 ###############################################################################################
 
 function Split-StringOnLiteralString {
