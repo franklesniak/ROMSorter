@@ -622,7 +622,7 @@ if ($boolErrorOccurred -eq $false) {
             ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameChildCategory -Value $strChildCategory
             ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameMatureFlag -Value $objMatureValue
         }
-    
+
     $PSCustomObjectThisProperty = New-Object PSCustomObject
     $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "PropertyName" -Value $strPropertyNameChildCategory
     $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $objDefaultValue
