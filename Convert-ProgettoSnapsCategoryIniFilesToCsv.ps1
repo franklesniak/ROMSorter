@@ -321,7 +321,7 @@ function Convert-OneSelectedHashTableOfAttributes {
     # Key: primary key of tabular data
     # Value: PSCustomObject representing collected tabular data
     #
-    # Eleven positional arguments are required:
+    # Twelve positional arguments are required:
     #
     # The first argument is a reference to an object that will be used to store output
     # The second argument is a reference to an object that serves as input. It is a "hashtable
@@ -334,25 +334,30 @@ function Convert-OneSelectedHashTableOfAttributes {
     #   keys, used to select the key for processing. If set to $null or "", the function
     #   assumes all inner hashtable keys need to be processed unless specified otherwise in
     #   argument five. If not set to $null or "", the function processes just the inner
-    #   hashtable specified and ignores any others. The presence of an item in the selected
+    #   hashtable specified and ignores any others.
+    # The fifth argument is only used if the fourth argument is not $null and not "". In this
+    #   case, it is a boolean. If set to $true, then the presence of an item in the selected
     #   hashtable is presumed to mean "affirmative" and the absense of an item is preseumed to
-    #   mean "negative". See arguments 7 and 8.
-    # The fifth argument is a reference to an array. If the array has any elements, they are
+    #   mean "negative". See arguments 7 and 8. On the other hand, if the fifth argument is set
+    #   to $false, then it is presumed that the items within the inner hashtable are key-value
+    #   pairs (an inner-inner hashtable), and the key represents the item while the value
+    #   represents the value for our tabular cell.
+    # The sixth argument is a reference to an array. If the array has any elements, they are
     #   strings representing keys from the input's inner hashtable to ignore.
-    # The sixth argument is the property name (column) to use in the output for storing the
+    # The seventh argument is the property name (column) to use in the output for storing the
     #   processed results
-    # The seventh argument is an arbitrary object used as default, i.e., for the absense of an
+    # The eighth argument is an arbitrary object used as default, i.e., for the absense of an
     #   indicator. Usually this is "False" or "Unknown" - or similar.
-    # The eighth argument is used only when the fourth argument is not $null or "" and the
+    # The ninth argument is used only when the fourth argument is not $null or "" and the
     #   function is processing one key from the inner hashtable. The presence of an item on the
     #   inner hashtable indicates an "affirmative" - and whatever is specified in this eighth
     #   argument is stored. Usually this is "True". If the fourth arguement is $null or "",
     #   pass $null as the eighth argument.
-    # The ninth argument is the name of the column used as the primary key.
-    # The tenth argument is a somewhat-redundant column that indicates that the primary key was
+    # The tenth argument is the name of the column used as the primary key.
+    # The eleventh argument is a somewhat-redundant column that indicates that the primary key was
     #   processed as part of the current data set. Something like "DataSetNamePresent" is
     #   appropriate.
-    # The eleventh argument is a reference to an array of property names. Each time a new
+    # The twelveth argument is a reference to an array of property names. Each time a new
     #   property is processed, its metadata is appended to the array and used for later calls
     #   to this function or for downstream post-processing.
     #
@@ -366,10 +371,22 @@ function Convert-OneSelectedHashTableOfAttributes {
     # $strFilePathProgettoSnapsCategoryArcadeIni = Join-Path $strSubfolderPath "arcade.ini"
     # $strPropertyName = "ProgettoSnapsCategoryArcade"
     # $objDefaultValue = "False"
-    # $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
-    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    # $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
     #
-    # Example usage #2 (Process all keys from inner hashtable with a few exceptions):
+    # Example usage #2 (Select one key from inner hashtable and process key-value pair (value
+    #   is value for cell in tabular model)):
+    # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
+    # $arrPropertyNamesAndDefaultValuesSoFar = @()
+    # $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryPresent"
+    # $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
+    # $strFilePathProgettoSnapsCategoryArcadeIni = Join-Path $strSubfolderPath "arcade.ini"
+    # $strPropertyName = "ProgettoSnapsCategoryArcade"
+    # $objDefaultValue = "Unknown"
+    # $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    #
+    # Example usage #3 (Process all keys from inner hashtable with a few exceptions):
     # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
     # $arrPropertyNamesAndDefaultValuesSoFar = @()
     # $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryPresent"
@@ -378,25 +395,26 @@ function Convert-OneSelectedHashTableOfAttributes {
     # $strPropertyName = "ProgettoSnapsCategoryCabinetType"
     # $objDefaultValue = "Unknown"
     # $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
-    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryCabinetsIni $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryCabinetsIni $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     $refHashtableOutput = $args[0]
     $refHashtableOfInputHashtables = $args[1]
     $strKeyToSelectInnerHashTable = $args[2] # $strFilePathProgettoSnapsCategoryArcadeIni
-    $strSectionNameThatIndicatesBooleanTrue = $args[3] # "ROOT_FOLDER"
-    $refArrIgnoreSections = $args[4] # @("FOLDER_SETTINGS", "ROOT_FOLDER")
-    $strPropertyName = $args[5] # "ProgettoSnapsCategoryArcade"
-    $objDefaultValueForAbsenseOfIndicator = $args[6] # "False"
-    $objAffirmativeValueForPresenceOfIndicator = $args[7] # "True"
-    $strPrimaryKeyPropertyName = $args[8] # "ROM"
-    $strPropertyNameIndicatingDefinitionInHashTable = $args[9] # "ProgettoSnapsCategoryPresent"
-    $refArrPropertyNamesAndDefaultValuesSoFar = $args[10]
+    $strSectionNameOfSingleSectionToProcess = $args[3] # "ROOT_FOLDER"
+    $boolTreatSingleSectionAsBoolean = $args[4]
+    $refArrIgnoreSections = $args[5] # @("FOLDER_SETTINGS", "ROOT_FOLDER")
+    $strPropertyName = $args[6] # "ProgettoSnapsCategoryArcade"
+    $objDefaultValueForAbsenseOfIndicator = $args[7] # "False"
+    $objAffirmativeValueForPresenceOfIndicator = $args[8] # "True"
+    $strPrimaryKeyPropertyName = $args[9] # "ROM"
+    $strPropertyNameIndicatingDefinitionInHashTable = $args[10] # "ProgettoSnapsCategoryPresent"
+    $refArrPropertyNamesAndDefaultValuesSoFar = $args[11]
 
     $intReturnCode = 0
 
     $boolMultivalued = $true
-    if ($null -ne $strSectionNameThatIndicatesBooleanTrue) {
-        if ("" -ne $strSectionNameThatIndicatesBooleanTrue) {
+    if ($null -ne $strSectionNameOfSingleSectionToProcess) {
+        if ("" -ne $strSectionNameOfSingleSectionToProcess) {
             $boolMultivalued = $false
         }
     }
@@ -409,12 +427,16 @@ function Convert-OneSelectedHashTableOfAttributes {
                     ($refHashtableOutput.Value).Item($strThisKey) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objDefaultValueForAbsenseOfIndicator
                 }
             
-            if (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).ContainsKey($strSectionNameThatIndicatesBooleanTrue)) {
-                ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameThatIndicatesBooleanTrue).Keys | `
+            if (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).ContainsKey($strSectionNameOfSingleSectionToProcess)) {
+                ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Keys | `
                     ForEach-Object {
                         $strThisKey = $_
                         if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
-                            (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = $objAffirmativeValueForPresenceOfIndicator
+                            if ($boolTreatSingleSectionAsBoolean) {
+                                (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = $objAffirmativeValueForPresenceOfIndicator
+                            } else {
+                                (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Item($strThisKey)
+                            }
                         } else {
                             $PSCustomObjectROMMetadata = New-Object PSCustomObject
                             $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
@@ -429,7 +451,11 @@ function Convert-OneSelectedHashTableOfAttributes {
                                         $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
                                     }
                                 }
-                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objAffirmativeValueForPresenceOfIndicator
+                            if ($boolTreatSingleSectionAsBoolean) {
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objAffirmativeValueForPresenceOfIndicator
+                            } else {
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Item($strThisKey))
+                            }
                             ($refHashtableOutput.Value).Add($strThisKey, $PSCustomObjectROMMetadata)
                         }
                     }
@@ -994,40 +1020,56 @@ if ($boolErrorOccurred -eq $false) {
     $strFilePath = $strFilePathProgettoSnapsCategoryArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryArcadeBIOSIni
     $strPropertyName = "ProgettoSnapsCategoryBIOSOfArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryArcadeNOBIOSIni
     $strPropertyName = "ProgettoSnapsCategoryArcadeExcludingBIOS"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryBootlegsIni
     $strPropertyName = "ProgettoSnapsCategoryBootleg"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1038,7 +1080,11 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1049,17 +1095,25 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryClonesArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryArcadeClone"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1070,37 +1124,53 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryFreeplayIni
     $strPropertyName = "ProgettoSnapsCategoryArcadeThatAllowsFreePlay"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "Free Play"
+    $strSectionNameOfSingleSectionToProcess = "Free Play"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryMechanicalArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryMechanicalArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryMessIni
     $strPropertyName = "ProgettoSnapsCategoryNonArcadeViaMESS"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1111,47 +1181,67 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryNonBootlegsIni
     $strPropertyName = "ProgettoSnapsCategoryNotABootleg"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryNonMechanicalArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryNotAMechanicalArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryNotWorkingArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryNonWorkingArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryOriginalsArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryArcadeParent"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1162,7 +1252,11 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
@@ -1173,37 +1267,53 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryScreenlessIni
     $strPropertyName = "ProgettoSnapsCategoryDoesNotUseADisplay"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryWorkingArcadeCleanIni
     $strPropertyName = "ProgettoSnapsCategoryWorkingArcadeNotInAGenerallyUndesirableCategory"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
 
     $strFilePath = $strFilePathProgettoSnapsCategoryWorkingArcadeIni
     $strPropertyName = "ProgettoSnapsCategoryWorkingArcade"
     $objDefaultValue = "False"
-    $strSectionNameThatIndicatesBooleanTrue = "ROOT_FOLDER"
+    $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
 
     Write-Verbose ("Processing data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameThatIndicatesBooleanTrue ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
 
     ###########################################################################################
     # All data has been tabularized; next, let's join the multivalued attributes' arrays
