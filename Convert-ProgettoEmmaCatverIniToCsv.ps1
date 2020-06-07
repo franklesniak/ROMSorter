@@ -103,7 +103,6 @@ function Split-StringOnLiteralString {
     }
 }
 
-
 function New-BackwardCompatibleCaseInsensitiveHashtable {
     # Usage:
     # $hashtable = New-BackwardCompatibleCaseInsensitiveHashtable
@@ -584,7 +583,7 @@ if ($boolErrorOccurred -eq $false) {
     $strSectionNameOfSingleSectionToProcess = "Category"
 
     Write-Verbose ("Processing category data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     if ($intReturnCode -ne 0) {
         Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
@@ -644,7 +643,7 @@ if ($boolErrorOccurred -eq $false) {
     $strSectionNameOfSingleSectionToProcess = "VerAdded"
 
     Write-Verbose ("Processing MAME version data from file " + $strFilePath + "...")
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     if ($intReturnCode -ne 0) {
         Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
