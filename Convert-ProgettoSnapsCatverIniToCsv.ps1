@@ -4,9 +4,6 @@
 # the first version of MAME that supports the ROM in some capacity) for each ROM can be
 # combined with other data sources (e.g., using Join-Object in PowerShell, Power BI, SQL
 # Server, or another tool of choice) to make a ROM list.
-#
-# This script takes a very long time to run, but I do not intend to run it often, and it works,
-# so I am not planning to do anything about it right now :)
 
 #region License
 ###############################################################################################
@@ -102,6 +99,435 @@ function Split-StringOnLiteralString {
     }
 }
 
+function New-BackwardCompatibleCaseInsensitiveHashtable {
+    # Usage:
+    # $hashtable = New-BackwardCompatibleCaseInsensitiveHashtable
+    $cultureDoNotCare = [System.Globalization.CultureInfo]::InvariantCulture
+    $caseInsensitiveHashCodeProvider = New-Object -TypeName "System.Collections.CaseInsensitiveHashCodeProvider" -ArgumentList @($cultureDoNotCare)
+    $caseInsensitiveComparer = New-Object -TypeName "System.Collections.CaseInsensitiveComparer" -ArgumentList @($cultureDoNotCare)
+    New-Object -TypeName "System.Collections.Hashtable" -ArgumentList @($caseInsensitiveHashCodeProvider, $caseInsensitiveComparer)
+}
+
+function Convert-IniToHashTable {
+    # This function reads an .ini file and converts it to a hashtable
+    #
+    # Five or six positional arguments are required:
+    #
+    # The first argument is a reference to an object that will be used to store output
+    # The second argument is a string representing the file path to the ini file
+    # The third argument is an array of characters that represent the characters allowed to
+    #   indicate the start of a comment. Usually, this should be set to @(";"), but if hashtags
+    #   are also allowed as comments for a given application, then it should be set to
+    #   @(";", "#") or @("#")
+    # The fourth argument is a boolean value that indicates whether comments should be ignored.
+    #   Normally, comments should be ignored, and so this should be set to $true
+    # The fifth argument is a boolean value that indicates whether comments must be on their
+    #   own line in order to be considered a comment. If set to $false, and if the semicolon
+    #   is the character allowed to indicate the start of a comment, then the text after the
+    #   semicolon in this example would not be considered a comment:
+    #   key=value ; this text would not be considered a comment
+    #   in this example, the value would be:
+    #   value ; this text would not be considered a comment
+    # The sixth argument is a string representation of the null section name. In other words,
+    #   if a key-value pair is found outside of a section, what should be used as its fake
+    #   section name? As an example, this can be set to "NoSection" as long as their is no
+    #   section in the ini file like [NoSection]
+    # The seventh argument is a boolean value that indicates whether it is permitted for keys
+    #   in the ini file to be supplied without an equal sign (if $true, the key is ingested but
+    #   the value is regarded as $null). If set to false, lines that lack an equal sign are
+    #   considered invalid and ignored.
+    # If supplied, the eighth argument is a string representation of the comment prefix and is
+    #   to being the name of the "key" representing the comment (and appended with an index
+    #   number beginning with 1). If argument four is set to $false, then this argument is
+    #   required. Usually "Comment" is OK to use, unless there are keys in the file named like
+    #   "Comment1", "Comment2", etc.
+    #
+    # The function returns a 0 if successful, non-zero otherwise.
+    #
+    # Example usage:
+    # $hashtableConfigIni = $null
+    # $intReturnCode = Convert-IniToHashTable ([ref]$hashtableConfigIni) ".\config.ini" @(";") $true $true "NoSection" $true
+    #
+    # This function is derived from Get-IniContent at the website:
+    # https://github.com/lipkau/PsIni/blob/master/PSIni/Functions/Get-IniContent.ps1
+    # retrieved on 2020-05-30
+    #region OriginalLicense
+    # Although substantial modifications have been made, the original portions of
+    # Get-IniContent that are incorporated into Convert-IniToHashTable are subject to the
+    # following license:
+    ###############################################################################################
+    # Copyright 2019 Oliver Lipkau
+
+    # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+    # and associated documentation files (the "Software"), to deal in the Software without
+    # restriction, including without limitation the rights to use, copy, modify, merge, publish,
+    # distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+    # Software is furnished to do so, subject to the following conditions:
+
+    # The above copyright notice and this permission notice shall be included in all copies or
+    # substantial portions of the Software.
+
+    # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+    # BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    # NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    ###############################################################################################
+    #endregion OriginalLicense
+
+    $refOutput = $args[0]
+    $strFilePath = $args[1]
+    $arrCharCommentIndicator = $args[2]
+    $boolIgnoreComments = $args[3]
+    $boolCommentsMustBeOnOwnLine = $args[4]
+    $strNullSectionName = $args[5]
+    $boolAllowKeysWithoutValuesThatOmitEqualSign = $args[6]
+    if ($boolIgnoreComments -ne $true) {
+        $strCommentPrefix = $args[7]
+    }
+
+    # Initialize regex matching patterns
+    $arrCharCommentIndicator = $arrCharCommentIndicator | ForEach-Object {
+        [regex]::Escape($_)
+    }
+    $strRegexComment = "^\s*([$($arrCharCommentIndicator -join '')].*)$"
+    $strRegexCommentAnywhere = "\s*([$($arrCharCommentIndicator -join '')].*)$"
+    $strRegexSection = "^\s*\[(.+)\]\s*$"
+    $strRegexKey = "^\s*(.+?)\s*=\s*(['`"]?)(.*)\2\s*$"
+
+    $hashtableIni = New-BackwardCompatibleCaseInsensitiveHashtable
+
+    if ((Test-Path $strFilePath) -eq $false) {
+        Write-Error ("Could not process INI file; the specified file was not found: " + $strFilePath)
+        1 # return failure code
+    } else {
+        $intCommentCount = 0
+        $strSection = $null
+        switch -regex -file $strFilePath {
+            $strRegexSection {
+                $strSection = $Matches[1]
+                if ($hashtableIni.ContainsKey($strSection) -eq $false) {
+                    $hashtableIni.Add($strSection, (New-BackwardCompatibleCaseInsensitiveHashtable))
+                }
+                $intCommentCount = 0
+                continue
+            }
+
+            $strRegexComment {
+                if ($boolIgnoreComments -ne $true) {
+                    if ($null -eq $strSection) {
+                        $strEffectiveSection = $strNullSectionName
+                        if ($hashtableIni.ContainsKey($strEffectiveSection) -eq $false) {
+                            $hashtableIni.Add($strEffectiveSection, (New-BackwardCompatibleCaseInsensitiveHashtable))
+                        }
+                    } else {
+                        $strEffectiveSection = $strSection
+                    }
+                    $intCommentCount++
+                    if (($hashtableIni.Item($strEffectiveSection)).ContainsKey($strCommentPrefix + ([string]$intCommentCount))) {
+                        Write-Warning ("File `"" + $strFilePath + "`", section `"" + $strEffectiveSection + "`" already unexpectedly contains a key `"" + ($strCommentPrefix + ([string]$intCommentCount)) + "`" with value `"" + ($hashtableIni.Item($strEffectiveSection)).Item($strCommentPrefix + ([string]$intCommentCount)) + "`". Key's value will be changed to: `"" + $Matches[1] + "`"")
+                        ($hashtableIni.Item($strEffectiveSection)).Item($strCommentPrefix + ([string]$intCommentCount)) = $Matches[1]
+                    } else {
+                        ($hashtableIni.Item($strEffectiveSection)).Add($strCommentPrefix + ([string]$intCommentCount), $Matches[1])
+                    }
+                }
+                continue
+            }
+
+            default {
+                $strLine = $_
+                if ($null -eq $strSection) {
+                    $strEffectiveSection = $strNullSectionName
+                    if ($hashtableIni.ContainsKey($strEffectiveSection) -eq $false) {
+                        $hashtableIni.Add($strEffectiveSection, (New-BackwardCompatibleCaseInsensitiveHashtable))
+                    }
+                } else {
+                    $strEffectiveSection = $strSection
+                }
+
+                $strKey = $null
+                $strValue = $null
+                if ($boolCommentsMustBeOnOwnLine) {
+                    $arrLine = @([regex]::Split($strLine, $strRegexKey))
+                    if ($arrLine.Count -ge 4) {
+                        # Key-Value Pair found
+                        $strKey = $arrLine[1]
+                        $strValue = $arrLine[3]
+                    } else {
+                        # No key-value pair found
+                        if ($boolAllowKeysWithoutValuesThatOmitEqualSign) {
+                            if (($null -ne $arrLine[0]) -and ("" -ne $arrLine[0])) {
+                                $strKey = $arrLine[0]
+                            }
+                        }
+                    }
+                } else {
+                    # Comments do not have to be on their own line
+                    $arrLine = @([regex]::Split($strLine, $strRegexCommentAnywhere))
+                    # $arrLine[0] is the line before any comments
+                    $arrLineKeyValue = @([regex]::Split($arrLine[0], $strRegexKey))
+                    if ($arrLineKeyValue.Count -ge 4) {
+                        # Key-Value Pair found
+                        $strKey = $arrLineKeyValue[1]
+                        $strValue = $arrLineKeyValue[3]
+                    } else {
+                        # No key-value pair found
+                        if ($boolAllowKeysWithoutValuesThatOmitEqualSign) {
+                            if (($null -ne $arrLineKeyValue[0]) -and ("" -ne $arrLineKeyValue[0])) {
+                                $strKey = $arrLineKeyValue[0]
+                            }
+                        }
+                    }
+                    # if $arrLine.Count -gt 1, $arrLine[1] is the comment portion of the line
+                    if ($arrLine.Count -gt 1) {
+                        if ($boolIgnoreComments -ne $true) {
+                            $intCommentCount++
+                            if (($hashtableIni.Item($strEffectiveSection)).ContainsKey($strCommentPrefix + ([string]$intCommentCount))) {
+                                Write-Warning ("File `"" + $strFilePath + "`", section `"" + $strEffectiveSection + "`" already unexpectedly contains a key `"" + ($strCommentPrefix + ([string]$intCommentCount)) + "`" with value `"" + ($hashtableIni.Item($strEffectiveSection)).Item($strCommentPrefix + ([string]$intCommentCount)) + "`". Key's value will be changed to: `"" + $Matches[1] + "`"")
+                                ($hashtableIni.Item($strEffectiveSection)).Item($strCommentPrefix + ([string]$intCommentCount)) = $Matches[1]
+                            } else {
+                                ($hashtableIni.Item($strEffectiveSection)).Add($strCommentPrefix + ([string]$intCommentCount), $Matches[1])
+                            }
+                        }
+                    }
+                }
+                
+                if ($null -ne $strKey) {
+                    if (($hashtableIni.Item($strEffectiveSection)).ContainsKey($strKey)) {
+                        Write-Warning ("File `"" + $strFilePath + "`", section `"" + $strEffectiveSection + "`" already unexpectedly contains a key `"" + $strKey + "`" with value `"" + ($hashtableIni.Item($strEffectiveSection)).Item($strKey) + "`". Key's value will be changed to: null")
+                        ($hashtableIni.Item($strEffectiveSection)).Item($strKey) = $strValue
+                    } else {
+                        ($hashtableIni.Item($strEffectiveSection)).Add($strKey, $strValue)
+                    }
+                }
+                continue
+            }
+        }
+        $refOutput.Value = $hashtableIni
+        0 # return success code
+    }
+}
+
+function Convert-OneSelectedHashTableOfAttributes {
+    # This function reads a hashtable from a hashtable of hashtables, then converts it into a
+    # tabular data set. This function is designed to work with various MAME UI programs' .ini
+    # files that have been converted to hashtables using Convert-IniToHashTable. This function
+    # appends its output to the hashtable specified in the first argument. The output is a
+    # hashtable (key-value pair) in the form of:
+    # Key: primary key of tabular data
+    # Value: PSCustomObject representing collected tabular data
+    #
+    # Twelve positional arguments are required:
+    #
+    # The first argument is a reference to an object that will be used to store output
+    # The second argument is a reference to an object that serves as input. It is a "hashtable
+    #   of hashtables" resulting, resulting from the collection of data using
+    #   Convert-IniToHashTable
+    # The third argument is a string representing the key of the input's outer hashtable. It
+    #   "selects" the innner hashtable.
+    # The fourth argument is either set to $null, or it's a string. If it's a string, it can
+    #   either be an empty string ("") or it can be the name of one of the inner hashtable's
+    #   keys, used to select the key for processing. If set to $null or "", the function
+    #   assumes all inner hashtable keys need to be processed unless specified otherwise in
+    #   argument five. If not set to $null or "", the function processes just the inner
+    #   hashtable specified and ignores any others.
+    # The fifth argument is only used if the fourth argument is not $null and not "". In this
+    #   case, it is a boolean. If set to $true, then the presence of an item in the selected
+    #   hashtable is presumed to mean "affirmative" and the absense of an item is preseumed to
+    #   mean "negative". See arguments 7 and 8. On the other hand, if the fifth argument is set
+    #   to $false, then it is presumed that the items within the inner hashtable are key-value
+    #   pairs (an inner-inner hashtable), and the key represents the item while the value
+    #   represents the value for our tabular cell.
+    # The sixth argument is a reference to an array. If the array has any elements, they are
+    #   strings representing keys from the input's inner hashtable to ignore.
+    # The seventh argument is the property name (column) to use in the output for storing the
+    #   processed results
+    # The eighth argument is an arbitrary object used as default, i.e., for the absense of an
+    #   indicator. Usually this is "False" or "Unknown" - or similar.
+    # The ninth argument is used only when the fourth argument is not $null or "" and the
+    #   function is processing one key from the inner hashtable. The presence of an item on the
+    #   inner hashtable indicates an "affirmative" - and whatever is specified in this eighth
+    #   argument is stored. Usually this is "True". If the fourth arguement is $null or "",
+    #   pass $null as the eighth argument.
+    # The tenth argument is the name of the column used as the primary key.
+    # The eleventh argument is a somewhat-redundant column that indicates that the primary key was
+    #   processed as part of the current data set. Something like "DataSetNamePresent" is
+    #   appropriate.
+    # The twelveth argument is a reference to an array of property names. Each time a new
+    #   property is processed, its metadata is appended to the array and used for later calls
+    #   to this function or for downstream post-processing.
+    #
+    # The function returns a 0 if successful, non-zero otherwise.
+    #
+    # Example usage #1 (Select one key from inner hashtable and treat as boolean):
+    # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
+    # $arrPropertyNamesAndDefaultValuesSoFar = @()
+    # $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryPresent"
+    # $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
+    # $strFilePathProgettoSnapsCategoryArcadeIni = Join-Path $strSubfolderPath "arcade.ini"
+    # $strPropertyName = "ProgettoSnapsCategoryArcade"
+    # $objDefaultValue = "False"
+    # $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    #
+    # Example usage #2 (Select one key from inner hashtable and process key-value pair (value
+    #   is value for cell in tabular model)):
+    # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
+    # $arrPropertyNamesAndDefaultValuesSoFar = @()
+    # $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryPresent"
+    # $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
+    # $strFilePathProgettoSnapsCategoryArcadeIni = Join-Path $strSubfolderPath "arcade.ini"
+    # $strPropertyName = "ProgettoSnapsCategoryArcade"
+    # $objDefaultValue = "Unknown"
+    # $strSectionNameOfSingleSectionToProcess = "ROOT_FOLDER"
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    #
+    # Example usage #3 (Process all keys from inner hashtable with a few exceptions):
+    # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
+    # $arrPropertyNamesAndDefaultValuesSoFar = @()
+    # $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryPresent"
+    # $strSubfolderPath = Join-Path "." "Progetto_Snaps_Resources"
+    # $strFilePathProgettoSnapsCategoryCabinetsIni = Join-Path $strSubfolderPath "cabinets.ini"
+    # $strPropertyName = "ProgettoSnapsCategoryCabinetType"
+    # $objDefaultValue = "Unknown"
+    # $arrIgnoreSections = @("FOLDER_SETTINGS", "ROOT_FOLDER")
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryCabinetsIni $null $null ([ref]$arrIgnoreSections) $strPropertyName "Unknown" $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    $refHashtableOutput = $args[0]
+    $refHashtableOfInputHashtables = $args[1]
+    $strKeyToSelectInnerHashTable = $args[2] # $strFilePathProgettoSnapsCategoryArcadeIni
+    $strSectionNameOfSingleSectionToProcess = $args[3] # "ROOT_FOLDER"
+    $boolTreatSingleSectionAsBoolean = $args[4]
+    $refArrIgnoreSections = $args[5] # @("FOLDER_SETTINGS", "ROOT_FOLDER")
+    $strPropertyName = $args[6] # "ProgettoSnapsCategoryArcade"
+    $objDefaultValueForAbsenseOfIndicator = $args[7] # "False"
+    $objAffirmativeValueForPresenceOfIndicator = $args[8] # "True"
+    $strPrimaryKeyPropertyName = $args[9] # "ROM"
+    $strPropertyNameIndicatingDefinitionInHashTable = $args[10] # "ProgettoSnapsCategoryPresent"
+    $refArrPropertyNamesAndDefaultValuesSoFar = $args[11]
+
+    $intReturnCode = 0
+
+    $boolMultivalued = $true
+    if ($null -ne $strSectionNameOfSingleSectionToProcess) {
+        if ("" -ne $strSectionNameOfSingleSectionToProcess) {
+            $boolMultivalued = $false
+        }
+    }
+
+    if (($refHashtableOfInputHashtables.Value).ContainsKey($strKeyToSelectInnerHashTable)) {
+        if ($boolMultivalued -eq $false) {
+            ($refHashtableOutput.Value).Keys | `
+                ForEach-Object {
+                    $strThisKey = $_
+                    ($refHashtableOutput.Value).Item($strThisKey) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objDefaultValueForAbsenseOfIndicator
+                }
+            
+            if (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).ContainsKey($strSectionNameOfSingleSectionToProcess)) {
+                ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Keys | `
+                    ForEach-Object {
+                        $strThisKey = $_
+                        if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
+                            if ($boolTreatSingleSectionAsBoolean) {
+                                (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = $objAffirmativeValueForPresenceOfIndicator
+                            } else {
+                                (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Item($strThisKey)
+                            }
+                        } else {
+                            $PSCustomObjectROMMetadata = New-Object PSCustomObject
+                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
+                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyNameIndicatingDefinitionInHashTable -Value "True"
+                            ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | `
+                                ForEach-Object {
+                                    $strThisPropertyName = $_.PropertyName
+                                    $objThisPropertyDefaultValue = $_.DefaultValue
+                                    if ($_.MultivaluedProperty) {
+                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
+                                    } else {
+                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
+                                    }
+                                }
+                            if ($boolTreatSingleSectionAsBoolean) {
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objAffirmativeValueForPresenceOfIndicator
+                            } else {
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Item($strThisKey))
+                            }
+                            ($refHashtableOutput.Value).Add($strThisKey, $PSCustomObjectROMMetadata)
+                        }
+                    }
+                $PSCustomObjectThisProperty = New-Object PSCustomObject
+                $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "PropertyName" -Value $strPropertyName
+                $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $objDefaultValueForAbsenseOfIndicator
+                $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "MultivaluedProperty" -Value $false
+                ($refArrPropertyNamesAndDefaultValuesSoFar.Value) = ($refArrPropertyNamesAndDefaultValuesSoFar.Value) + $PSCustomObjectThisProperty
+            } else {
+                # Write-Error ("The following file had an unexpected file format and cannot be processed: " + $strKeyToSelectInnerHashTable)
+                $intReturnCode = 2
+            }
+        } else {
+            $hashtableOutput.Keys | `
+                ForEach-Object {
+                    $strThisROMName = $_
+                    $hashtableOutput.Item($strThisROMName) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($objDefaultValueForAbsenseOfIndicator)
+                }
+            
+            ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Keys | `
+                Where-Object {($refArrIgnoreSections.Value) -notcontains $_} | `
+                Sort-Object | `
+                ForEach-Object {
+                    $strHeader = $_
+                    (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable)).Item($strHeader).Keys | `
+                        ForEach-Object {
+                            $strThisKey =$_
+                            if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
+                                # ROM already on our output list
+                                if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName).Count -eq 1) {
+                                    # This multivalued attribute had one value stored
+                                    if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName)[0] -eq $objDefaultValueForAbsenseOfIndicator) {
+                                        # The existing value was the default value; replace it
+                                        (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = @($strHeader)
+                                    } else {
+                                        # The existing value was not the default value; append it so that we now have two values.
+                                        (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName + $strHeader
+                                    }
+                                } else {
+                                    # This multivalued attribute had more than one value stored; append this one
+                                    (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName + $strHeader
+                                }
+                            } else {
+                                # ROM was not on our output list
+                                $PSCustomObjectROMMetadata = New-Object PSCustomObject
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyNameIndicatingDefinitionInHashTable -Value "True"
+                                ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | `
+                                    ForEach-Object {
+                                        $strThisPropertyName = $_.PropertyName
+                                        $objThisPropertyDefaultValue = $_.DefaultValue
+                                        if ($_.MultivaluedProperty) {
+                                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
+                                        } else {
+                                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
+                                        }
+                                    }
+                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($strHeader)
+                                ($refHashtableOutput.Value).Add($strThisKey, $PSCustomObjectROMMetadata)
+                            }
+                        }
+                }
+            $PSCustomObjectThisProperty = New-Object PSCustomObject
+            $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "PropertyName" -Value $strPropertyName
+            $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $objDefaultValueForAbsenseOfIndicator
+            $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "MultivaluedProperty" -Value $true
+            ($refArrPropertyNamesAndDefaultValuesSoFar.Value) = ($refArrPropertyNamesAndDefaultValuesSoFar.Value) + $PSCustomObjectThisProperty
+        }
+    } else {
+        $intReturnCode = 1
+        # Write-Error ("Cannot process ROM information from the following file because it is missing in the hashtable: " + $strKeyToSelectInnerHashTable)
+    }
+
+    $intReturnCode
+}
+
 $boolErrorOccurred = $false
 
 # Progetto Snaps catver.ini file
@@ -116,224 +542,135 @@ if ((Test-Path $strFilePathProgettoSnapsCatverIni) -ne $true) {
 if ($boolErrorOccurred -eq $false) {
     # We have all the files, let's do stuff
 
-    $csvCurrentRomList = @()
+    $hashtableMaster = New-BackwardCompatibleCaseInsensitiveHashtable
 
-    $strCurrentFilePath = $strFilePathProgettoSnapsCatverIni
+    $arrCharCommentIndicator = @(";")
+    $boolIgnoreComments = $true
+    $boolCommentsMustBeOnOwnLine = $false
+    $strNullSectionName = "NoSection"
+    $boolAllowKeysWithoutValuesThatOmitEqualSign = $true
 
-    $arrStrFileContent = @(Get-Content $strCurrentFilePath)
-    $strHeaderMinusSquareBraces = $null
-    for ($intLineCounter = 0; $intLineCounter -lt $arrStrFileContent.Length; $intLineCounter++) {
-        if (($arrStrFileContent[$intLineCounter]).Length -ge 1) {
-            # There is data on this line (it's not just blank)
+    ###########################################################################################
 
-            if ($intLineCounter -ge 10) {
-                Write-Progress -Activity "Converting Progetto Snaps catver.ini file to CSV" -Status "Processing" -PercentComplete (($intLineCounter) / ($arrStrFileContent.Length) * 100)
-            }
-            $boolIsComment = $false
-            if (($arrStrFileContent[$intLineCounter]).Length -ge 3) {
-                if (($arrStrFileContent[$intLineCounter]).Substring(0, 3) -eq ";; ") {
-                    if (($arrStrFileContent[$intLineCounter]).Substring(($arrStrFileContent[$intLineCounter]).Length - 3, 3) -eq " ;;") {
-                        $boolIsComment = $true
-                    }
-                }
-            }
+    $strFilePath = $strFilePathProgettoSnapsCatverIni
+    $hashtableIniFile = $null
+    Write-Verbose ("Ingesting data from file " + $strFilePath + "...")
+    $intReturnCode = Convert-IniToHashTable ([ref]$hashtableIniFile) $strFilePath $arrCharCommentIndicator $boolIgnoreComments $boolCommentsMustBeOnOwnLine $strNullSectionName $boolAllowKeysWithoutValuesThatOmitEqualSign
 
-            if ($boolIsComment -eq $false) {
-                $boolWasValidSectionHeaderLine = $false
-                if (($arrStrFileContent[$intLineCounter]).Substring(0, 1) -eq "[") {
-                    # Possible start of a new ini section
-                    if (($arrStrFileContent[$intLineCounter]).Substring(($arrStrFileContent[$intLineCounter]).Length - 1, 1) -eq "]") {
-                        # Line has both an opening square bracket and a closing square bracket; it's a new section.
-                        # The question is: is it a section that we care about?
-                        if (((($arrStrFileContent[$intLineCounter]).Substring(1, ($arrStrFileContent[$intLineCounter]).Length - 2)).ToLower() -eq "category") -or ((($arrStrFileContent[$intLineCounter]).Substring(1, ($arrStrFileContent[$intLineCounter]).Length - 2)).ToLower() -eq "veradded")) {
-                            $strHeaderMinusSquareBraces = ($arrStrFileContent[$intLineCounter]).Substring(1, ($arrStrFileContent[$intLineCounter]).Length - 2)
-                            $boolWasValidSectionHeaderLine = $true
-                        }
-                    }
-                }
-
-                if ($boolWasValidSectionHeaderLine -eq $false) {
-                    if ($null -ne $strHeaderMinusSquareBraces) {
-                        # We are in a section and this line has data
-                        # Let's assume it's a ROM
-                        $arrLineInProgress = Split-StringOnLiteralString ($arrStrFileContent[$intLineCounter]) "="
-                        if ($arrLineInProgress.Count -eq 2) {
-                            $strThisROMName = $arrLineInProgress[0]
-                            $strROMDescription = $arrLineInProgress[1]
-                            if ($strHeaderMinusSquareBraces.ToLower() -eq "category") {
-                                # We're in the [Category] section
-                                $strMature = "False"
-                                $strCategory = ""
-                                $strSubcategory = ""
-
-                                $arrLineInProgress = Split-StringOnLiteralString $strROMDescription " * "
-                                if ($arrLineInProgress.Count -ge 2) {
-                                    # The pattern " * " existed. Take the right side of it and split again:
-                                    $arrLineInProgressB = Split-StringOnLiteralString ($arrLineInProgress[1]) " *"
-                                    if (($arrLineInProgressB[0]).ToLower() -eq "mature") {
-                                        $strMature = "True"
-                                    }
-                                }
-
-                                $arrLineInProgressB = Split-StringOnLiteralString ($arrLineInProgress[0]) " / "
-                                $strCategory = $arrLineInProgressB[0]
-                                if ($arrLineInProgressB.Count -ge 2) {
-                                    $strSubcategory = $arrLineInProgressB[1]
-                                }
-
-                                $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
-                                if ($result.Count -ne 0) {
-                                    # ROM is already on the list
-                                    for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
-                                        if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
-                                            ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
-
-                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory) {
-                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = "`n" + $strCategory + "`n"
-                                            } else {
-                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory).Contains("`n" + $strCategory + "`n") -eq $false) {
-                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationCategory + $strCategory + "`n"
-                                                }
-                                            }
-
-                                            if ("" -ne $strSubcategory) {
-                                                if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory) {
-                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = "`n" + $strSubcategory + "`n"
-                                                } else {
-                                                    if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory).Contains("`n" + $strSubcategory + "`n") -eq $false) {
-                                                        ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationSubcategory + $strSubcategory + "`n"
-                                                    }
-                                                }
-                                            }
-
-                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature) {
-                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = "`n" + $strMature + "`n"
-                                            } else {
-                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature).Contains("`n" + $strMature + "`n") -eq $false) {
-                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationMature + $strMature + "`n"
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    $PSCustomObjectROMMetadata = New-Object PSCustomObject
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationList" -Value "True"
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationCategory" -Value ("`n" + $strCategory + "`n")
-                                    if ("" -eq $strSubcategory) {
-                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationSubcategory" -Value ""
-                                    } else {
-                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationSubcategory" -Value ("`n" + $strSubcategory + "`n")
-                                    }
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationMature" -Value ("`n" + $strMature + "`n")
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion" -Value ""
-                                    $csvCurrentRomList = $csvCurrentRomList + $PSCustomObjectROMMetadata
-                                }
-                            } else {
-                                # Must be in the VerAdded section
-
-                                $result = @($csvCurrentRomList | Where-Object { $_.ROM -eq $strThisROMName })
-                                if ($result.Count -ne 0) {
-                                    # ROM is already on the list
-                                    for ($intCounterA = 0; $intCounterA -lt $csvCurrentRomList.Count; $intCounterA++) {
-                                        if (($csvCurrentRomList[$intCounterA]).ROM -eq $strThisROMName) {
-                                            ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationList = "True"
-
-                                            if ("" -eq ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion) {
-                                                ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = "`n" + $strROMDescription + "`n"
-                                            } else {
-                                                if ((($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion).Contains("`n" + $strROMDescription + "`n") -eq $false) {
-                                                    ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = ($csvCurrentRomList[$intCounterA]).ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion + $strROMDescription + "`n"
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    $PSCustomObjectROMMetadata = New-Object PSCustomObject
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ROM" -Value $strThisROMName
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationList" -Value "True"
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationCategory" -Value ""
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationSubcategory" -Value ""
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationMature" -Value ""
-                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name "ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion" -Value ("`n" + $strROMDescription + "`n")
-                                    $csvCurrentRomList = $csvCurrentRomList + $PSCustomObjectROMMetadata
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    if ($intReturnCode -eq 0) {
+        $hashtableMaster.Add($strFilePath, $hashtableIniFile)
+    } else {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + " and it will be skipped.")
     }
 
-    # Clean up the tabular data
-    $intLineCounter = 0
-    $csvCurrentRomList = $csvCurrentRomList | `
+    ###########################################################################################
+
+    # All files have been loaded into memory as hashtables at this point. Start transforming
+    # data to form output.
+    $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
+    $arrPropertyNamesAndDefaultValuesSoFar = @()
+    $strPropertyNameIndicatingDefinitionInHashTable = "ProgettoSnapsCategoryAndVersionInformationList"
+
+    ###########################################################################################
+
+    $strFilePath = $strFilePathProgettoSnapsCatverIni
+    $strPropertyName = "ProgettoSnapsCategoryAndVersionInformationCategory"
+    $objDefaultValue = "Unknown"
+    $strSectionNameOfSingleSectionToProcess = "Category"
+
+    Write-Verbose ("Processing category data from file " + $strFilePath + "...")
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue $null "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
+
+    ###########################################################################################
+
+    $strPropertyNameParentCategory = "ProgettoSnapsCategoryAndVersionInformationCategory"
+    $strPropertyNameChildCategory = "ProgettoSnapsCategoryAndVersionInformationSubcategory"
+    $strPropertyNameMatureFlag = "ProgettoSnapsCategoryAndVersionInformationMature"
+    $strMatureSearchString = " * Mature *"
+    $objDefaultValue = "Unknown"
+    Write-Verbose ("Performing post-processing on category data from file " + $strFilePath + "...")
+    $hashtableOutput.Keys | `
         ForEach-Object {
-            if ($intLineCounter -ge 10) {
-                Write-Progress -Activity "Converting Progetto Snaps catver.ini file to CSV" -Status "Cleaning up" -PercentComplete (($intLineCounter) / ($csvCurrentRomList.Count) * 100)
+            $strThisKey = $_
+            $strThisFormerCombinedCategory = $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory
+            
+            if ($strThisFormerCombinedCategory.Contains($strMatureSearchString)) {
+                $objMatureValue = "True"
+                $arrWorkingValue = Split-StringOnLiteralString $strThisFormerCombinedCategory $strMatureSearchString
+            } else {
+                $objMatureValue = "False"
+                $arrWorkingValue = @($strThisFormerCombinedCategory)
             }
 
-            # ProgettoSnapsCategoryAndVersionInformationCategory
-            $strCurrentField = ""
-            $arrLineInProgress = Split-StringOnLiteralString ($_.ProgettoSnapsCategoryAndVersionInformationCategory) "`n"
-            for ($intArrayCounter = 1; $intArrayCounter -le ($arrLineInProgress.Count - 2); $intArrayCounter++) {
-                if ("" -eq $strCurrentField) {
-                    $strCurrentField = $arrLineInProgress[$intArrayCounter]
-                } else {
-                    $strCurrentField = $strCurrentField + ";" + $arrLineInProgress[$intArrayCounter]
-                }
-            }
-            if ("" -ne $strCurrentField) {
-                $_.ProgettoSnapsCategoryAndVersionInformationCategory = $strCurrentField
+            $arrCategories = Split-StringOnLiteralString ($arrWorkingValue[0]) " / "
+            $strParentCategory = $arrCategories[0]
+            if ($arrCategories.Count -ge 2) {
+                $strChildCategory = $arrCategories[1]
+            } else {
+                $strChildCategory = ""
             }
 
-            # ProgettoSnapsCategoryAndVersionInformationSubcategory
-            $strCurrentField = ""
-            $arrLineInProgress = Split-StringOnLiteralString ($_.ProgettoSnapsCategoryAndVersionInformationSubcategory) "`n"
-            for ($intArrayCounter = 1; $intArrayCounter -le ($arrLineInProgress.Count - 2); $intArrayCounter++) {
-                if ("" -eq $strCurrentField) {
-                    $strCurrentField = $arrLineInProgress[$intArrayCounter]
-                } else {
-                    $strCurrentField = $strCurrentField + ";" + $arrLineInProgress[$intArrayCounter]
-                }
-            }
-            if ("" -ne $strCurrentField) {
-                $_.ProgettoSnapsCategoryAndVersionInformationSubcategory = $strCurrentField
-            }
-
-            # ProgettoSnapsCategoryAndVersionInformationMature
-            $strCurrentField = ""
-            $arrLineInProgress = Split-StringOnLiteralString ($_.ProgettoSnapsCategoryAndVersionInformationMature) "`n"
-            for ($intArrayCounter = 1; $intArrayCounter -le ($arrLineInProgress.Count - 2); $intArrayCounter++) {
-                if ("" -eq $strCurrentField) {
-                    $strCurrentField = $arrLineInProgress[$intArrayCounter]
-                } else {
-                    $strCurrentField = $strCurrentField + ";" + $arrLineInProgress[$intArrayCounter]
-                }
-            }
-            if ("" -ne $strCurrentField) {
-                $_.ProgettoSnapsCategoryAndVersionInformationMature = $strCurrentField
-            }
-
-            # ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion
-            $strCurrentField = ""
-            $arrLineInProgress = Split-StringOnLiteralString ($_.ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion) "`n"
-            for ($intArrayCounter = 1; $intArrayCounter -le ($arrLineInProgress.Count - 2); $intArrayCounter++) {
-                if ("" -eq $strCurrentField) {
-                    $strCurrentField = $arrLineInProgress[$intArrayCounter]
-                } else {
-                    $strCurrentField = $strCurrentField + ";" + $arrLineInProgress[$intArrayCounter]
-                }
-            }
-            if ("" -ne $strCurrentField) {
-                $_.ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion = $strCurrentField
-            }
-
-            $intLineCounter++
-
-            $_
+            $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory = $strParentCategory
+            ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameChildCategory -Value $strChildCategory
+            ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameMatureFlag -Value $objMatureValue
         }
+    
+    $PSCustomObjectThisProperty = New-Object PSCustomObject
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "PropertyName" -Value $strPropertyNameChildCategory
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $objDefaultValue
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "MultivaluedProperty" -Value $false
+    $arrPropertyNamesAndDefaultValuesSoFar = $arrPropertyNamesAndDefaultValuesSoFar + $PSCustomObjectThisProperty
 
-    $csvCurrentRomList | Export-Csv $strCSVOutputFile -NoTypeInformation
+    $PSCustomObjectThisProperty = New-Object PSCustomObject
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "PropertyName" -Value $strPropertyNameMatureFlag
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $objDefaultValue
+    $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name "MultivaluedProperty" -Value $false
+    $arrPropertyNamesAndDefaultValuesSoFar = $arrPropertyNamesAndDefaultValuesSoFar + $PSCustomObjectThisProperty
+
+    ###########################################################################################
+
+    $strFilePath = $strFilePathProgettoSnapsCatverIni
+    $strPropertyName = "ProgettoSnapsCategoryAndVersionInformationRomAddedToMameVersion"
+    $objDefaultValue = "Unknown"
+    $strSectionNameOfSingleSectionToProcess = "VerAdded"
+
+    Write-Verbose ("Processing MAME version data from file " + $strFilePath + "...")
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue "True" "ROM" $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+
+    if ($intReturnCode -ne 0) {
+        Write-Error ("An error occurred while procesing file " + $strFilePath + ".")
+    }
+
+    ###########################################################################################
+    # All data has been tabularized; next, let's join the multivalued attributes' arrays
+    Write-Verbose "Performing Post-Processing..."
+
+    $strJoining = ";"
+
+    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
+        Where-Object {$_.MultivaluedProperty -eq $true} | `
+        ForEach-Object {$_.PropertyName})
+
+    if ($arrJustMultiValuedAttributes.Count -gt 0) {
+        $hashtableOutput.Keys | `
+            ForEach-Object {
+                $strThisKey = $_
+                $arrJustMultiValuedAttributes | `
+                    ForEach-Object {
+                        $strThisMultivaluedProperty = $_
+                        $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
+                    }
+            }
+    }
+
+    # Write output file
+    Write-Verbose "Writing Output File..."
+    $hashtableOutput.Values | Sort-Object -Property "ROM" | Export-Csv $strCSVOutputFile -NoTypeInformation
+    Write-Verbose "Done"
 }
+
+$VerbosePreference = $actionPreferenceFormerVerbose
