@@ -1,16 +1,8 @@
 # Convert-MAME2010DATToCSV.ps1
 # Downloads the MAME 2010 DAT in XML format from Github, analyzes it, and stores the extracted
 # data and associated insights in a CSV.
-$strThisScriptVersionNumber = [version]"1.0.20200816.0"
 
-# Inputs
-$strURL = 'https://github.com/libretro/mame2010-libretro/raw/master/metadata/mame2010.xml'
-$strOutputFilePath = '.\MAME_2010_DAT.csv'
-
-#region DownloadLocationNotice
-# The most up-to-date version of this script can be found on the author's GitHub repository
-# at https://github.com/franklesniak/ROMSorter
-#endregion DownloadLocationNotice
+$strThisScriptVersionNumber = [version]'1.0.20200820.0'
 
 #region License
 ###############################################################################################
@@ -33,6 +25,26 @@ $strOutputFilePath = '.\MAME_2010_DAT.csv'
 ###############################################################################################
 #endregion License
 
+#region DownloadLocationNotice
+# The most up-to-date version of this script can be found on the author's GitHub repository
+# at https://github.com/franklesniak/ROMSorter
+#endregion DownloadLocationNotice
+
+#region Inputs
+###############################################################################################
+$strURL = 'https://github.com/libretro/mame2010-libretro/raw/master/metadata/mame2010.xml'
+
+$strSubfolderPath = Join-Path '.' 'MAME_2010_Resources'
+$strLocalXMLFilePath = $null
+
+# Uncomment the following line if you prefer that the script use a local copy of the
+#    MAME 2010 DAT file instead of having to download it from GitHub:
+# $strLocalXMLFilePath = Join-Path $strSubfolderPath 'mame2010.xml'
+
+$strOutputFilePath = Join-Path '.' 'MAME_2010_DAT.csv'
+###############################################################################################
+#endregion Inputs
+
 function New-BackwardCompatibleCaseInsensitiveHashtable {
     # New-BackwardCompatibleCaseInsensitiveHashtable is designed to create a case-insensitive
     # hashtable that is backward-compatible all the way to PowerShell v1, yet forward-
@@ -44,6 +56,9 @@ function New-BackwardCompatibleCaseInsensitiveHashtable {
     #
     # Usage:
     # $hashtable = New-BackwardCompatibleCaseInsensitiveHashtable
+
+    $strThisFunctionVersionNumber = [version]'1.0.20200817.0'
+
     $cultureDoNotCare = [System.Globalization.CultureInfo]::InvariantCulture
     $caseInsensitiveHashCodeProvider = New-Object -TypeName 'System.Collections.CaseInsensitiveHashCodeProvider' -ArgumentList @($cultureDoNotCare)
     $caseInsensitiveComparer = New-Object -TypeName 'System.Collections.CaseInsensitiveComparer' -ArgumentList @($cultureDoNotCare)
@@ -79,10 +94,13 @@ function Test-MachineCompletelyFunctionalRecursively {
     # $boolROMPackageContainsROMs = $false
     # $boolROMPackageContainsCHD = $false
     # $boolROMFunctional = Test-MachineCompletelyFunctionalRecursively ([ref]$boolROMPackageContainsROMs) ([ref]$boolROMPackageContainsCHD) $strROMName ([ref]$hashtableEmulatorDAT)
+
     $refBoolROMPackagePresent = $args[0]
     $refBoolCHDPresent = $args[1]
     $strThisROMName = $args[2]
     $refHashtableDAT = $args[3]
+
+    $strThisFunctionVersionNumber = [version]'1.0.20200820.0'
 
     $game = ($refHashtableDAT.Value).Item($strThisROMName)
     $boolParentROMCompletelyFunctional = $true
@@ -135,7 +153,16 @@ function Test-MachineCompletelyFunctionalRecursively {
 }
 
 # Get the MAME 2010 DAT
-$strContent = Invoke-WebRequest -Uri $strURL
+if ($null -eq $strLocalXMLFilePath) {
+    $strContent = Invoke-WebRequest -Uri $strURL
+} else {
+    if ((Test-Path $strLocalXMLFilePath) -ne $true) {
+        Write-Error ('The MAME 2010 DAT file is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath)
+        break
+    }
+    $strAbsoluteXMLFilePath = (Resolve-Path $strLocalXMLFilePath).Path
+    $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
+}
 
 # Convert it to XML
 $xmlMAME2010 = [xml]$strContent
@@ -153,9 +180,9 @@ $arrInputTypes = @()
     $game = $_
     if ($null -ne $game.input) {
         @($game.input) | ForEach-Object {
-            $input = $_
-            if ($null -ne $input.control) {
-                @($input.control) | ForEach-Object {
+            $inputFromXML = $_
+            if ($null -ne $inputFromXML.control) {
+                @($inputFromXML.control) | ForEach-Object {
                     $control = $_
                     if ($arrInputTypes -notcontains $control.type) {
                         $arrInputTypes += $control.type
@@ -170,15 +197,15 @@ $arrInputTypes = @()
 $arrControlsTotal = $arrInputTypes | ForEach-Object {
     $strInputType = $_
     switch ($strInputType) {
-        'doublejoy2way' {$strAdjustedInputType = 'doublejoy_2wayhorizontal_2wayhorizontal'}
-        'vdoublejoy2way' {$strAdjustedInputType = 'doublejoy_2wayvertical_2wayvertical'}
-        'doublejoy4way' {$strAdjustedInputType = 'doublejoy_4way_4way'}
-        'doublejoy8way' {$strAdjustedInputType = 'doublejoy_8way_8way'}
-        'joy2way' {$strAdjustedInputType = 'joy_2wayhorizontal'}
-        'vjoy2way' {$strAdjustedInputType = 'joy_2wayvertical'}
-        'joy4way' {$strAdjustedInputType = 'joy_4way'}
-        'joy8way' {$strAdjustedInputType = 'joy_8way'}
-        default {$strAdjustedInputType = $strInputType}
+        'doublejoy2way' { $strAdjustedInputType = 'doublejoy_2wayhorizontal_2wayhorizontal' }
+        'vdoublejoy2way' { $strAdjustedInputType = 'doublejoy_2wayvertical_2wayvertical' }
+        'doublejoy4way' { $strAdjustedInputType = 'doublejoy_4way_4way' }
+        'doublejoy8way' { $strAdjustedInputType = 'doublejoy_8way_8way' }
+        'joy2way' { $strAdjustedInputType = 'joy_2wayhorizontal' }
+        'vjoy2way' { $strAdjustedInputType = 'joy_2wayvertical' }
+        'joy4way' { $strAdjustedInputType = 'joy_4way' }
+        'joy8way' { $strAdjustedInputType = 'joy_8way' }
+        default { $strAdjustedInputType = $strInputType }
     }
     $strAdjustedInputType
 } | Select-Object -Unique | Sort-Object
@@ -315,38 +342,38 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
     $strNumButtons = 'N/A'
     if ($null -ne $game.input) {
         @($game.input) | ForEach-Object {
-            $input = $_
-            if ($null -ne $input.players) {
+            $inputFromXML = $_
+            if ($null -ne $inputFromXML.players) {
                 if ($strNumPlayers -eq 'N/A') {
                     $strNumPlayers = '0'
                 }
-                if (([int]($input.players)) -gt ([int]$strNumPlayers)) {
-                    $strNumPlayers = $input.players
+                if (([int]($inputFromXML.players)) -gt ([int]$strNumPlayers)) {
+                    $strNumPlayers = $inputFromXML.players
                 }
             }
-            if ($null -ne $input.buttons) {
+            if ($null -ne $inputFromXML.buttons) {
                 if ($strNumButtons -eq 'N/A') {
                     $strNumButtons = '0'
                 }
-                if (([int]($input.buttons)) -gt ([int]$strNumButtons)) {
-                    $strNumButtons = $input.buttons
+                if (([int]($inputFromXML.buttons)) -gt ([int]$strNumButtons)) {
+                    $strNumButtons = $inputFromXML.buttons
                 }
             }
-            if ($null -ne $input.control) {
-                @($input.control) | ForEach-Object {
+            if ($null -ne $inputFromXML.control) {
+                @($inputFromXML.control) | ForEach-Object {
                     $control = $_
                     if ($null -ne $control.type) {
                         $strInputType = $control.type
                         switch ($strInputType) {
-                            'doublejoy2way' {$strAdjustedInputType = 'doublejoy_2wayhorizontal_2wayhorizontal'}
-                            'vdoublejoy2way' {$strAdjustedInputType = 'doublejoy_2wayvertical_2wayvertical'}
-                            'doublejoy4way' {$strAdjustedInputType = 'doublejoy_4way_4way'}
-                            'doublejoy8way' {$strAdjustedInputType = 'doublejoy_8way_8way'}
-                            'joy2way' {$strAdjustedInputType = 'joy_2wayhorizontal'}
-                            'vjoy2way' {$strAdjustedInputType = 'joy_2wayvertical'}
-                            'joy4way' {$strAdjustedInputType = 'joy_4way'}
-                            'joy8way' {$strAdjustedInputType = 'joy_8way'}
-                            default {$strAdjustedInputType = $strInputType}
+                            'doublejoy2way' { $strAdjustedInputType = 'doublejoy_2wayhorizontal_2wayhorizontal' }
+                            'vdoublejoy2way' { $strAdjustedInputType = 'doublejoy_2wayvertical_2wayvertical' }
+                            'doublejoy4way' { $strAdjustedInputType = 'doublejoy_4way_4way' }
+                            'doublejoy8way' { $strAdjustedInputType = 'doublejoy_8way_8way' }
+                            'joy2way' { $strAdjustedInputType = 'joy_2wayhorizontal' }
+                            'vjoy2way' { $strAdjustedInputType = 'joy_2wayvertical' }
+                            'joy4way' { $strAdjustedInputType = 'joy_4way' }
+                            'joy8way' { $strAdjustedInputType = 'joy_8way' }
+                            default { $strAdjustedInputType = $strInputType }
                         }
                         $hashtableInputCountsForPlayerOne.Item($strAdjustedInputType)++
                     }
@@ -418,51 +445,51 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
             $driver = $_
 
             switch ($driver.status) {
-                'good' {$strTemp = 'Good'}
-                'imperfect' {$strTemp = 'Imperfect'}
-                'preliminary' {$strTemp = 'Preliminary'}
-                default {$strTemp = $driver.status}
+                'good' { $strTemp = 'Good' }
+                'imperfect' { $strTemp = 'Imperfect' }
+                'preliminary' { $strTemp = 'Preliminary' }
+                default { $strTemp = $driver.status }
             }
             $strOverallStatus = $strTemp
 
             switch ($driver.emulation) {
-                'good' {$strTemp = 'Good'}
-                'imperfect' {$strTemp = 'Imperfect'}
-                'preliminary' {$strTemp = 'Preliminary'}
-                default {$strTemp = $driver.status}
+                'good' { $strTemp = 'Good' }
+                'imperfect' { $strTemp = 'Imperfect' }
+                'preliminary' { $strTemp = 'Preliminary' }
+                default { $strTemp = $driver.status }
             }
             $strEmulationStatus = $strTemp
 
             switch ($driver.color) {
-                'good' {$strTemp = 'Good'}
-                'imperfect' {$strTemp = 'Imperfect'}
-                'preliminary' {$strTemp = 'Preliminary'}
-                default {$strTemp = $driver.color}
+                'good' { $strTemp = 'Good' }
+                'imperfect' { $strTemp = 'Imperfect' }
+                'preliminary' { $strTemp = 'Preliminary' }
+                default { $strTemp = $driver.color }
             }
             $strColorStatus = $strTemp
 
             switch ($driver.sound) {
-                'good' {$strTemp = 'Good'}
-                'imperfect' {$strTemp = 'Imperfect'}
-                'preliminary' {$strTemp = 'Preliminary'}
-                default {$strTemp = $driver.sound}
+                'good' { $strTemp = 'Good' }
+                'imperfect' { $strTemp = 'Imperfect' }
+                'preliminary' { $strTemp = 'Preliminary' }
+                default { $strTemp = $driver.sound }
             }
             $strSoundStatus = $strTemp
 
             switch ($driver.graphic) {
-                'good' {$strTemp = 'Good'}
-                'imperfect' {$strTemp = 'Imperfect'}
-                'preliminary' {$strTemp = 'Preliminary'}
-                default {$strTemp = $driver.graphic}
+                'good' { $strTemp = 'Good' }
+                'imperfect' { $strTemp = 'Imperfect' }
+                'preliminary' { $strTemp = 'Preliminary' }
+                default { $strTemp = $driver.graphic }
             }
             $strGraphicStatus = $strTemp
 
             if ($null -ne $driver.cocktail) {
                 switch ($driver.cocktail) {
-                    'good' {$strTemp = 'Good'}
-                    'imperfect' {$strTemp = 'Imperfect'}
-                    'preliminary' {$strTemp = 'Preliminary'}
-                    default {$strTemp = $driver.cocktail}
+                    'good' { $strTemp = 'Good' }
+                    'imperfect' { $strTemp = 'Imperfect' }
+                    'preliminary' { $strTemp = 'Preliminary' }
+                    default { $strTemp = $driver.cocktail }
                 }
                 $strCocktailStatus = $strTemp
             } else {
@@ -471,10 +498,10 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
 
             if ($null -ne $driver.protection) {
                 switch ($driver.protection) {
-                    'good' {$strTemp = 'Good'}
-                    'imperfect' {$strTemp = 'Imperfect'}
-                    'preliminary' {$strTemp = 'Preliminary'}
-                    default {$strTemp = $driver.protection}
+                    'good' { $strTemp = 'Good' }
+                    'imperfect' { $strTemp = 'Imperfect' }
+                    'preliminary' { $strTemp = 'Preliminary' }
+                    default { $strTemp = $driver.protection }
                 }
                 $strProtectionStatus = $strTemp
             } else {
