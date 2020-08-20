@@ -416,7 +416,7 @@ function Convert-OneSelectedHashTableOfAttributes {
     # $strPropertyName = 'ProgettoSnapsCategoryArcade'
     # $objDefaultValue = 'False'
     # $strSectionNameOfSingleSectionToProcess = 'ROOT_FOLDER'
-    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue 'True' 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue 'True' 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
     #
     # Example usage #2 (Select one key from inner hashtable and process key-value pair (value
     #   is value for cell in tabular model)):
@@ -428,7 +428,7 @@ function Convert-OneSelectedHashTableOfAttributes {
     # $strPropertyName = 'ProgettoSnapsCategoryArcade'
     # $objDefaultValue = 'Unknown'
     # $strSectionNameOfSingleSectionToProcess = 'ROOT_FOLDER'
-    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePathProgettoSnapsCategoryArcadeIni $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
     #
     # Example usage #3 (Process all keys from inner hashtable with a few exceptions):
     # $hashtableOutput = New-BackwardCompatibleCaseInsensitiveHashtable
@@ -439,7 +439,7 @@ function Convert-OneSelectedHashTableOfAttributes {
     # $strPropertyName = 'ProgettoSnapsCategoryCabinetType'
     # $objDefaultValue = 'Unknown'
     # $arrIgnoreSections = @('FOLDER_SETTINGS', 'ROOT_FOLDER')
-    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePathProgettoSnapsCategoryCabinetsIni $null $null ([ref]$arrIgnoreSections) $strPropertyName 'Unknown' $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    # $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePathProgettoSnapsCategoryCabinetsIni $null $null ([ref]$arrIgnoreSections) $strPropertyName 'Unknown' $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     $refHashtableOutput = $args[0]
     $refHashtableOfInputHashtables = $args[1]
@@ -592,7 +592,7 @@ if ((Test-Path $strFilePathArcadeBelgiumNplayersIni) -ne $true) {
 if ($boolErrorOccurred -eq $false) {
     # We have all the files, let's do stuff
 
-    $hashtableMaster = New-BackwardCompatibleCaseInsensitiveHashtable
+    $hashtablePrimary = New-BackwardCompatibleCaseInsensitiveHashtable
 
     $arrCharCommentIndicator = @(';')
     $boolIgnoreComments = $true
@@ -608,7 +608,7 @@ if ($boolErrorOccurred -eq $false) {
     $intReturnCode = Convert-IniToHashTable ([ref]$hashtableIniFile) $strFilePath $arrCharCommentIndicator $boolIgnoreComments $boolCommentsMustBeOnOwnLine $strNullSectionName $boolAllowKeysWithoutValuesThatOmitEqualSign
 
     if ($intReturnCode -eq 0) {
-        $hashtableMaster.Add($strFilePath, $hashtableIniFile)
+        $hashtablePrimary.Add($strFilePath, $hashtableIniFile)
     } else {
         Write-Error ('An error occurred while procesing file ' + $strFilePath + ' and it will be skipped.')
     }
@@ -629,7 +629,7 @@ if ($boolErrorOccurred -eq $false) {
     $strSectionNameOfSingleSectionToProcess = 'NPlayers'
 
     Write-Verbose ('Processing data from file ' + $strFilePath + '...')
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtableMaster) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePath $strSectionNameOfSingleSectionToProcess $false ([ref]($null)) $strPropertyName $objDefaultValue $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     if ($intReturnCode -ne 0) {
         Write-Error ('An error occurred while procesing file ' + $strFilePath + '.')
