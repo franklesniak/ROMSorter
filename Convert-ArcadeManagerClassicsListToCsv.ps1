@@ -3,6 +3,8 @@
 # https://raw.githubusercontent.com/cosmo0/arcade-manager-data/master/csv/best/classics-all.csv
 # and converts it to a proper CSV format for easier downstream handling
 
+$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+
 #region License
 ###############################################################################################
 # Copyright 2020 Frank Lesniak
@@ -24,6 +26,12 @@
 ###############################################################################################
 #endregion License
 
+#region DownloadLocationNotice
+# The most up-to-date version of this script can be found on the author's GitHub repository
+# at https://github.com/franklesniak/ROMSorter
+#endregion DownloadLocationNotice
+
+#region Inputs
 # Download the classics-all.csv file from
 # https://raw.githubusercontent.com/cosmo0/arcade-manager-data/master/csv/best/classics-all.csv
 # and put it in the following folder:
@@ -31,23 +39,24 @@
 # or if on Linux / MacOS: ./Arcade_Manager_Resources
 # i.e., the folder that this script is in should have a subfolder called:
 # Arcade_Manager_Resources
-$strSubfolderPath = Join-Path "." "Arcade_Manager_Resources"
+$strSubfolderPath = Join-Path '.' 'Arcade_Manager_Resources'
 
 # The file will be processed and output as a CSV to
 # .\Arcade_Manager_Classics_List.csv
 # or if on Linux / MacOS: ./Arcade_Manager_Classics_List.csv
-$strCSVOutputFile = Join-Path "." "Arcade_Manager_Classics_List.csv"
+$strCSVOutputFile = Join-Path '.' 'Arcade_Manager_Classics_List.csv'
 
 ###############################################################################################
+#endregion Inputs
 
 $boolErrorOccurred = $false
 
 # Arcade Manager Classics (All) "CSV" file (really, it's a semicolon-separated file)
-$strURLArcadeManagerClassicsAll = "https://raw.githubusercontent.com/cosmo0/arcade-manager-data/master/csv/best/classics-all.csv"
-$strFilePathArcadeManagerClassicsAllSemicolonSeparated = Join-Path $strSubfolderPath "classics-all.csv"
+$strURLArcadeManagerClassicsAll = 'https://raw.githubusercontent.com/cosmo0/arcade-manager-data/master/csv/best/classics-all.csv'
+$strFilePathArcadeManagerClassicsAllSemicolonSeparated = Join-Path $strSubfolderPath 'classics-all.csv'
 
 if ((Test-Path $strFilePathArcadeManagerClassicsAllSemicolonSeparated) -ne $true) {
-    Write-Error ("The Arcade Manager Classics (All) `"CSV`" file is missing. Please download it from the following URL and place it in the following location.`n`nURL: " + $strURLArcadeManagerClassicsAll + "`n`nFile Location:`n" + $strFilePathArcadeManagerClassicsAllSemicolonSeparated)
+    Write-Error ('The Arcade Manager Classics (All) "CSV" file is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURLArcadeManagerClassicsAll + "`n`n" + 'File Location:' + "`n" + $strFilePathArcadeManagerClassicsAllSemicolonSeparated)
     $boolErrorOccurred = $true
 }
 
@@ -55,13 +64,13 @@ if ($boolErrorOccurred -eq $false) {
     # We have all the files, let's do stuff
 
     # Import as semicolon-separated values "CSV"
-    $csvCurrentRomList = Import-Csv $strFilePathArcadeManagerClassicsAllSemicolonSeparated -Delimiter ";"
+    $csvCurrentRomList = Import-Csv $strFilePathArcadeManagerClassicsAllSemicolonSeparated -Delimiter ';'
 
     # Add another column to the CSV indicating that the ROM was listed as classic in Arcade
     # Manager. It's redundant, but it makes certain analysis easier.
     $csvCurrentRomList = $csvCurrentRomList | `
         ForEach-Object {
-            $_ | Add-Member -MemberType NoteProperty -Name "ArcadeManagerListedAsClassic" -Value "True"
+            $_ | Add-Member -MemberType NoteProperty -Name 'ArcadeManagerListedAsClassic' -Value 'True'
             $_
         }
 
