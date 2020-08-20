@@ -689,8 +689,8 @@ if ($boolErrorOccurred -eq $false) {
     $strJoining = ';'
 
     $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object {$_.MultivaluedProperty -eq $true} | `
-        ForEach-Object {$_.PropertyName})
+        Where-Object { $_.MultivaluedProperty -eq $true } | `
+        ForEach-Object { $_.PropertyName })
 
     if ($arrJustMultiValuedAttributes.Count -gt 0) {
         $hashtableOutput.Keys | `
