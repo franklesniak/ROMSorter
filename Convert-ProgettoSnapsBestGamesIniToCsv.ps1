@@ -630,7 +630,7 @@ if ($boolErrorOccurred -eq $false) {
     $arrIgnoreSections = @('FOLDER_SETTINGS', 'ROOT_FOLDER')
 
     Write-Verbose ('Processing data from file ' + $strFilePath + '...')
-    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName 'Unknown' $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
+    $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePath $null $null ([ref]$arrIgnoreSections) $strPropertyName $objDefaultValue $null 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
 
     if ($intReturnCode -ne 0) {
         Write-Error ('An error occurred while procesing file ' + $strFilePath + '.')
