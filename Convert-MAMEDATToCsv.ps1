@@ -2,7 +2,7 @@
 # Analyzes the current version of MAME's DAT in XML format and stores the extracted data and
 # associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.0'
+$strThisScriptVersionNumber = [version]'1.0.20201004.1'
 
 #region License
 ###############################################################################################
@@ -185,7 +185,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable) {
             Import-Module PowerHTML
         }
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strDownloadPageURL
-        $strEffectiveURL = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.Contains('lx.zip') })[0].Attributes['href'].Value
+        $strEffectiveURL = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower().Contains('lx.zip') })[0].Attributes['href'].Value
     }
     if ((Test-Path $strSubfolderPath) -ne $true) {
         New-Item $strSubfolderPath -ItemType Directory | Out-Null
