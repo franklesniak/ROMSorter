@@ -2,7 +2,7 @@
 # Analyzes the current version of MAME's DAT in XML format and stores the extracted data and
 # associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.1'
+$strThisScriptVersionNumber = [version]'1.0.20201004.2'
 
 #region License
 ###############################################################################################
@@ -65,6 +65,53 @@ function New-BackwardCompatibleCaseInsensitiveHashtable {
     $caseInsensitiveHashCodeProvider = New-Object -TypeName 'System.Collections.CaseInsensitiveHashCodeProvider' -ArgumentList @($cultureDoNotCare)
     $caseInsensitiveComparer = New-Object -TypeName 'System.Collections.CaseInsensitiveComparer' -ArgumentList @($cultureDoNotCare)
     New-Object -TypeName 'System.Collections.Hashtable' -ArgumentList @($caseInsensitiveHashCodeProvider, $caseInsensitiveComparer)
+}
+
+function Get-AbsoluteURLFromRelative {
+    # This functions takes a potentially relative URL (/etc/foo.html) and turns it into an
+    # absolute URL if it is, in fact, a relative URL. If the URL is an absolute URL, then the
+    # function simply returns the absolute URL.
+    #
+    # The function takes two positional arguments.
+    #
+    # The first argument is a string containing the base URL (i.e., the parent URL) from which
+    # the second URL is derived
+    #
+    # The second argument is a string containing the (potentially) relative URL.
+    #
+    # Example 1:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = '/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/downloads/list.txt'
+    #
+    # Example 2:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Example 3:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'http://foo.net/stuff/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Note: this function is converted from https://stackoverflow.com/a/34603567/2134110
+    # Thanks to Vikash Rathee for pointing me in the right direction
+
+    $strURLBase = $args[0]
+    $strURLRelative = $args[1]
+
+    $strThisFunctionVersionNumber = [version]'1.0.20201004.0'
+
+    $uriKindRelativeOrAbsolute = [System.UriKind]::RelativeOrAbsolute
+    $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLRelative, $uriKindRelativeOrAbsolute)
+    if ($uriWorking.IsAbsoluteUri -ne $true) {
+        $uriBase = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLBase)
+        $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($uriBase, $strURLRelative)
+    }
+    $uriWorking.ToString()
 }
 
 function Test-MachineCompletelyFunctionalRecursively {
@@ -174,7 +221,9 @@ function Convert-MAMEControlWaysToClearerOutputFormat {
 # Get the MAME DAT
 $arrCommands = @(Get-Command Expand-Archive)
 $boolZIPExtractAvailable = ($arrCommands.Count -ge 1)
-if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable) {
+$arrCommands = @(Get-Command Invoke-WebRequest)
+$boolInvokeWebRequestAvailable = ($arrCommands.Count -ge 1)
+if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable -and $boolInvokeWebRequestAvailable) {
     $arrModules = @(Get-Module PowerHTML -ListAvailable)
     if ($arrModules.Count -eq 0) {
         Write-Warning 'It is recommended that you install the PowerHTML module using "Install-Module PowerHTML" before continuing. Doing so will allow this script to obtain the URL for the most-current DAT file automatically. Without PowerHTML, this script is using a potentially-outdated URL. Break out of ths script now to install PowerHTML, then re-run the script'
@@ -184,23 +233,41 @@ if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable) {
         if ($arrLoadedModules.Count -eq 0) {
             Import-Module PowerHTML
         }
-        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strDownloadPageURL
-        $strEffectiveURL = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower().Contains('lx.zip') })[0].Attributes['href'].Value
+        $strNextDownloadPageURL = $strDownloadPageURL
+        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower().Contains('lx.zip') })
+        if ($arrNodes.Count -eq 0) {
+            Write-Error ('Failed to download the MAME DAT file. Please download the file that looks like mame*lx.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded and extracted XML file.')
+            break
+        }
+        $strNextURL = $arrNodes[0].Attributes['href'].Value
+
+        $strURLBase = $strNextDownloadPageURL
+        $strURLRelative = $strNextURL
+        $strNextURL = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+
+        $strEffectiveURL = $strNextURL
     }
     if ((Test-Path $strSubfolderPath) -ne $true) {
         New-Item $strSubfolderPath -ItemType Directory | Out-Null
     }
     Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath mamelx.zip)
 
-    Expand-Archive -Path (Join-Path $strSubfolderPath mamelx.zip) -DestinationPath $strSubfolderPath -Force
-    $fileInfoExtractedXML = Get-ChildItem $strSubfolderPath | Where-Object { $_.Name.Length -ge 5 } | `
-        Where-Object { $_.Name.Substring(($_.Name.Length - 4), 4).ToLower() -eq '.xml' } | `
-        Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
-    $strAbsoluteXMLFilePath = $fileInfoExtractedXML.FullName
-    $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
+    if (Test-Path (Join-Path $strSubfolderPath mamelx.zip)) {
+        # Successful download
+        Expand-Archive -Path (Join-Path $strSubfolderPath mamelx.zip) -DestinationPath $strSubfolderPath -Force
+        $fileInfoExtractedXML = Get-ChildItem $strSubfolderPath | Where-Object { $_.Name.Length -ge 5 } | `
+            Where-Object { $_.Name.Substring(($_.Name.Length - 4), 4).ToLower() -eq '.xml' } | `
+            Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
+        $strAbsoluteXMLFilePath = $fileInfoExtractedXML.FullName
+        $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
+    } else {
+        Write-Error ('Failed to download the MAME DAT file. Please download the file that looks like mame*lx.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded and extracted XML file.')
+        break
+    }
 } else {
     if ((Test-Path $strLocalXMLFilePath) -ne $true) {
-        Write-Error ('The MAME DAT file is missing. Please download the file that looks like mame*lx.zip it from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath)
+        Write-Error ('The MAME DAT file is missing. Please download the file that looks like mame*lx.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath)
         break
     }
     $strAbsoluteXMLFilePath = (Resolve-Path $strLocalXMLFilePath).Path
