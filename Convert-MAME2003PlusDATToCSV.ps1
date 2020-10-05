@@ -2,7 +2,7 @@
 # Downloads the MAME 2003 Plus DAT in XML format from Github, analyzes it, and stores the
 # extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.1'
+$strThisScriptVersionNumber = [version]'1.1.20201005.0'
 
 #region License
 ###############################################################################################
@@ -30,19 +30,25 @@ $strThisScriptVersionNumber = [version]'1.0.20201004.1'
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
 
+$actionPreferenceNewVerbose = $VerbosePreference
+$actionPreferenceFormerVerbose = $VerbosePreference
+$strLocalXMLFilePath = $null
+
 #region Inputs
 ###############################################################################################
 $strDownloadPageURL = 'https://github.com/libretro/mame2003-plus-libretro'
 $strURL = 'https://raw.githubusercontent.com/libretro/mame2003-plus-libretro/master/metadata/mame2003-plus.xml'
 
 $strSubfolderPath = Join-Path '.' 'MAME_2003_Plus_Resources'
-$strLocalXMLFilePath = $null
 
 # Uncomment the following line if you prefer that the script use a local copy of the
 #    MAME 2003 Plus DAT file instead of having to download it from GitHub:
 # $strLocalXMLFilePath = Join-Path $strSubfolderPath 'mame2003-plus.xml'
 
 $strOutputFilePath = Join-Path '.' 'MAME_2003_Plus_DAT.csv'
+
+# Comment-out the following line if you prefer that the script operate silently.
+$actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
 ###############################################################################################
 #endregion Inputs
 
@@ -200,18 +206,25 @@ function Get-AbsoluteURLFromRelative {
     $uriWorking.ToString()
 }
 
-# Get the MAME DAT
+$VerbosePreference = $actionPreferenceNewVerbose
+
+# Get the MAME 2003 Plus DAT
 $arrCommands = @(Get-Command Invoke-WebRequest)
 $boolInvokeWebRequestAvailable = ($arrCommands.Count -ge 1)
 if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
+    $VerbosePreference = $actionPreferenceFormerVerbose
     $arrModules = @(Get-Module PowerHTML -ListAvailable)
+    $VerbosePreference = $actionPreferenceNewVerbose
     if ($arrModules.Count -eq 0) {
         Write-Warning 'It is recommended that you install the PowerHTML module using "Install-Module PowerHTML" before continuing. Doing so will allow this script to obtain the URL for the most-current DAT file automatically. Without PowerHTML, this script is using a potentially-outdated URL. Break out of ths script now to install PowerHTML, then re-run the script'
         $strEffectiveURL = $strURL
     } else {
-        $arrLoadedModules = @(Get-Module PowerHTML -ListAvailable)
+        Write-Verbose ('Parsing site ' + $strDownloadPageURL + ' to dynamically obtain DAT download URL...')
+        $arrLoadedModules = @(Get-Module PowerHTML)
         if ($arrLoadedModules.Count -eq 0) {
+            $VerbosePreference = $actionPreferenceFormerVerbose
             Import-Module PowerHTML
+            $VerbosePreference = $actionPreferenceNewVerbose
         }
 
         $strNextDownloadPageURL = $strDownloadPageURL
@@ -258,11 +271,15 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
     if ((Test-Path $strSubfolderPath) -ne $true) {
         New-Item $strSubfolderPath -ItemType Directory | Out-Null
     }
+    Write-Verbose ('Downloading DAT from ' + $strEffectiveURL + '...')
+    $VerbosePreference = $actionPreferenceFormerVerbose
     Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath 'mame2003-plus.xml')
+    $VerbosePreference = $actionPreferenceNewVerbose
 
     if (Test-Path (Join-Path $strSubfolderPath 'mame2003-plus.xml')) {
         # Successful download
         $strAbsoluteXMLFilePath = (Resolve-Path (Join-Path $strSubfolderPath 'mame2003-plus.xml')).Path
+        Write-Verbose ('Loading DAT into memory and converting it to XML object...')
         $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
     } else {
         Write-Error ('Failed to download the MAME 2003 Plus DAT file. Please download the file that looks like mame2003-plus.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
@@ -274,20 +291,21 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
         break
     }
     $strAbsoluteXMLFilePath = (Resolve-Path $strLocalXMLFilePath).Path
+    Write-Verbose ('Loading DAT into memory and converting it to XML object...')
     $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
 }
 
 # Convert it to XML
 $xmlMAME2003Plus = [xml]$strContent
 
-# Create a hashtable of game information for rapid lookup by name
+Write-Verbose ('Creating a hashtable of ROM package information for rapid lookup by name...')
 $hashtableMAME2003Plus = New-BackwardCompatibleCaseInsensitiveHashtable
 @($xmlMAME2003Plus.mame.game) | ForEach-Object {
     $game = $_
     $hashtableMAME2003Plus.Add($game.name, $game)
 }
 
-# Create an array of the types of controls
+Write-Verbose ('Creating a array to act as a dictionary of the different types of controls available in this DAT...')
 $arrInputTypes = @()
 @($xmlMAME2003Plus.mame.game) | ForEach-Object {
     $game = $_
@@ -327,8 +345,23 @@ $arrControlsTotal | ForEach-Object {
     $hashtableInputCountsForPlayerOne.Add($strInputType, 0)
 }
 
+Write-Verbose ('Processing ROM packages...')
+
+$intTotalROMPackages = @($xmlMAME2003Plus.mame.game).Count
+$intCurrentROMPackage = 1
+$timeDateStartOfProcessing = Get-Date
+
 $arrCSVMAME2003Plus = @($xmlMAME2003Plus.mame.game) | ForEach-Object {
     $game = $_
+
+    if ($intCurrentROMPackage -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / ($intCurrentROMPackage - 1) * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = ($intCurrentROMPackage - 1) / $intTotalROMPackages * 100
+        Write-Progress -Activity 'Processing MAME 2003 Plus ROM Packages' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
 
     # Reset control counts
     $arrControlsTotal | ForEach-Object {
@@ -573,7 +606,12 @@ $arrCSVMAME2003Plus = @($xmlMAME2003Plus.mame.game) | ForEach-Object {
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2003Plus_PaletteSize' -Value $strPaletteSize
 
     $PSCustomObject
+
+    $intCurrentROMPackage++
 }
+
+Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePath)
 
 $arrCSVMAME2003Plus | Sort-Object -Property @('ROMName') |
     Export-Csv -Path $strOutputFilePath -NoTypeInformation
+$VerbosePreference = $actionPreferenceFormerVerbose

@@ -2,7 +2,7 @@
 # Analyzes the current version of Final Burn Neo (FBNeo)'s arcade-only DAT in XML format and
 # stores the extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.1'
+$strThisScriptVersionNumber = [version]'1.1.20201005.0'
 
 #region License
 ###############################################################################################
@@ -30,20 +30,26 @@ $strThisScriptVersionNumber = [version]'1.0.20201004.1'
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
 
+$actionPreferenceNewVerbose = $VerbosePreference
+$actionPreferenceFormerVerbose = $VerbosePreference
+$strLocalXMLFilePath = $null
+
 #region Inputs
 ###############################################################################################
 $strDownloadPageURL = 'https://github.com/libretro/FBNeo'
 $strURL = 'https://raw.githubusercontent.com/libretro/FBNeo/master/dats/FinalBurn%20Neo%20(ClrMame%20Pro%20XML%2C%20Arcade%20only).dat'
 
 $strSubfolderPath = Join-Path '.' 'FBNeo_Resources'
-$strLocalXMLFilePath = $null
 
 # Uncomment and configure the following line if you prefer that the script use a local copy of
-#   the MAME DAT file instead of having to download it from GitHub:
+#   the FBNeo DAT file instead of having to download it from GitHub:
 
 # $strLocalXMLFilePath = Join-Path $strSubfolderPath 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat'
 
 $strOutputFilePath = Join-Path '.' 'FBNeo_Arcade_DAT.csv'
+
+# Comment-out the following line if you prefer that the script operate silently.
+$actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
 ###############################################################################################
 #endregion Inputs
 
@@ -201,25 +207,32 @@ function Get-AbsoluteURLFromRelative {
     $uriWorking.ToString()
 }
 
-# Get the MAME DAT
+$VerbosePreference = $actionPreferenceNewVerbose
+
+# Get the FBNeo DAT
 $arrCommands = @(Get-Command Invoke-WebRequest)
 $boolInvokeWebRequestAvailable = ($arrCommands.Count -ge 1)
 if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
+    $VerbosePreference = $actionPreferenceFormerVerbose
     $arrModules = @(Get-Module PowerHTML -ListAvailable)
+    $VerbosePreference = $actionPreferenceNewVerbose
     if ($arrModules.Count -eq 0) {
         Write-Warning 'It is recommended that you install the PowerHTML module using "Install-Module PowerHTML" before continuing. Doing so will allow this script to obtain the URL for the most-current DAT file automatically. Without PowerHTML, this script is using a potentially-outdated URL. Break out of ths script now to install PowerHTML, then re-run the script'
         $strEffectiveURL = $strURL
     } else {
-        $arrLoadedModules = @(Get-Module PowerHTML -ListAvailable)
+        Write-Verbose ('Parsing site ' + $strDownloadPageURL + ' to dynamically obtain DAT download URL...')
+        $arrLoadedModules = @(Get-Module PowerHTML)
         if ($arrLoadedModules.Count -eq 0) {
+            $VerbosePreference = $actionPreferenceFormerVerbose
             Import-Module PowerHTML
+            $VerbosePreference = $actionPreferenceNewVerbose
         }
 
         $strNextDownloadPageURL = $strDownloadPageURL
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
         $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'dats' })
         if ($arrNodes.Count -eq 0) {
-            Write-Error ('Failed to download the FinalBurn DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            Write-Error ('Failed to download the FinalBurn Neo DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
             break
         }
         $strNextURL = $arrNodes[0].Attributes['href'].Value
@@ -232,7 +245,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
         $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower().Contains('arcade only') })
         if ($arrNodes.Count -eq 0) {
-            Write-Error ('Failed to download the FinalBurn DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            Write-Error ('Failed to download the FinalBurn Neo DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
             break
         }
         $strNextURL = $arrNodes[0].Attributes['href'].Value
@@ -245,7 +258,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
         $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'download' })
         if ($arrNodes.Count -eq 0) {
-            Write-Error ('Failed to download the FinalBurn DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            Write-Error ('Failed to download the FinalBurn Neo DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
             break
         }
         $strNextURL = $arrNodes[0].Attributes['href'].Value
@@ -259,14 +272,18 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
     if ((Test-Path $strSubfolderPath) -ne $true) {
         New-Item $strSubfolderPath -ItemType Directory | Out-Null
     }
+    Write-Verbose ('Downloading DAT from ' + $strEffectiveURL + '...')
+    $VerbosePreference = $actionPreferenceFormerVerbose
     Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat')
+    $VerbosePreference = $actionPreferenceNewVerbose
 
     if (Test-Path (Join-Path $strSubfolderPath 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat')) {
         # Successful download
         $strAbsoluteXMLFilePath = (Resolve-Path (Join-Path $strSubfolderPath 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat')).Path
+        Write-Verbose ('Loading DAT into memory and converting it to XML object...')
         $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
     } else {
-        Write-Error ('Failed to download the FinalBurn DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+        Write-Error ('Failed to download the FinalBurn Neo DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
         break
     }
 } else {
@@ -275,21 +292,37 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
         break
     }
     $strAbsoluteXMLFilePath = (Resolve-Path $strLocalXMLFilePath).Path
+    Write-Verbose ('Loading DAT into memory and converting it to XML object...')
     $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
 }
 
 # Convert it to XML
 $xmlFBNeo = [xml]$strContent
 
-# Create a hashtable of game information for rapid lookup by name
+Write-Verbose ('Creating a hashtable of ROM package information for rapid lookup by name...')
 $hashtableFBNeo = New-BackwardCompatibleCaseInsensitiveHashtable
 @($xmlFBNeo.datafile.game) | ForEach-Object {
     $game = $_
     $hashtableFBNeo.Add($game.name, $game)
 }
 
+Write-Verbose ('Processing ROM packages...')
+
+$intTotalROMPackages = @($xmlFBNeo.datafile.game).Count
+$intCurrentROMPackage = 1
+$timeDateStartOfProcessing = Get-Date
+
 $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
     $game = $_
+    
+    if ($intCurrentROMPackage -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / ($intCurrentROMPackage - 1) * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = ($intCurrentROMPackage - 1) / $intTotalROMPackages * 100
+        Write-Progress -Activity 'Processing FBNeo ROM Packages' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
 
     $PSCustomObject = New-Object PSCustomObject
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
@@ -349,7 +382,12 @@ $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_OverallStatus' -Value $strOverallStatus
 
     $PSCustomObject
+    
+    $intCurrentROMPackage++
 }
 
+Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePath)
 $arrCSVFBNeo | Sort-Object -Property @('ROMName') |
     Export-Csv -Path $strOutputFilePath -NoTypeInformation
+
+$VerbosePreference = $actionPreferenceFormerVerbose

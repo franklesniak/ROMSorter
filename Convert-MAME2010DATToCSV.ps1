@@ -2,7 +2,7 @@
 # Downloads the MAME 2010 DAT in XML format from Github, analyzes it, and stores the extracted
 # data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.1.20201005.0'
 
 #region License
 ###############################################################################################
@@ -30,18 +30,25 @@ $strThisScriptVersionNumber = [version]'1.0.20200820.0'
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
 
+$actionPreferenceNewVerbose = $VerbosePreference
+$actionPreferenceFormerVerbose = $VerbosePreference
+$strLocalXMLFilePath = $null
+
 #region Inputs
 ###############################################################################################
+$strDownloadPageURL = 'https://github.com/libretro/mame2010-libretro'
 $strURL = 'https://github.com/libretro/mame2010-libretro/raw/master/metadata/mame2010.xml'
 
 $strSubfolderPath = Join-Path '.' 'MAME_2010_Resources'
-$strLocalXMLFilePath = $null
 
 # Uncomment the following line if you prefer that the script use a local copy of the
 #    MAME 2010 DAT file instead of having to download it from GitHub:
 # $strLocalXMLFilePath = Join-Path $strSubfolderPath 'mame2010.xml'
 
 $strOutputFilePath = Join-Path '.' 'MAME_2010_DAT.csv'
+
+# Comment-out the following line if you prefer that the script operate silently.
+$actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
 ###############################################################################################
 #endregion Inputs
 
@@ -152,29 +159,153 @@ function Test-MachineCompletelyFunctionalRecursively {
     }
 }
 
+function Get-AbsoluteURLFromRelative {
+    # This functions takes a potentially relative URL (/etc/foo.html) and turns it into an
+    # absolute URL if it is, in fact, a relative URL. If the URL is an absolute URL, then the
+    # function simply returns the absolute URL.
+    #
+    # The function takes two positional arguments.
+    #
+    # The first argument is a string containing the base URL (i.e., the parent URL) from which
+    # the second URL is derived
+    #
+    # The second argument is a string containing the (potentially) relative URL.
+    #
+    # Example 1:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = '/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/downloads/list.txt'
+    #
+    # Example 2:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Example 3:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'http://foo.net/stuff/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Note: this function is converted from https://stackoverflow.com/a/34603567/2134110
+    # Thanks to Vikash Rathee for pointing me in the right direction
+
+    $strURLBase = $args[0]
+    $strURLRelative = $args[1]
+
+    $strThisFunctionVersionNumber = [version]'1.0.20201004.0'
+
+    $uriKindRelativeOrAbsolute = [System.UriKind]::RelativeOrAbsolute
+    $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLRelative, $uriKindRelativeOrAbsolute)
+    if ($uriWorking.IsAbsoluteUri -ne $true) {
+        $uriBase = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLBase)
+        $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($uriBase, $strURLRelative)
+    }
+    $uriWorking.ToString()
+}
+
+$VerbosePreference = $actionPreferenceNewVerbose
+
 # Get the MAME 2010 DAT
-if ($null -eq $strLocalXMLFilePath) {
-    $strContent = Invoke-WebRequest -Uri $strURL
+$arrCommands = @(Get-Command Invoke-WebRequest)
+$boolInvokeWebRequestAvailable = ($arrCommands.Count -ge 1)
+if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
+    $VerbosePreference = $actionPreferenceFormerVerbose
+    $arrModules = @(Get-Module PowerHTML -ListAvailable)
+    $VerbosePreference = $actionPreferenceNewVerbose
+    if ($arrModules.Count -eq 0) {
+        Write-Warning 'It is recommended that you install the PowerHTML module using "Install-Module PowerHTML" before continuing. Doing so will allow this script to obtain the URL for the most-current DAT file automatically. Without PowerHTML, this script is using a potentially-outdated URL. Break out of ths script now to install PowerHTML, then re-run the script'
+        $strEffectiveURL = $strURL
+    } else {
+        Write-Verbose ('Parsing site ' + $strDownloadPageURL + ' to dynamically obtain DAT download URL...')
+        $arrLoadedModules = @(Get-Module PowerHTML)
+        if ($arrLoadedModules.Count -eq 0) {
+            $VerbosePreference = $actionPreferenceFormerVerbose
+            Import-Module PowerHTML
+            $VerbosePreference = $actionPreferenceNewVerbose
+        }
+
+        $strNextDownloadPageURL = $strDownloadPageURL
+        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'metadata' })
+        if ($arrNodes.Count -eq 0) {
+            Write-Error ('Failed to download the MAME 2010 DAT file. Please download the file that looks like mame2010.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            break
+        }
+        $strNextURL = $arrNodes[0].Attributes['href'].Value
+
+        $strURLBase = $strNextDownloadPageURL
+        $strURLRelative = $strNextURL
+        $strNextURL = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+
+        $strNextDownloadPageURL = $strNextURL
+        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'mame2010.xml' })
+        if ($arrNodes.Count -eq 0) {
+            Write-Error ('Failed to download the MAME 2010 DAT file. Please download the file that looks like mame2010.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            break
+        }
+        $strNextURL = $arrNodes[0].Attributes['href'].Value
+
+        $strURLBase = $strNextDownloadPageURL
+        $strURLRelative = $strNextURL
+        $strNextURL = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+
+        $strNextDownloadPageURL = $strNextURL
+        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'download' })
+        if ($arrNodes.Count -eq 0) {
+            Write-Error ('Failed to download the MAME 2010 DAT file. Please download the file that looks like mame2010.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+            break
+        }
+        $strNextURL = $arrNodes[0].Attributes['href'].Value
+
+        $strURLBase = $strNextDownloadPageURL
+        $strURLRelative = $strNextURL
+        $strNextURL = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+
+        $strEffectiveURL = $strNextURL
+    }
+    if ((Test-Path $strSubfolderPath) -ne $true) {
+        New-Item $strSubfolderPath -ItemType Directory | Out-Null
+    }
+    Write-Verbose ('Downloading DAT from ' + $strEffectiveURL + '...')
+    $VerbosePreference = $actionPreferenceFormerVerbose
+    Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath 'mame2010.xml')
+    $VerbosePreference = $actionPreferenceNewVerbose
+
+    if (Test-Path (Join-Path $strSubfolderPath 'mame2010.xml')) {
+        # Successful download
+        $strAbsoluteXMLFilePath = (Resolve-Path (Join-Path $strSubfolderPath 'mame2010.xml')).Path
+        Write-Verbose ('Loading DAT into memory and converting it to XML object...')
+        $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
+    } else {
+        Write-Error ('Failed to download the MAME 2010 DAT file. Please download the file that looks like mame2010.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
+        break
+    }
 } else {
     if ((Test-Path $strLocalXMLFilePath) -ne $true) {
         Write-Error ('The MAME 2010 DAT file is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath)
         break
     }
     $strAbsoluteXMLFilePath = (Resolve-Path $strLocalXMLFilePath).Path
+    Write-Verbose ('Loading DAT into memory and converting it to XML object...')
     $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
 }
 
 # Convert it to XML
 $xmlMAME2010 = [xml]$strContent
 
-# Create a hashtable of game information for rapid lookup by name
+Write-Verbose ('Creating a hashtable of ROM package information for rapid lookup by name...')
 $hashtableMAME2010 = New-BackwardCompatibleCaseInsensitiveHashtable
 @($xmlMAME2010.mame.game) | ForEach-Object {
     $game = $_
     $hashtableMAME2010.Add($game.name, $game)
 }
 
-# Create an array of the types of controls
+Write-Verbose ('Creating a array to act as a dictionary of the different types of controls available in this DAT...')
 $arrInputTypes = @()
 @($xmlMAME2010.mame.game) | ForEach-Object {
     $game = $_
@@ -217,8 +348,23 @@ $arrControlsTotal | ForEach-Object {
     $hashtableInputCountsForPlayerOne.Add($strInputType, 0)
 }
 
+Write-Verbose ('Processing ROM packages...')
+
+$intTotalROMPackages = @($xmlMAME2010.mame.game).Count
+$intCurrentROMPackage = 1
+$timeDateStartOfProcessing = Get-Date
+
 $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
     $game = $_
+
+    if ($intCurrentROMPackage -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / ($intCurrentROMPackage - 1) * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = ($intCurrentROMPackage - 1) / $intTotalROMPackages * 100
+        Write-Progress -Activity 'Processing MAME 2010 ROM Packages' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
 
     # Reset control counts
     $arrControlsTotal | ForEach-Object {
@@ -528,7 +674,12 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PaletteSize' -Value $strPaletteSize
 
     $PSCustomObject
+
+    $intCurrentROMPackage++
 }
 
+Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePath)
 $arrCSVMAME2010 | Sort-Object -Property @('ROMName') |
     Export-Csv -Path $strOutputFilePath -NoTypeInformation
+
+$VerbosePreference = $actionPreferenceFormerVerbose
