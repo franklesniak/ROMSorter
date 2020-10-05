@@ -2,7 +2,7 @@
 # Downloads the MAME 2003 Plus DAT in XML format from Github, analyzes it, and stores the
 # extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.0'
+$strThisScriptVersionNumber = [version]'1.0.20201004.1'
 
 #region License
 ###############################################################################################
@@ -258,11 +258,11 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
     if ((Test-Path $strSubfolderPath) -ne $true) {
         New-Item $strSubfolderPath -ItemType Directory | Out-Null
     }
-    Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath 'MAME_2003_Plus_DAT.csv')
+    Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath 'mame2003-plus.xml')
 
-    if (Test-Path (Join-Path $strSubfolderPath 'MAME_2003_Plus_DAT.csv')) {
+    if (Test-Path (Join-Path $strSubfolderPath 'mame2003-plus.xml')) {
         # Successful download
-        $strAbsoluteXMLFilePath = (Resolve-Path (Join-Path $strSubfolderPath 'MAME_2003_Plus_DAT.csv')).Path
+        $strAbsoluteXMLFilePath = (Resolve-Path (Join-Path $strSubfolderPath 'mame2003-plus.xml')).Path
         $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
     } else {
         Write-Error ('Failed to download the MAME 2003 Plus DAT file. Please download the file that looks like mame2003-plus.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
