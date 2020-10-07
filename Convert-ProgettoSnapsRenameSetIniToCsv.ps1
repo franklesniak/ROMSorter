@@ -1,7 +1,7 @@
 # Convert-ProgettoSnapsRenameSetIniToCsv.ps1 converts the AntoPISA RenameSet to a tabular data
 # format that is easier to ingest and use in downstream scripts.
 
-$strThisScriptVersionNumber = [version]'1.0.20201005.0'
+$strThisScriptVersionNumber = [version]'1.0.20201006.0'
 
 #region License
 ###############################################################################################
