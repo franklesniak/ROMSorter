@@ -1,6 +1,7 @@
 Operation,OldROMPackageName,NewROMPackageName
 R,batsugun,batsuguna
 R,batsuguna,batsugun
+D,kinst2k4,
 D,raiden2c,
 D,smgpu3,
 D,wh2j,
