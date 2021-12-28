@@ -37,7 +37,7 @@ $strLocalXMLFilePath = $null
 #region Inputs
 ###############################################################################################
 $strDownloadPageURL = 'https://www.mamedev.org/release.html'
-$strURL = 'https://github.com/mamedev/mame/releases/download/mame0225/mame0225lx.zip'
+$strURL = 'https://github.com/mamedev/mame/releases/download/mame0238/mame0238lx.zip'
 
 $strSubfolderPath = Join-Path '.' 'MAME_Resources'
 
