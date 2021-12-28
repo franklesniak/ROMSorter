@@ -2,11 +2,11 @@
 # Analyzes the current version of Final Burn Neo (FBNeo)'s arcade-only DAT in XML format and
 # stores the extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.1.20201005.0'
+$strThisScriptVersionNumber = [version]'1.1.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -256,7 +256,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
 
         $strNextDownloadPageURL = $strNextURL
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
-        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'download' })
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -like '*download*' })
         if ($arrNodes.Count -eq 0) {
             Write-Error ('Failed to download the FinalBurn Neo DAT file. Please download the file that looks like FinalBurn Neo (ClrMame Pro XML, Arcade only).dat from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
             break
@@ -314,7 +314,7 @@ $timeDateStartOfProcessing = Get-Date
 
 $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
     $game = $_
-    
+
     if ($intCurrentROMPackage -ge 101) {
         $timeDateCurrent = Get-Date
         $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
@@ -382,7 +382,7 @@ $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_OverallStatus' -Value $strOverallStatus
 
     $PSCustomObject
-    
+
     $intCurrentROMPackage++
 }
 
