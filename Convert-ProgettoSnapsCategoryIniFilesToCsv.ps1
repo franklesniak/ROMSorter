@@ -1176,7 +1176,7 @@ if ($boolErrorOccurred -eq $false) {
     $strFilePath = $strFilePathProgettoSnapsCategoryFreeplayIni
     $strPropertyName = 'ProgettoSnapsCategoryArcadeThatAllowsFreePlay'
     $objDefaultValue = 'False'
-    $strSectionNameOfSingleSectionToProcess = 'Free Play'
+    $strSectionNameOfSingleSectionToProcess = 'ROOT_FOLDER'
 
     Write-Verbose ('Processing data from file ' + $strFilePath + '...')
     $intReturnCode = Convert-OneSelectedHashTableOfAttributes ([ref]$hashtableOutput) ([ref]$hashtablePrimary) $strFilePath $strSectionNameOfSingleSectionToProcess $true ([ref]($null)) $strPropertyName $objDefaultValue 'True' 'ROM' $strPropertyNameIndicatingDefinitionInHashTable ([ref]$arrPropertyNamesAndDefaultValuesSoFar)
