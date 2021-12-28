@@ -455,7 +455,7 @@ function Convert-OneSelectedHashTableOfAttributes {
     $strPropertyNameIndicatingDefinitionInHashTable = $args[10] # 'ProgettoSnapsCategoryPresent'
     $refArrPropertyNamesAndDefaultValuesSoFar = $args[11]
 
-    $strThisFunctionVersionNumber = [version]'1.0.20200820.0'
+    $strThisFunctionVersionNumber = [version]'1.0.20211227.0'
 
     $intReturnCode = 0
 
@@ -468,14 +468,13 @@ function Convert-OneSelectedHashTableOfAttributes {
 
     if (($refHashtableOfInputHashtables.Value).ContainsKey($strKeyToSelectInnerHashTable)) {
         if ($boolMultivalued -eq $false) {
-            ($refHashtableOutput.Value).Keys | `
-                ForEach-Object {
-                    $strThisKey = $_
-                    ($refHashtableOutput.Value).Item($strThisKey) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objDefaultValueForAbsenseOfIndicator
-                }
+            ($refHashtableOutput.Value).Keys | ForEach-Object {
+                $strThisKey = $_
+                ($refHashtableOutput.Value).Item($strThisKey) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objDefaultValueForAbsenseOfIndicator
+            }
 
             if (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).ContainsKey($strSectionNameOfSingleSectionToProcess)) {
-                ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Keys | `
+                ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Item($strSectionNameOfSingleSectionToProcess).Keys |
                     ForEach-Object {
                         $strThisKey = $_
                         if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
@@ -488,16 +487,15 @@ function Convert-OneSelectedHashTableOfAttributes {
                             $PSCustomObjectROMMetadata = New-Object PSCustomObject
                             $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
                             $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyNameIndicatingDefinitionInHashTable -Value 'True'
-                            ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | `
-                                ForEach-Object {
-                                    $strThisPropertyName = $_.PropertyName
-                                    $objThisPropertyDefaultValue = $_.DefaultValue
-                                    if ($_.MultivaluedProperty) {
-                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
-                                    } else {
-                                        $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
-                                    }
+                            ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | ForEach-Object {
+                                $strThisPropertyName = $_.PropertyName
+                                $objThisPropertyDefaultValue = $_.DefaultValue
+                                if ($_.MultivaluedProperty) {
+                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
+                                } else {
+                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
                                 }
+                            }
                             if ($boolTreatSingleSectionAsBoolean) {
                                 $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value $objAffirmativeValueForPresenceOfIndicator
                             } else {
@@ -516,54 +514,50 @@ function Convert-OneSelectedHashTableOfAttributes {
                 $intReturnCode = 2
             }
         } else {
-            $hashtableOutput.Keys | `
-                ForEach-Object {
-                    $strThisROMName = $_
-                    $hashtableOutput.Item($strThisROMName) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($objDefaultValueForAbsenseOfIndicator)
-                }
+            $hashtableOutput.Keys | ForEach-Object {
+                $strThisROMName = $_
+                $hashtableOutput.Item($strThisROMName) | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($objDefaultValueForAbsenseOfIndicator)
+            }
 
-            ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Keys | `
-                Where-Object { ($refArrIgnoreSections.Value) -notcontains $_ } | `
-                Sort-Object | `
-                ForEach-Object {
+            ($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable).Keys |
+                Where-Object { ($refArrIgnoreSections.Value) -notcontains $_ } |
+                Sort-Object | ForEach-Object {
                     $strHeader = $_
-                    (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable)).Item($strHeader).Keys | `
-                        ForEach-Object {
-                            $strThisKey = $_
-                            if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
-                                # ROM already on our output list
-                                if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName).Count -eq 1) {
-                                    # This multivalued attribute had one value stored
-                                    if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName)[0] -eq $objDefaultValueForAbsenseOfIndicator) {
-                                        # The existing value was the default value; replace it
-                                        (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = @($strHeader)
-                                    } else {
-                                        # The existing value was not the default value; append it so that we now have two values.
-                                        (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName + $strHeader
-                                    }
+                    (($refHashtableOfInputHashtables.Value).Item($strKeyToSelectInnerHashTable)).Item($strHeader).Keys | ForEach-Object {
+                        $strThisKey = $_
+                        if (($refHashtableOutput.Value).ContainsKey($strThisKey)) {
+                            # ROM already on our output list
+                            if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName).Count -eq 1) {
+                                # This multivalued attribute had one value stored
+                                if (((($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName)[0] -eq $objDefaultValueForAbsenseOfIndicator) {
+                                    # The existing value was the default value; replace it
+                                    (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = @($strHeader)
                                 } else {
-                                    # This multivalued attribute had more than one value stored; append this one
+                                    # The existing value was not the default value; append it so that we now have two values.
                                     (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName + $strHeader
                                 }
                             } else {
-                                # ROM was not on our output list
-                                $PSCustomObjectROMMetadata = New-Object PSCustomObject
-                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
-                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyNameIndicatingDefinitionInHashTable -Value 'True'
-                                ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | `
-                                    ForEach-Object {
-                                        $strThisPropertyName = $_.PropertyName
-                                        $objThisPropertyDefaultValue = $_.DefaultValue
-                                        if ($_.MultivaluedProperty) {
-                                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
-                                        } else {
-                                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
-                                        }
-                                    }
-                                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($strHeader)
-                                ($refHashtableOutput.Value).Add($strThisKey, $PSCustomObjectROMMetadata)
+                                # This multivalued attribute had more than one value stored; append this one
+                                (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName = (($refHashtableOutput.Value).Item($strThisKey)).$strPropertyName + $strHeader
                             }
+                        } else {
+                            # ROM was not on our output list
+                            $PSCustomObjectROMMetadata = New-Object PSCustomObject
+                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPrimaryKeyPropertyName -Value $strThisKey
+                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyNameIndicatingDefinitionInHashTable -Value 'True'
+                            ($refArrPropertyNamesAndDefaultValuesSoFar.Value) | ForEach-Object {
+                                $strThisPropertyName = $_.PropertyName
+                                $objThisPropertyDefaultValue = $_.DefaultValue
+                                if ($_.MultivaluedProperty) {
+                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value @($objThisPropertyDefaultValue)
+                                } else {
+                                    $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strThisPropertyName -Value $objThisPropertyDefaultValue
+                                }
+                            }
+                            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name $strPropertyName -Value @($strHeader)
+                            ($refHashtableOutput.Value).Add($strThisKey, $PSCustomObjectROMMetadata)
                         }
+                    }
                 }
             $PSCustomObjectThisProperty = New-Object PSCustomObject
             $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name 'PropertyName' -Value $strPropertyName
@@ -1368,20 +1362,18 @@ if ($boolErrorOccurred -eq $false) {
 
     $strJoining = ';'
 
-    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object { $_.MultivaluedProperty -eq $true } | `
-        ForEach-Object { $_.PropertyName })
+    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar |
+            Where-Object { $_.MultivaluedProperty -eq $true } |
+            ForEach-Object { $_.PropertyName })
 
     if ($arrJustMultiValuedAttributes.Count -gt 0) {
-        $hashtableOutput.Keys | `
-            ForEach-Object {
-                $strThisKey = $_
-                $arrJustMultiValuedAttributes | `
-                    ForEach-Object {
-                        $strThisMultivaluedProperty = $_
-                        $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
-                    }
+        $hashtableOutput.Keys | ForEach-Object {
+            $strThisKey = $_
+            $arrJustMultiValuedAttributes | ForEach-Object {
+                $strThisMultivaluedProperty = $_
+                $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
             }
+        }
     }
 
     # Write output file
