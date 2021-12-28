@@ -4,11 +4,11 @@
 # (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another tool of choice) to
 # make a ROM list.
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -642,39 +642,37 @@ if ($boolErrorOccurred -eq $false) {
     $strPropertyNameQualityDescription = 'ProgettoSnapsQualityDescription'
     $objDefaultValue = 'Unknown'
     Write-Verbose ('Performing post-processing on quality scores data from file ' + $strFilePath + '...')
-    $hashtableOutput.Keys | `
-        ForEach-Object {
-            $strThisKey = $_
-            $arrAverageScores = @()
-            $arrDescriptions = @()
-            $hashtableOutput.Item($strThisKey).$strPropertyNameQualityScore |
-                ForEach-Object {
-                    $strThisFormerQualityScore = $_
+    $hashtableOutput.Keys | ForEach-Object {
+        $strThisKey = $_
+        $arrAverageScores = @()
+        $arrDescriptions = @()
+        $hashtableOutput.Item($strThisKey).$strPropertyNameQualityScore | ForEach-Object {
+            $strThisFormerQualityScore = $_
 
-                    $arrFirstScoreSplit = Split-StringOnLiteralString $strThisFormerQualityScore ' ('
-                    $strNumericalRange = $arrFirstScoreSplit[0]
-                    if ($arrFirstScoreSplit.Count -ge 2) {
-                        $arrDescriptionSplit = Split-StringOnLiteralString ($arrFirstScoreSplit[1]) ')'
-                        $strDescription = $arrDescriptionSplit[0]
-                    } else {
-                        $strDescription = ''
-                    }
-                    $arrDescriptions = $arrDescriptions + $strDescription
+            $arrFirstScoreSplit = Split-StringOnLiteralString $strThisFormerQualityScore ' ('
+            $strNumericalRange = $arrFirstScoreSplit[0]
+            if ($arrFirstScoreSplit.Count -ge 2) {
+                $arrDescriptionSplit = Split-StringOnLiteralString ($arrFirstScoreSplit[1]) ')'
+                $strDescription = $arrDescriptionSplit[0]
+            } else {
+                $strDescription = ''
+            }
+            $arrDescriptions = $arrDescriptions + $strDescription
 
-                    $arrSecondScoreSplit = Split-StringOnLiteralString $strNumericalRange ' to '
-                    $strLowScore = $arrSecondScoreSplit[0]
-                    if ($arrSecondScoreSplit.Count -ge 2) {
-                        $strHighScore = $arrSecondScoreSplit[1]
-                    } else {
-                        $strHighScore = '0'
-                    }
+            $arrSecondScoreSplit = Split-StringOnLiteralString $strNumericalRange ' to '
+            $strLowScore = $arrSecondScoreSplit[0]
+            if ($arrSecondScoreSplit.Count -ge 2) {
+                $strHighScore = $arrSecondScoreSplit[1]
+            } else {
+                $strHighScore = '0'
+            }
 
-                    $doubleAverageScore = (([int]$strHighScore) + ([int]$strLowScore)) / 2
-                    $arrAverageScores = $arrAverageScores + $doubleAverageScore
-                }
-            $hashtableOutput.Item($strThisKey).$strPropertyNameQualityScore = @($arrAverageScores)
-            ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameQualityDescription -Value @($arrDescriptions)
+            $doubleAverageScore = (([int]$strHighScore) + ([int]$strLowScore)) / 2
+            $arrAverageScores = $arrAverageScores + $doubleAverageScore
         }
+        $hashtableOutput.Item($strThisKey).$strPropertyNameQualityScore = @($arrAverageScores)
+        ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameQualityDescription -Value @($arrDescriptions)
+    }
 
     $PSCustomObjectThisProperty = New-Object PSCustomObject
     $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name 'PropertyName' -Value $strPropertyNameQualityDescription
@@ -688,20 +686,18 @@ if ($boolErrorOccurred -eq $false) {
 
     $strJoining = ';'
 
-    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object { $_.MultivaluedProperty -eq $true } | `
-        ForEach-Object { $_.PropertyName })
+    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar |
+            Where-Object { $_.MultivaluedProperty -eq $true } |
+            ForEach-Object { $_.PropertyName })
 
     if ($arrJustMultiValuedAttributes.Count -gt 0) {
-        $hashtableOutput.Keys | `
-            ForEach-Object {
-                $strThisKey = $_
-                $arrJustMultiValuedAttributes | `
-                    ForEach-Object {
-                        $strThisMultivaluedProperty = $_
-                        $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
-                    }
+        $hashtableOutput.Keys | ForEach-Object {
+            $strThisKey = $_
+            $arrJustMultiValuedAttributes | ForEach-Object {
+                $strThisMultivaluedProperty = $_
+                $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
             }
+        }
     }
 
     # Write output file
