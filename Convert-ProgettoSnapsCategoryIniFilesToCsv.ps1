@@ -710,12 +710,12 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryNotWorkingArcadeIni) -ne $true) 
     $boolErrorOccurred = $true
 }
 
-# Progetto Snaps Category "Originals Arcade.ini" file
+# Progetto Snaps Category "Parents Arcade.ini" file
 $strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
-$strFilePathProgettoSnapsCategoryOriginalsArcadeIni = Join-Path $strSubfolderPath 'Originals Arcade.ini'
+$strFilePathProgettoSnapsCategoryParentsArcadeIni = Join-Path $strSubfolderPath 'Parents Arcade.ini'
 
-if ((Test-Path $strFilePathProgettoSnapsCategoryOriginalsArcadeIni) -ne $true) {
-    Write-Error ('The Progetto Snaps Category ini file "Originals Arcade.ini" is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURLProgettoSnapsCategory + "`n`n" + 'File Location:' + "`n" + $strFilePathProgettoSnapsCategoryOriginalsArcadeIni)
+if ((Test-Path $strFilePathProgettoSnapsCategoryParentsArcadeIni) -ne $true) {
+    Write-Error ('The Progetto Snaps Category ini file "Parents Arcade.ini" is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURLProgettoSnapsCategory + "`n`n" + 'File Location:' + "`n" + $strFilePathProgettoSnapsCategoryParentsArcadeIni)
     $boolErrorOccurred = $true
 }
 
@@ -972,7 +972,7 @@ if ($boolErrorOccurred -eq $false) {
 
     ###########################################################################################
 
-    $strFilePath = $strFilePathProgettoSnapsCategoryOriginalsArcadeIni
+    $strFilePath = $strFilePathProgettoSnapsCategoryParentsArcadeIni
     $hashtableIniFile = $null
     Write-Verbose ('Ingesting data from file ' + $strFilePath + '...')
     $intReturnCode = Convert-IniToHashTable ([ref]$hashtableIniFile) $strFilePath $arrCharCommentIndicator $boolIgnoreComments $boolCommentsMustBeOnOwnLine $strNullSectionName $boolAllowKeysWithoutValuesThatOmitEqualSign
@@ -1272,7 +1272,7 @@ if ($boolErrorOccurred -eq $false) {
 
     ###########################################################################################
 
-    $strFilePath = $strFilePathProgettoSnapsCategoryOriginalsArcadeIni
+    $strFilePath = $strFilePathProgettoSnapsCategoryParentsArcadeIni
     $strPropertyName = 'ProgettoSnapsCategoryArcadeParent'
     $objDefaultValue = 'False'
     $strSectionNameOfSingleSectionToProcess = 'ROOT_FOLDER'
