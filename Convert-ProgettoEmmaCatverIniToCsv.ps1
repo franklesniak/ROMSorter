@@ -5,11 +5,11 @@
 # sources (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another tool of
 # choice) to make a ROM list.
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -644,31 +644,30 @@ if ($boolErrorOccurred -eq $false) {
     $strMatureSearchString = ' * Mature *'
     $objDefaultValue = 'Unknown'
     Write-Verbose ('Performing post-processing on category data from file ' + $strFilePath + '...')
-    $hashtableOutput.Keys | `
-        ForEach-Object {
-            $strThisKey = $_
-            $strThisFormerCombinedCategory = $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory
+    $hashtableOutput.Keys | ForEach-Object {
+        $strThisKey = $_
+        $strThisFormerCombinedCategory = $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory
 
-            if ($strThisFormerCombinedCategory.Contains($strMatureSearchString)) {
-                $objMatureValue = 'True'
-                $arrWorkingValue = Split-StringOnLiteralString $strThisFormerCombinedCategory $strMatureSearchString
-            } else {
-                $objMatureValue = 'False'
-                $arrWorkingValue = @($strThisFormerCombinedCategory)
-            }
-
-            $arrCategories = Split-StringOnLiteralString ($arrWorkingValue[0]) ' / '
-            $strParentCategory = $arrCategories[0]
-            if ($arrCategories.Count -ge 2) {
-                $strChildCategory = $arrCategories[1]
-            } else {
-                $strChildCategory = ''
-            }
-
-            $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory = $strParentCategory
-            ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameChildCategory -Value $strChildCategory
-            ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameMatureFlag -Value $objMatureValue
+        if ($strThisFormerCombinedCategory.Contains($strMatureSearchString)) {
+            $objMatureValue = 'True'
+            $arrWorkingValue = Split-StringOnLiteralString $strThisFormerCombinedCategory $strMatureSearchString
+        } else {
+            $objMatureValue = 'False'
+            $arrWorkingValue = @($strThisFormerCombinedCategory)
         }
+
+        $arrCategories = Split-StringOnLiteralString ($arrWorkingValue[0]) ' / '
+        $strParentCategory = $arrCategories[0]
+        if ($arrCategories.Count -ge 2) {
+            $strChildCategory = $arrCategories[1]
+        } else {
+            $strChildCategory = ''
+        }
+
+        $hashtableOutput.Item($strThisKey).$strPropertyNameParentCategory = $strParentCategory
+        ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameChildCategory -Value $strChildCategory
+        ($hashtableOutput.Item($strThisKey)) | Add-Member -MemberType NoteProperty -Name $strPropertyNameMatureFlag -Value $objMatureValue
+    }
 
     $PSCustomObjectThisProperty = New-Object PSCustomObject
     $PSCustomObjectThisProperty | Add-Member -MemberType NoteProperty -Name 'PropertyName' -Value $strPropertyNameChildCategory
@@ -702,20 +701,18 @@ if ($boolErrorOccurred -eq $false) {
 
     $strJoining = ';'
 
-    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object { $_.MultivaluedProperty -eq $true } | `
-        ForEach-Object { $_.PropertyName })
+    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar |
+            Where-Object { $_.MultivaluedProperty -eq $true } |
+            ForEach-Object { $_.PropertyName })
 
     if ($arrJustMultiValuedAttributes.Count -gt 0) {
-        $hashtableOutput.Keys | `
-            ForEach-Object {
-                $strThisKey = $_
-                $arrJustMultiValuedAttributes | `
-                    ForEach-Object {
-                        $strThisMultivaluedProperty = $_
-                        $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
-                    }
+        $hashtableOutput.Keys | ForEach-Object {
+            $strThisKey = $_
+            $arrJustMultiValuedAttributes | ForEach-Object {
+                $strThisMultivaluedProperty = $_
+                $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
             }
+        }
     }
 
     # Write output file
