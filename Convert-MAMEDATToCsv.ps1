@@ -2,7 +2,7 @@
 # Analyzes the current version of MAME's DAT in XML format and stores the extracted data and
 # associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20211227.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.1'
 
 #region License
 ###############################################################################################
@@ -275,8 +275,8 @@ if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable -and $boolInvok
         # TODO: Create backward compatible alternative to Expand-Archive
         Expand-Archive -Path (Join-Path $strSubfolderPath mamelx.zip) -DestinationPath $strSubfolderPath -Force
         $fileInfoExtractedXML = Get-ChildItem $strSubfolderPath | Where-Object { $_.Name.Length -ge 5 } | `
-            Where-Object { $_.Name.Substring(($_.Name.Length - 4), 4).ToLower() -eq '.xml' } | `
-            Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
+                Where-Object { $_.Name.Substring(($_.Name.Length - 4), 4).ToLower() -eq '.xml' } | `
+                Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
         $strAbsoluteXMLFilePath = $fileInfoExtractedXML.FullName
         Write-Verbose ('Loading DAT into memory and converting it to XML object...')
         $strContent = [System.IO.File]::ReadAllText($strAbsoluteXMLFilePath)
@@ -769,7 +769,7 @@ $arrCSVMAME = @($xmlMAME.mame.machine) | ForEach-Object {
     $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME_SaveStateSupported' -Value $strSaveStateSupported
 
     $PSCustomObject
-    
+
     $intCurrentROMPackage++
 }
 
