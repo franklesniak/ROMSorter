@@ -1,11 +1,11 @@
 # Convert-ProgettoSnapsRenameSetIniToCsv.ps1 converts the AntoPISA RenameSet to a tabular data
 # format that is easier to ingest and use in downstream scripts.
 
-$strThisScriptVersionNumber = [version]'1.0.20201006.0'
+$strThisScriptVersionNumber = [version]'1.0.20211228.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -34,7 +34,7 @@ $actionPreferenceFormerVerbose = $VerbosePreference
 
 #region Inputs
 ###############################################################################################
-# Download the languages.ini file from http://www.progettosnaps.net/languages/ and put it in
+# Download the renameSET.ini file from http://www.progettosnaps.net/renameset/ and put it in
 # the following folder:
 # .\Progetto_Snaps_Resources
 # or if on Linux / MacOS: ./Progetto_Snaps_Resources
@@ -446,7 +446,7 @@ if ($boolErrorOccurred -eq $false) {
 
     ###########################################################################################
 
-    $arrCSVRenameSetInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Keys | Sort-Object | `
+    $arrCSVRenameSetInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Keys | Sort-Object |
         ForEach-Object {
             $strMAMEVersion = $_
             if ($strMAMEVersion -ne $strNullSectionName) {
@@ -461,35 +461,30 @@ if ($boolErrorOccurred -eq $false) {
 
                 $PSCustomObject
             }
-        } | Sort-Object -Property 'MAMEVersionPowerShellFriendly' | `
-        ForEach-Object {
+        } | Sort-Object -Property 'MAMEVersionPowerShellFriendly' | ForEach-Object {
             $PSCustomObjectHeader = $_
             $strMAMEVersion = $PSCustomObjectHeader.MAMEVersion
             $versionPowerShellFriendly = $PSCustomObjectHeader.MAMEVersionPowerShellFriendly
             $strMAMEDate = $PSCustomObjectHeader.MAMEDate
             $arrAllKeys = @($hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Keys)
-            $arrDelKeys = @($arrAllKeys | `
-                ForEach-Object {
+            $arrDelKeys = @($arrAllKeys | ForEach-Object {
                     $strMAMEVersionMetadataItem = $_
                     if ($strMAMEVersionMetadataItem.ToLower().Contains('del_')) {
                         $strMAMEVersionMetadataItem
                     }
                 })
-            $arrRenKeys = @($arrAllKeys | `
-                ForEach-Object {
+            $arrRenKeys = @($arrAllKeys | ForEach-Object {
                     $strMAMEVersionMetadataItem = $_
                     if ($strMAMEVersionMetadataItem.ToLower().Contains('ren_')) {
                         $strMAMEVersionMetadataItem
                     }
                 })
 
-            $arrDelROMPackages = @($arrDelKeys | `
-                ForEach-Object {
+            $arrDelROMPackages = @($arrDelKeys | ForEach-Object {
                     $strDelKey = $_
                     $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strDelKey)
                 })
-            $arrRenROMPackages = @($arrRenKeys | `
-                ForEach-Object {
+            $arrRenROMPackages = @($arrRenKeys | ForEach-Object {
                     $strRenKey = $_
                     $strRenInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strRenKey)
                     $arrRenInfoA = Split-StringOnLiteralString $strRenInfo '> '
@@ -504,36 +499,34 @@ if ($boolErrorOccurred -eq $false) {
                     $PSCustomObject
                 })
 
-            $arrDelROMPackages | `
-                ForEach-Object {
-                    $strOldName = $_
-                    $strNewName = ''
-                    $PSCustomObject = New-Object PSCustomObject
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'D'
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
-                    $PSCustomObject
-                }
+            $arrDelROMPackages | ForEach-Object {
+                $strOldName = $_
+                $strNewName = ''
+                $PSCustomObject = New-Object PSCustomObject
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'D'
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
+                $PSCustomObject
+            }
 
-            $arrRenROMPackages | `
-                ForEach-Object {
-                    $PSCustomObjectRenameInfo = $_
-                    $strOldName = $PSCustomObjectRenameInfo.OldROMPackageName
-                    $strNewName = $PSCustomObjectRenameInfo.NewROMPackageName
-                    $PSCustomObject = New-Object PSCustomObject
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'R'
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
-                    $PSCustomObject
-                }
+            $arrRenROMPackages | ForEach-Object {
+                $PSCustomObjectRenameInfo = $_
+                $strOldName = $PSCustomObjectRenameInfo.OldROMPackageName
+                $strNewName = $PSCustomObjectRenameInfo.NewROMPackageName
+                $PSCustomObject = New-Object PSCustomObject
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'R'
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
+                $PSCustomObject
+            }
         }
-    $arrCSVRenameSetInfo | `
-        Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'Operation', 'OldROMPackageName') | `
+    $arrCSVRenameSetInfo |
+        Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'Operation', 'OldROMPackageName') |
         Export-Csv -Path $strCSVOutputFile -NoTypeInformation
 }
