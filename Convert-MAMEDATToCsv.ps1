@@ -272,6 +272,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolZIPExtractAvailable -and $boolInvok
     if (Test-Path (Join-Path $strSubfolderPath mamelx.zip)) {
         # Successful download
         Write-Verbose 'Extracting DAT from compressed ZIP...'
+        # TODO: Create backward compatible alternative to Expand-Archive
         Expand-Archive -Path (Join-Path $strSubfolderPath mamelx.zip) -DestinationPath $strSubfolderPath -Force
         $fileInfoExtractedXML = Get-ChildItem $strSubfolderPath | Where-Object { $_.Name.Length -ge 5 } | `
             Where-Object { $_.Name.Substring(($_.Name.Length - 4), 4).ToLower() -eq '.xml' } | `
