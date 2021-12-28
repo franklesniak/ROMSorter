@@ -3,11 +3,11 @@
 # https://raw.githubusercontent.com/cosmo0/arcade-manager-data/master/csv/best/classics-all.csv
 # and converts it to a proper CSV format for easier downstream handling
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -68,11 +68,10 @@ if ($boolErrorOccurred -eq $false) {
 
     # Add another column to the CSV indicating that the ROM was listed as classic in Arcade
     # Manager. It's redundant, but it makes certain analysis easier.
-    $csvCurrentRomList = $csvCurrentRomList | `
-        ForEach-Object {
-            $_ | Add-Member -MemberType NoteProperty -Name 'ArcadeManagerListedAsClassic' -Value 'True'
-            $_
-        }
+    $csvCurrentRomList = $csvCurrentRomList | ForEach-Object {
+        $_ | Add-Member -MemberType NoteProperty -Name 'ArcadeManagerListedAsClassic' -Value 'True'
+        $_
+    }
 
     # Export as comma-separated values (true CSV)
     $csvCurrentRomList | Export-Csv $strCSVOutputFile -NoTypeInformation
