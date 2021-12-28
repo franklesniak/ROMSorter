@@ -4,11 +4,11 @@
 # using Join-Object in PowerShell, Power BI, SQL Server, or another tool of choice) to make a
 # ROM list.
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -641,14 +641,12 @@ if ($boolErrorOccurred -eq $false) {
     Write-Verbose 'Processing multivalued entries...'
     $strPropertyName = 'ArcadeBelgiumNumberOfPlayers'
 
-    $hashtableOutput.Keys | `
-        ForEach-Object {
-            $strThisKey = $_
-            $hashtableOutput.Item($strThisKey).$strPropertyName = @((Split-StringOnLiteralString ($hashtableOutput.Item($strThisKey).$strPropertyName) ' / ') | Sort-Object )
-        }
+    $hashtableOutput.Keys | ForEach-Object {
+        $strThisKey = $_
+        $hashtableOutput.Item($strThisKey).$strPropertyName = @((Split-StringOnLiteralString ($hashtableOutput.Item($strThisKey).$strPropertyName) ' / ') | Sort-Object )
+    }
 
-    $arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object { $_.PropertyName -eq $strPropertyName } | `
+    $arrPropertyNamesAndDefaultValuesSoFar | Where-Object { $_.PropertyName -eq $strPropertyName } |
         ForEach-Object {
             $_.MultivaluedProperty = $true
         }
@@ -659,20 +657,18 @@ if ($boolErrorOccurred -eq $false) {
 
     $strJoining = ';'
 
-    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar | `
-        Where-Object { $_.MultivaluedProperty -eq $true } | `
-        ForEach-Object { $_.PropertyName })
+    $arrJustMultiValuedAttributes = @($arrPropertyNamesAndDefaultValuesSoFar |
+            Where-Object { $_.MultivaluedProperty -eq $true } |
+            ForEach-Object { $_.PropertyName })
 
     if ($arrJustMultiValuedAttributes.Count -gt 0) {
-        $hashtableOutput.Keys | `
-            ForEach-Object {
-                $strThisKey = $_
-                $arrJustMultiValuedAttributes | `
-                    ForEach-Object {
-                        $strThisMultivaluedProperty = $_
-                        $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
-                    }
+        $hashtableOutput.Keys | ForEach-Object {
+            $strThisKey = $_
+            $arrJustMultiValuedAttributes | ForEach-Object {
+                $strThisMultivaluedProperty = $_
+                $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty = $hashtableOutput.Item($strThisKey).$strThisMultivaluedProperty -join $strJoining
             }
+        }
     }
 
     # Write output file
