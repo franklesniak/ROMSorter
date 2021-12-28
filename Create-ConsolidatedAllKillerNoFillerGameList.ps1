@@ -4,11 +4,11 @@
 # using Join-Object in PowerShell, Power BI, SQL Server, or another tool of choice to pull in
 # additional ROM metadata.
 
-$strThisScriptVersionNumber = [version]'1.0.20200821.0'
+$strThisScriptVersionNumber = [version]'1.0.20211228.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -150,8 +150,7 @@ function Merge-AllKillerNoFillerFile {
     $strCurrentFileScreenOrientation = $args[3]
 
     $arrStrFileContent = @(Get-Content $strCurrentFilePath)
-    $arrStrRomList = @($arrStrFileContent | `
-        ForEach-Object {
+    $arrStrRomList = @($arrStrFileContent | ForEach-Object {
             if ($_.Length -ge 2) {
                 if ($_.Substring(0, 2) -ne '::') {
                     $_ # Not commented-out -- send down pipeline
@@ -159,8 +158,7 @@ function Merge-AllKillerNoFillerFile {
             } else {
                 $_
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             if ($_.Length -ge 4) {
                 if ($_.Substring(0, 4) -ne 'rem ') {
                     $_ # Not commented-out -- send down pipeline
@@ -168,8 +166,7 @@ function Merge-AllKillerNoFillerFile {
             } else {
                 $_
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             if ($_.Length -ge 3) {
                 if ($_.Substring(0, 3) -ne 'md ') {
                     $_ # Not a "make directory" command -- send down pipeline
@@ -177,8 +174,7 @@ function Merge-AllKillerNoFillerFile {
             } else {
                 $_
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             if ($_.Length -ge 6) {
                 if ($_.Substring(0, 6) -ne 'mkdir ') {
                     $_ # Not a "make directory" command -- send down pipeline
@@ -186,20 +182,17 @@ function Merge-AllKillerNoFillerFile {
             } else {
                 $_
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             if ($_.Length -ge 5) {
                 if ($_.Substring(0, 5) -eq 'copy ') {
                     $_ # It's a copy command -- send down pipeline
                 }
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             if ($_.ToLower().Contains('.zip')) {
                 $_ # Contains .zip string --- well-formatted line for us to process -- send down pipeline
             }
-        } | `
-        ForEach-Object {
+        } | ForEach-Object {
             $arrTempResult = Split-StringOnLiteralString ($_.ToLower()) 'copy '
             if ($arrTempResult.Count -ge 2) {
                 $arrTempResultTwo = Split-StringOnLiteralString ($arrTempResult[1]) '.zip'
@@ -207,32 +200,31 @@ function Merge-AllKillerNoFillerFile {
             }
         })
 
-    $arrStrRomList | `
-        ForEach-Object {
-            $strThisROMName = $_
-            $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
-            if ($result.Count -ne 0) {
-                # ROM is already on the list
-                for ($intCounterA = 0; $intCounterA -lt ($refCsvCurrentRomList.Value).Count; $intCounterA++) {
-                    if ((($refCsvCurrentRomList.Value)[$intCounterA]).ROM -eq $strThisROMName) {
-                        (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerList = 'True'
-                        if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
-                            (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory + ';' + $strCurrentFileCategory
-                        }
-                        if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
-                            (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation + ';' + $strCurrentFileScreenOrientation
-                        }
+    $arrStrRomList | ForEach-Object {
+        $strThisROMName = $_
+        $result = @($refCsvCurrentRomList.Value | Where-Object { $_.ROM -eq $strThisROMName })
+        if ($result.Count -ne 0) {
+            # ROM is already on the list
+            for ($intCounterA = 0; $intCounterA -lt ($refCsvCurrentRomList.Value).Count; $intCounterA++) {
+                if ((($refCsvCurrentRomList.Value)[$intCounterA]).ROM -eq $strThisROMName) {
+                    (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerList = 'True'
+                    if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory).Contains($strCurrentFileCategory) -eq $false) {
+                        (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerCategory + ';' + $strCurrentFileCategory
+                    }
+                    if (((($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation).Contains($strCurrentFileScreenOrientation) -eq $false) {
+                        (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation = (($refCsvCurrentRomList.Value)[$intCounterA]).AllKillerNoFillerScreenOrientation + ';' + $strCurrentFileScreenOrientation
                     }
                 }
-            } else {
-                $PSCustomObjectROMMetadata = New-Object PSCustomObject
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'ROM' -Value $strThisROMName
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerList' -Value 'True'
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerCategory' -Value $strCurrentFileCategory
-                $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerScreenOrientation' -Value $strCurrentFileScreenOrientation
-                ($refCsvCurrentRomList.Value) = ($refCsvCurrentRomList.Value) + $PSCustomObjectROMMetadata
             }
+        } else {
+            $PSCustomObjectROMMetadata = New-Object PSCustomObject
+            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'ROM' -Value $strThisROMName
+            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerList' -Value 'True'
+            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerCategory' -Value $strCurrentFileCategory
+            $PSCustomObjectROMMetadata | Add-Member -MemberType NoteProperty -Name 'AllKillerNoFillerScreenOrientation' -Value $strCurrentFileScreenOrientation
+            ($refCsvCurrentRomList.Value) = ($refCsvCurrentRomList.Value) + $PSCustomObjectROMMetadata
         }
+    }
 }
 
 function Merge-ROMManuallyOntoAllKillerNoFillerList {
