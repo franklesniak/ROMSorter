@@ -2,11 +2,11 @@
 # Analyzes the current version of MAME's DAT in XML format and stores the extracted data and
 # associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.0.20201004.2'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
