@@ -2,11 +2,11 @@
 # Downloads the MAME 2003 Plus DAT in XML format from Github, analyzes it, and stores the
 # extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.1.20201005.0'
+$strThisScriptVersionNumber = [version]'1.1.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -255,7 +255,7 @@ if ($null -eq $strLocalXMLFilePath -and $boolInvokeWebRequestAvailable) {
 
         $strNextDownloadPageURL = $strNextURL
         $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
-        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'download' })
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -like '*download*' })
         if ($arrNodes.Count -eq 0) {
             Write-Error ('Failed to download the MAME 2003 Plus DAT file. Please download the file that looks like mame2003-plus.xml from the folder "metadata" in the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalXMLFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalXMLFilePath to point to the path of the downloaded XML file.')
             break
