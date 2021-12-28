@@ -5,11 +5,11 @@
 # other data sources (e.g., using Join-Object in PowerShell, Power BI, SQL Server, or another
 # tool of choice) to make a ROM list.
 
-$strThisScriptVersionNumber = [version]'1.0.20200820.0'
+$strThisScriptVersionNumber = [version]'1.0.20211227.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -35,7 +35,7 @@ $strThisScriptVersionNumber = [version]'1.0.20200820.0'
 
 #region Inputs
 ###############################################################################################
-# Download the "category.ini" ZIP file from http://www.progettosnaps.net/renameset/ and put
+# Download the "category.ini" ZIP file from https://www.progettosnaps.net/support/ and put
 # each of the .ini files from the ZIP file in the following folder:
 # .\Progetto_Snaps_Resources
 # or if on Linux / MacOS: ./Progetto_Snaps_Resources
@@ -582,7 +582,7 @@ function Convert-OneSelectedHashTableOfAttributes {
 $boolErrorOccurred = $false
 
 # Progetto Snaps Category arcade.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryArcadeIni = Join-Path $strSubfolderPath 'arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeIni) -ne $true) {
@@ -591,7 +591,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeIni) -ne $true) {
 }
 
 # Progetto Snaps Category arcade_BIOS.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryArcadeBIOSIni = Join-Path $strSubfolderPath 'arcade_BIOS.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeBIOSIni) -ne $true) {
@@ -600,7 +600,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeBIOSIni) -ne $true) {
 }
 
 # Progetto Snaps Category arcade_NOBIOS.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryArcadeNOBIOSIni = Join-Path $strSubfolderPath 'arcade_NOBIOS.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeNOBIOSIni) -ne $true) {
@@ -609,7 +609,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryArcadeNOBIOSIni) -ne $true) {
 }
 
 # Progetto Snaps Category Bootlegs.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryBootlegsIni = Join-Path $strSubfolderPath 'Bootlegs.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryBootlegsIni) -ne $true) {
@@ -618,7 +618,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryBootlegsIni) -ne $true) {
 }
 
 # Progetto Snaps Category cabinets.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryCabinetsIni = Join-Path $strSubfolderPath 'cabinets.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryCabinetsIni) -ne $true) {
@@ -627,7 +627,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryCabinetsIni) -ne $true) {
 }
 
 # Progetto Snaps Category category.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryCategoryIni = Join-Path $strSubfolderPath 'category.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryCategoryIni) -ne $true) {
@@ -636,7 +636,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryCategoryIni) -ne $true) {
 }
 
 # Progetto Snaps Category "Clones Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryClonesArcadeIni = Join-Path $strSubfolderPath 'Clones Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryClonesArcadeIni) -ne $true) {
@@ -645,7 +645,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryClonesArcadeIni) -ne $true) {
 }
 
 # Progetto Snaps Category driver.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryDriverIni = Join-Path $strSubfolderPath 'driver.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryDriverIni) -ne $true) {
@@ -654,7 +654,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryDriverIni) -ne $true) {
 }
 
 # Progetto Snaps Category freeplay.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryFreeplayIni = Join-Path $strSubfolderPath 'freeplay.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryFreeplayIni) -ne $true) {
@@ -663,7 +663,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryFreeplayIni) -ne $true) {
 }
 
 # Progetto Snaps Category "Mechanical Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryMechanicalArcadeIni = Join-Path $strSubfolderPath 'Mechanical Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryMechanicalArcadeIni) -ne $true) {
@@ -672,7 +672,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryMechanicalArcadeIni) -ne $true) 
 }
 
 # Progetto Snaps Category mess.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryMessIni = Join-Path $strSubfolderPath 'mess.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryMessIni) -ne $true) {
@@ -681,7 +681,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryMessIni) -ne $true) {
 }
 
 # Progetto Snaps Category monochrome.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryMonochromeIni = Join-Path $strSubfolderPath 'monochrome.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryMonochromeIni) -ne $true) {
@@ -690,7 +690,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryMonochromeIni) -ne $true) {
 }
 
 # Progetto Snaps Category "Non Bootlegs.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryNonBootlegsIni = Join-Path $strSubfolderPath 'Non Bootlegs.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryNonBootlegsIni) -ne $true) {
@@ -699,7 +699,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryNonBootlegsIni) -ne $true) {
 }
 
 # Progetto Snaps Category "Non Mechanical Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryNonMechanicalArcadeIni = Join-Path $strSubfolderPath 'Non Mechanical Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryNonMechanicalArcadeIni) -ne $true) {
@@ -708,7 +708,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryNonMechanicalArcadeIni) -ne $tru
 }
 
 # Progetto Snaps Category "Not Working Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryNotWorkingArcadeIni = Join-Path $strSubfolderPath 'Not Working Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryNotWorkingArcadeIni) -ne $true) {
@@ -717,7 +717,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryNotWorkingArcadeIni) -ne $true) 
 }
 
 # Progetto Snaps Category "Originals Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryOriginalsArcadeIni = Join-Path $strSubfolderPath 'Originals Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryOriginalsArcadeIni) -ne $true) {
@@ -726,7 +726,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryOriginalsArcadeIni) -ne $true) {
 }
 
 # Progetto Snaps Category Players.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryPlayersIni = Join-Path $strSubfolderPath 'Players.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryPlayersIni) -ne $true) {
@@ -735,7 +735,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryPlayersIni) -ne $true) {
 }
 
 # Progetto Snaps Category resolution.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryResolutionIni = Join-Path $strSubfolderPath 'resolution.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryResolutionIni) -ne $true) {
@@ -744,7 +744,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryResolutionIni) -ne $true) {
 }
 
 # Progetto Snaps Category screenless.ini file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryScreenlessIni = Join-Path $strSubfolderPath 'screenless.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryScreenlessIni) -ne $true) {
@@ -753,7 +753,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryScreenlessIni) -ne $true) {
 }
 
 # Progetto Snaps Category "Working Arcade Clean.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryWorkingArcadeCleanIni = Join-Path $strSubfolderPath 'Working Arcade Clean.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryWorkingArcadeCleanIni) -ne $true) {
@@ -762,7 +762,7 @@ if ((Test-Path $strFilePathProgettoSnapsCategoryWorkingArcadeCleanIni) -ne $true
 }
 
 # Progetto Snaps Category "Working Arcade.ini" file
-$strURLProgettoSnapsCategory = 'www.progettosnaps.net/renameset/'
+$strURLProgettoSnapsCategory = 'www.progettosnaps.net/support/'
 $strFilePathProgettoSnapsCategoryWorkingArcadeIni = Join-Path $strSubfolderPath 'Working Arcade.ini'
 
 if ((Test-Path $strFilePathProgettoSnapsCategoryWorkingArcadeIni) -ne $true) {
