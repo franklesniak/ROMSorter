@@ -304,10 +304,10 @@ function Test-RenameSetRecordShouldBeIgnored {
         Select-Object -Property @('MAMEVersionPowerShellFriendly', 'Operation', 'OldROMPackageName', 'NewROMPackageName')
 
     $arrMatchedExclusions = @(($refArrRenameSetExclusions.Value) |
-        Where-Object { $_.MAMEVersionPowerShellFriendly -eq $PSCustomObjectRenameSetPossibleExclusionMatch.MAMEVersionPowerShellFriendly } |
-        Where-Object { $_.Operation -eq $PSCustomObjectRenameSetPossibleExclusionMatch.Operation } |
-        Where-Object { $_.OldROMPackageName -eq $PSCustomObjectRenameSetPossibleExclusionMatch.OldROMPackageName } |
-        Where-Object { $_.NewROMPackageName -eq $PSCustomObjectRenameSetPossibleExclusionMatch.NewROMPackageName })
+            Where-Object { $_.MAMEVersionPowerShellFriendly -eq $PSCustomObjectRenameSetPossibleExclusionMatch.MAMEVersionPowerShellFriendly } |
+            Where-Object { $_.Operation -eq $PSCustomObjectRenameSetPossibleExclusionMatch.Operation } |
+            Where-Object { $_.OldROMPackageName -eq $PSCustomObjectRenameSetPossibleExclusionMatch.OldROMPackageName } |
+            Where-Object { $_.NewROMPackageName -eq $PSCustomObjectRenameSetPossibleExclusionMatch.NewROMPackageName })
 
     ($arrMatchedExclusions.Count -ne 0)
 }
@@ -483,8 +483,7 @@ if ($null -eq $strLocalExclusionCSVFilePath -and $null -eq $strExclusionDownload
 
 $versionConvertedMAMEVersion = Convert-MAMEVersionNumberToRepresentativePowerShellVersion $strSourceMAMEVersion
 
-$arrFilteredRenameSetExclusions = @($arrRenameSetExclusions |
-    ForEach-Object {
+$arrFilteredRenameSetExclusions = @($arrRenameSetExclusions | ForEach-Object {
         $PSCustomObjectRenameSetExclusionItem = $_
         $PSCustomObjectRenameSetExclusionItem.MAMEVersionPowerShellFriendly = [System.Version]($PSCustomObjectRenameSetExclusionItem.MAMEVersionPowerShellFriendly)
         $PSCustomObjectRenameSetExclusionItem
@@ -503,16 +502,15 @@ Write-Verbose "Loading RenameSet tabulated data..."
 $arrProgettoSnapsRenameSet = Import-Csv $strPathToProgettoSnapsRenameSetInCSVFormat
 
 Write-Verbose "Filtering RenameSet down to just the data that needs to be processed for this emulator version/ROM set..."
-$arrFilteredProgettoSnapsRenameSet = @($arrProgettoSnapsRenameSet |
-    ForEach-Object {
+$arrFilteredProgettoSnapsRenameSet = @($arrProgettoSnapsRenameSet | ForEach-Object {
         $PSCustomObjectRenameSetItem = $_
         $PSCustomObjectRenameSetItem.MAMEVersionPowerShellFriendly = [System.Version]($PSCustomObjectRenameSetItem.MAMEVersionPowerShellFriendly)
         $PSCustomObjectRenameSetItem
     } | Where-Object { $_.MAMEVersionPowerShellFriendly -gt $versionConvertedMAMEVersion })
 
 $arrConvertedMAMEVersionsToProcess = @($arrFilteredProgettoSnapsRenameSet |
-    Select-Object -Property @('MAMEVersionPowerShellFriendly') -Unique) |
-    ForEach-Object { $_.MAMEVersionPowerShellFriendly }
+        Select-Object -Property @('MAMEVersionPowerShellFriendly') -Unique) |
+        ForEach-Object { $_.MAMEVersionPowerShellFriendly }
 
 $intTotalRenameSetOperations = ($arrRenameSetPrerequisites.Count) + ($arrFilteredProgettoSnapsRenameSet.Count)
 $intCurrentRenameSetOperation = 1
@@ -585,85 +583,78 @@ $strPrefix = 'Renamed*' + $strDisplayVersion + '*'
         }
     }
 
-$arrConvertedMAMEVersionsToProcess |
-    ForEach-Object {
-        $versionCurrentlyProcessing = $_
-        $PSCustomObjectRenameSetItem = @($arrFilteredProgettoSnapsRenameSet |
-            Where-Object { $_.MAMEVersionPowerShellFriendly -eq $versionCurrentlyProcessing } |
-            Select-Object -First 1)[0]
-        $strDisplayVersion = $PSCustomObjectRenameSetItem.MAMEVersion
-        Write-Debug ('Processing emulator version ' + $strDisplayVersion + '...')
-        $arrFilteredProgettoSnapsRenameSet |
-            Where-Object { $_.MAMEVersionPowerShellFriendly -eq $versionCurrentlyProcessing } |
-            Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'MAMEDate', 'Operation', 'OldROMPackageName') |
-            ForEach-Object {
-                $PSCustomObjectRenameSetItem = $_
+$arrConvertedMAMEVersionsToProcess | ForEach-Object {
+    $versionCurrentlyProcessing = $_
+    $PSCustomObjectRenameSetItem = @($arrFilteredProgettoSnapsRenameSet | Where-Object { $_.MAMEVersionPowerShellFriendly -eq $versionCurrentlyProcessing } | Select-Object -First 1)[0]
+    $strDisplayVersion = $PSCustomObjectRenameSetItem.MAMEVersion
+    Write-Debug ('Processing emulator version ' + $strDisplayVersion + '...')
+    $arrFilteredProgettoSnapsRenameSet | Where-Object { $_.MAMEVersionPowerShellFriendly -eq $versionCurrentlyProcessing } | Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'MAMEDate', 'Operation', 'OldROMPackageName') | ForEach-Object {
+        $PSCustomObjectRenameSetItem = $_
 
-                if ($intCurrentRenameSetOperation -ge 101) {
-                    $timeDateCurrent = Get-Date
-                    $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
-                    $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / ($intCurrentRenameSetOperation - 1) * $intTotalRenameSetOperations
-                    $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
-                    $doublePercentComplete = ($intCurrentRenameSetOperation - 1) / $intTotalRenameSetOperations * 100
-                    Write-Progress -Activity 'Applying RenameSet to This Emulator Version/ROM Set' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
-                }
+        if ($intCurrentRenameSetOperation -ge 101) {
+            $timeDateCurrent = Get-Date
+            $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+            $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / ($intCurrentRenameSetOperation - 1) * $intTotalRenameSetOperations
+            $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+            $doublePercentComplete = ($intCurrentRenameSetOperation - 1) / $intTotalRenameSetOperations * 100
+            Write-Progress -Activity 'Applying RenameSet to This Emulator Version/ROM Set' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+        }
 
-                if ((Test-RenameSetRecordShouldBeIgnored ([ref]$arrFilteredRenameSetExclusions) ([ref]$PSCustomObjectRenameSetItem)) -ne $true) {
-                    $strOldROMPackageName = $PSCustomObjectRenameSetItem.OldROMPackageName
-                    $strNewROMPackageName = $PSCustomObjectRenameSetItem.NewROMPackageName
-                    if ($PSCustomObjectRenameSetItem.Operation -eq 'D') {
-                        # Delete operation
-                        if ($hashtableROMPackageMetadata.ContainsKey($strOldROMPackageName)) {
-                            $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strOldROMPackageName)
-                            $hashtableROMPackageMetadata.Remove($strOldROMPackageName)
-                            $PSCustomObjectROMMetadata.ROMName = ('Deleted*' + $strOldROMPackageName + '*' + $strDisplayVersion)
-                            $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
-                        } else {
-                            Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME deleted the ROM "' + $strOldROMPackageName + '" - however, this ROM was not present in the ROM set as it was in the process of advancing to this version. Either the RenameSet information is wrong, or the ROM package was missing in the emulator metadata.')
-                        }
-                    } elseif ($PSCustomObjectRenameSetItem.Operation -eq 'R') {
-                        # Rename operation
-                        if ($hashtableROMPackageMetadata.ContainsKey($strOldROMPackageName)) {
-                            $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strOldROMPackageName)
-                            $hashtableROMPackageMetadata.Remove($strOldROMPackageName)
-                            $PSCustomObjectROMMetadata.ROMName = ('Renamed*' + $strDisplayVersion + '*' + $strOldROMPackageName + '*' + $strNewROMPackageName)
-                            $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
-                        } else {
-                            Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to something new - however, this ROM was not present in the ROM set as it was in the process of advancing to this version. Either the RenameSet information is wrong, or the ROM package was missing in the emulator metadata.')
-                        }
-                    }
-                } else {
-                    Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to "' + $strNewROMPackageName + '" - however, this operation is on the ignore list and will not be processed.')
-                }
-
-                $intCurrentRenameSetOperation++
-            }
-        # Process pending renames
-        $strPrefix = 'Renamed*' + $strDisplayVersion + '*'
-        @($hashtableROMPackageMetadata.Keys | Where-Object { $_.Contains($strPrefix) }) |
-            ForEach-Object {
-                $strTemporaryROMNameToBeRenamed = $_
-                $arrTemporaryROMNameToBeRenamed = Split-StringOnLiteralString $strTemporaryROMNameToBeRenamed $strPrefix
-                $strOldAndNewROMPackageName = $arrTemporaryROMNameToBeRenamed[$arrTemporaryROMNameToBeRenamed.Length - 1]
-                $arrOldAndNewROMPackageNames = Split-StringOnLiteralString $strOldAndNewROMPackageName '*'
-                $strOldROMPackageName = $arrOldAndNewROMPackageNames[0]
-                $strNewROMPackageName = $arrOldAndNewROMPackageNames[$arrOldAndNewROMPackageNames.Length - 1]
-                $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strTemporaryROMNameToBeRenamed)
-                if ($hashtableROMPackageMetadata.ContainsKey($strNewROMPackageName)) {
-                    # Collision
-                    $strCollisionName = 'RenameSetCollision*' + $strOldROMPackageName + '*to*' + $strNewROMPackageName + '*AtVersion*' + $strDisplayVersion
-                    Write-Warning -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to "' + $strNewROMPackageName + ' - however, there is already a ROM present in this ROM set as it was in the process of advancing to this version with the name "' + $strNewROMPackageName + '". Either the RenameSet information is wrong, or the emulator was updated after the official release of the emulator upon which the RenameSet is based. The ROM package metadata will be retained with a ROMName "' + $strCollisionName + '" - it is recommended that you inspect the input and output to determine if this is expected.')
-                    $hashtableROMPackageMetadata.Remove($strTemporaryROMNameToBeRenamed)
-                    $PSCustomObjectROMMetadata.ROMName = $strCollisionName
+        if ((Test-RenameSetRecordShouldBeIgnored ([ref]$arrFilteredRenameSetExclusions) ([ref]$PSCustomObjectRenameSetItem)) -ne $true) {
+            $strOldROMPackageName = $PSCustomObjectRenameSetItem.OldROMPackageName
+            $strNewROMPackageName = $PSCustomObjectRenameSetItem.NewROMPackageName
+            if ($PSCustomObjectRenameSetItem.Operation -eq 'D') {
+                # Delete operation
+                if ($hashtableROMPackageMetadata.ContainsKey($strOldROMPackageName)) {
+                    $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strOldROMPackageName)
+                    $hashtableROMPackageMetadata.Remove($strOldROMPackageName)
+                    $PSCustomObjectROMMetadata.ROMName = ('Deleted*' + $strOldROMPackageName + '*' + $strDisplayVersion)
                     $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
                 } else {
-                    # Happy path
-                    $hashtableROMPackageMetadata.Remove($strTemporaryROMNameToBeRenamed)
-                    $PSCustomObjectROMMetadata.ROMName = $strNewROMPackageName
+                    Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME deleted the ROM "' + $strOldROMPackageName + '" - however, this ROM was not present in the ROM set as it was in the process of advancing to this version. Either the RenameSet information is wrong, or the ROM package was missing in the emulator metadata.')
+                }
+            } elseif ($PSCustomObjectRenameSetItem.Operation -eq 'R') {
+                # Rename operation
+                if ($hashtableROMPackageMetadata.ContainsKey($strOldROMPackageName)) {
+                    $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strOldROMPackageName)
+                    $hashtableROMPackageMetadata.Remove($strOldROMPackageName)
+                    $PSCustomObjectROMMetadata.ROMName = ('Renamed*' + $strDisplayVersion + '*' + $strOldROMPackageName + '*' + $strNewROMPackageName)
                     $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
+                } else {
+                    Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to something new - however, this ROM was not present in the ROM set as it was in the process of advancing to this version. Either the RenameSet information is wrong, or the ROM package was missing in the emulator metadata.')
                 }
             }
+        } else {
+            Write-Debug -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to "' + $strNewROMPackageName + '" - however, this operation is on the ignore list and will not be processed.')
+        }
+
+        $intCurrentRenameSetOperation++
     }
+    # Process pending renames
+    $strPrefix = 'Renamed*' + $strDisplayVersion + '*'
+    @($hashtableROMPackageMetadata.Keys | Where-Object { $_.Contains($strPrefix) }) | ForEach-Object {
+        $strTemporaryROMNameToBeRenamed = $_
+        $arrTemporaryROMNameToBeRenamed = Split-StringOnLiteralString $strTemporaryROMNameToBeRenamed $strPrefix
+        $strOldAndNewROMPackageName = $arrTemporaryROMNameToBeRenamed[$arrTemporaryROMNameToBeRenamed.Length - 1]
+        $arrOldAndNewROMPackageNames = Split-StringOnLiteralString $strOldAndNewROMPackageName '*'
+        $strOldROMPackageName = $arrOldAndNewROMPackageNames[0]
+        $strNewROMPackageName = $arrOldAndNewROMPackageNames[$arrOldAndNewROMPackageNames.Length - 1]
+        $PSCustomObjectROMMetadata = $hashtableROMPackageMetadata.Item($strTemporaryROMNameToBeRenamed)
+        if ($hashtableROMPackageMetadata.ContainsKey($strNewROMPackageName)) {
+            # Collision
+            $strCollisionName = 'RenameSetCollision*' + $strOldROMPackageName + '*to*' + $strNewROMPackageName + '*AtVersion*' + $strDisplayVersion
+            Write-Warning -Message ('RenameSet input file indicated that in version ' + $strDisplayVersion + ', MAME renamed the ROM "' + $strOldROMPackageName + '" to "' + $strNewROMPackageName + ' - however, there is already a ROM present in this ROM set as it was in the process of advancing to this version with the name "' + $strNewROMPackageName + '". Either the RenameSet information is wrong, or the emulator was updated after the official release of the emulator upon which the RenameSet is based. The ROM package metadata will be retained with a ROMName "' + $strCollisionName + '" - it is recommended that you inspect the input and output to determine if this is expected.')
+            $hashtableROMPackageMetadata.Remove($strTemporaryROMNameToBeRenamed)
+            $PSCustomObjectROMMetadata.ROMName = $strCollisionName
+            $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
+        } else {
+            # Happy path
+            $hashtableROMPackageMetadata.Remove($strTemporaryROMNameToBeRenamed)
+            $PSCustomObjectROMMetadata.ROMName = $strNewROMPackageName
+            $hashtableROMPackageMetadata.Add($PSCustomObjectROMMetadata.ROMName, $PSCustomObjectROMMetadata)
+        }
+    }
+}
 
 Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFile)
 $hashtableROMPackageMetadata.Values | Sort-Object -Property @('ROMName') |
