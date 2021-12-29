@@ -1,11 +1,11 @@
 # Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1
 # MAME 2003 Plus is built from ROM set version 0.78
 
-$strThisScriptVersionNumber = [version]'1.0.20201011.0'
+$strThisScriptVersionNumber = [version]'1.0.20211228.0'
 
 #region License
 ###############################################################################################
-# Copyright 2020 Frank Lesniak
+# Copyright 2021 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -368,7 +368,7 @@ if ($null -eq $strLocalPrerequisiteCSVFilePath -and $null -eq $strPrerequisiteDo
 
             $strNextDownloadPageURL = $strNextURL
             $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
-            $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'Raw' })
+            $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -like '*Raw*' })
             if ($arrNodes.Count -eq 0) {
                 Write-Error ('Failed to download the MAME 2003 Plus RenameSet prerequisites file. Please download the file that looks like MAME_2003_Plus_RenameSet_Prerequisites.csv the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strPrerequisiteDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalPrerequisiteCSVFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalPrerequisiteCSVFilePath to point to the path of the downloaded CSV file.')
                 break
@@ -442,7 +442,7 @@ if ($null -eq $strLocalExclusionCSVFilePath -and $null -eq $strExclusionDownload
 
             $strNextDownloadPageURL = $strNextURL
             $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
-            $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -eq 'Raw' })
+            $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower() -like '*Raw*' })
             if ($arrNodes.Count -eq 0) {
                 Write-Error ('Failed to download the MAME 2003 Plus RenameSet exclusions file. Please download the file that looks like MAME_2003_Plus_RenameSet_Exclusions.csv the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strExclusionDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strLocalExclusionCSVFilePath + "`n`n" + 'Once downloaded, set the script variable $strLocalExclusionCSVFilePath to point to the path of the downloaded CSV file.')
                 break
