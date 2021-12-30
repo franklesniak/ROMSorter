@@ -1,7 +1,12 @@
 MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
+0.78.103.0,R,compgolf,compglfo
 0.79.100.0,R,stridr2a,strider2
 0.79.100.0,R,wbml,wbmlb
 0.79.101.0,R,galaga,galagao
+0.79.101.0,D,nebulbee,
+0.80.100.0,D,4in1boot,
+0.82.102.0,D,tgmj,
+0.90.103.0,R,kabukiz,kabukizj
 0.94.103.0,R,bublbobl,bublbob1
 0.95.104.0,R,pktgaldx,pktgaldj
 0.95.106.0,D,dblewing,
@@ -20,6 +25,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.105.101.0,R,fghthist,fghthstu
 0.105.105.0,D,ddp3,
 0.116.104.0,R,brapboys,brapboyj
+0.127.103.0,R,imago,imagoa
 0.129.104.0,R,hvysmsh,hvysmshj
 0.129.104.0,R,skullfng,skullfnj
 0.103.102.0,R,mgcrystl,mgcrysto
@@ -33,4 +39,8 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.144.100.0,R,ironclado,ironclad
 0.145.102.0,R,pzloop2j,pzloop2jr1
 0.147.100.0,R,f1lap,f1lapj
+0.151.100.0,R,safarir,safarij
+0.156.100.0,R,botanic,
+0.188.100.0,D,kinst14,
 0.216.100.0,R,eeekk,eeekkp
+0.227.100.0,D,shtngmst,
