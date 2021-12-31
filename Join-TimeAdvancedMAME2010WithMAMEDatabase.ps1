@@ -28,10 +28,6 @@ $strThisScriptVersionNumber = [version]'1.0.20211230.0'
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
 
-
-$actionPreferenceFormerVerbose = $VerbosePreference
-$actionPreferenceFormerDebug = $DebugPreference
-
 $strLocalMAMEDatabaseCSV = $null
 $boolBackupMAMEDatabaseBeforeOverwrite = $true
 $strLocalMAMEDatabaseBackupPrefix = $null
