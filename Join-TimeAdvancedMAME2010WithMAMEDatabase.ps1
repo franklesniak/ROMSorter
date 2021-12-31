@@ -1,6 +1,6 @@
 # Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1
 
-$strThisScriptVersionNumber = [version]'1.0.20211230.0'
+$strThisScriptVersionNumber = [version]'1.0.20211231.0'
 
 #region License
 ###############################################################################################
@@ -27,6 +27,9 @@ $strThisScriptVersionNumber = [version]'1.0.20211230.0'
 # The most up-to-date version of this script can be found on the author's GitHub repository
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
+
+$actionPreferenceFormerVerbose = $VerbosePreference
+$actionPreferenceFormerDebug = $DebugPreference
 
 $strLocalMAMEDatabaseCSV = $null
 $boolBackupMAMEDatabaseBeforeOverwrite = $true
