@@ -2,7 +2,7 @@
 # Analyzes the current version of Final Burn Neo (FBNeo)'s arcade-only DAT in XML format and
 # stores the extracted data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.1.20211227.0'
+$strThisScriptVersionNumber = [version]'1.2.20211230.0'
 
 #region License
 ###############################################################################################
@@ -46,7 +46,8 @@ $strSubfolderPath = Join-Path '.' 'FBNeo_Resources'
 
 # $strLocalXMLFilePath = Join-Path $strSubfolderPath 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat'
 
-$strOutputFilePath = Join-Path '.' 'FBNeo_Arcade_DAT.csv'
+$strOutputFilePathMachineSummary = Join-Path '.' 'FBNeo_Arcade_DAT.csv'
+$strOutputFilePathROMFileCRCs = Join-Path '.' 'FBNeo_Arcade_DAT_ROM_File_CRCs.csv'
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
@@ -157,6 +158,64 @@ function Test-MachineCompletelyFunctionalRecursively {
             }
         }
         $boolCompletelyFunctionalROMPackage
+    }
+}
+
+function Get-ROMHashInfoRecursively {
+    # This functions supports recursive ROM lookups in a MAME/FBNeo DAT to gather the ROM file
+    # hashes in this machine and any parents. CHDs (disks) are not included
+    #
+    # The function takes four positional arguments.
+    #
+    # The first argument is a reference to an hashtable. Before calling the function,
+    # a variable must be initialized to an empty hashtable (@{}). After completion of the
+    # function, the hashtable is set to a series of keys, each of which is the CRC of a ROM
+    # file in the specified ROM package. The value (in the key-value pair) is left $null
+    #
+    # The second argument is a string containing the short name of the machine (ROM package).
+    #
+    # The third argument is a reference to a hashtable of all the ROM information obtained
+    # from the DAT, indexed by the ROM name.
+    #
+    # The function returns $true if successful, $false otherwise
+    #
+    # Example:
+    # $strROMName = 'mario'
+    # $hashtableROMCRCs = @{}
+    # $boolSuccess = Get-ROMHashInfoRecursively ([ref]$hashtableROMCRCs) $strROMName ([ref]$hashtableEmulatorDAT)
+
+    $refHashtableROMCRCs = $args[0]
+    $strThisROMName = $args[1]
+    $refHashtableDAT = $args[2]
+
+    $strThisFunctionVersionNumber = [version]'1.0.20211230.0'
+
+    $game = ($refHashtableDAT.Value).Item($strThisROMName)
+    $boolParentSuccess = $true
+    if ($null -ne $game.romof) {
+        # This game has a parent ROM
+        $boolParentSuccess = Get-ROMHashInfoRecursively $refHashtableROMCRCs ($game.romof) $refHashtableDAT
+    }
+
+    if ($boolParentSuccess -eq $false) {
+        $false
+    } else {
+        $boolSuccess = $true
+
+        if ($null -ne $game.rom) {
+            @($game.rom) | ForEach-Object {
+                $file = $_
+                if ($file.status -ne 'nodump') {
+                    if ($null -ne $file.crc) {
+                        if (($refHashtableROMCRCs.Value).ContainsKey($file.crc) -eq $false) {
+                            ($refHashtableROMCRCs.Value).Add($file.crc, $null)
+                        }
+                    }
+                }
+            }
+        }
+
+        $boolSuccess
     }
 }
 
@@ -312,7 +371,10 @@ $intTotalROMPackages = @($xmlFBNeo.datafile.game).Count
 $intCurrentROMPackage = 1
 $timeDateStartOfProcessing = Get-Date
 
-$arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
+$arrCSVFBNeo = @()
+$arrCSVFBNeoROMCRCs = @()
+
+@($xmlFBNeo.datafile.game) | ForEach-Object {
     $game = $_
 
     if ($intCurrentROMPackage -ge 101) {
@@ -324,34 +386,45 @@ $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
         Write-Progress -Activity 'Processing FBNeo ROM Packages' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
     }
 
-    $PSCustomObject = New-Object PSCustomObject
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $game.name
+    $PSCustomObjectMachineSummary = New-Object PSCustomObject
+    $PSCustomObjectROMFileCRCInfo = New-Object PSCustomObject
+
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
+
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $game.name
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $game.name
+
     if ($null -eq $game.description) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value ''
+        $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $game.description
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $game.description
+        $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $game.description
     }
+
+    ###########################################################################################
+
     if ($null -eq $game.manufacturer) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_Manufacturer' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_Manufacturer' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_Manufacturer' -Value $game.manufacturer
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_Manufacturer' -Value $game.manufacturer
     }
     if ($null -eq $game.year) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_Year' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_Year' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_Year' -Value $game.year
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_Year' -Value $game.year
     }
     if ($null -eq $game.cloneof) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_CloneOf' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_CloneOf' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_CloneOf' -Value $game.cloneof
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_CloneOf' -Value $game.cloneof
     }
 
     if (($null -eq $game.isbios) -or ($game.isbios -eq 'no')) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_IsBIOSROM' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_IsBIOSROM' -Value 'False'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_IsBIOSROM' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_IsBIOSROM' -Value 'True'
     }
 
     $boolROMPackageContainsROMs = $false
@@ -359,10 +432,29 @@ $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
     $boolROMFunctional = Test-MachineCompletelyFunctionalRecursively ([ref]$boolROMPackageContainsROMs) ([ref]$boolROMPackageContainsCHD) ($game.name) ([ref]$hashtableFBNeo)
 
     if ($boolROMFunctional -eq $true) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_FunctionalROMPackage' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_FunctionalROMPackage' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_FunctionalROMPackage' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_FunctionalROMPackage' -Value 'False'
     }
+
+    ###########################################################################################
+
+    $hashtableROMFileCRCs = New-BackwardCompatibleCaseInsensitiveHashtable
+    $boolSuccess = Get-ROMHashInfoRecursively ([ref]$hashtableROMFileCRCs) ($game.name) ([ref]$hashtableFBNeo)
+
+    if ($boolSuccess -eq $true) {
+        $arrSortedCRCs = @(@($hashtableROMFileCRCs.Keys) | Sort-Object)
+        if ($arrSortedCRCs.Count -ge 1) {
+            $strSortedCRCs = [string]::Join("`t", $arrSortedCRCs)
+        } else {
+            $strSortedCRCs = ''
+        }
+    } else {
+        $strSortedCRCs = ''
+    }
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMFileString' -Value $strSortedCRCs
+
+    ###########################################################################################
 
     $strOverallStatus = 'Unknown'
     if ($null -ne $game.driver) {
@@ -379,15 +471,19 @@ $arrCSVFBNeo = @($xmlFBNeo.datafile.game) | ForEach-Object {
         }
     }
 
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'FBNeo_OverallStatus' -Value $strOverallStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'FBNeo_OverallStatus' -Value $strOverallStatus
 
-    $PSCustomObject
+    $arrCSVFBNeo += $PSCustomObjectMachineSummary
+    $arrCSVFBNeoROMCRCs += $PSCustomObjectROMFileCRCInfo
 
     $intCurrentROMPackage++
 }
 
-Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePath)
+Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePathMachineSummary)
 $arrCSVFBNeo | Sort-Object -Property @('ROMName') |
-    Export-Csv -Path $strOutputFilePath -NoTypeInformation
+    Export-Csv -Path $strOutputFilePathMachineSummary -NoTypeInformation
+
+$arrCSVFBNeoROMCRCs | Sort-Object -Property @('ROMName') |
+    Export-Csv -Path $strOutputFilePathROMFileCRCs -NoTypeInformation
 
 $VerbosePreference = $actionPreferenceFormerVerbose

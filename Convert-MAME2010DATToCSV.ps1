@@ -2,7 +2,7 @@
 # Downloads the MAME 2010 DAT in XML format from Github, analyzes it, and stores the extracted
 # data and associated insights in a CSV.
 
-$strThisScriptVersionNumber = [version]'1.1.20211227.0'
+$strThisScriptVersionNumber = [version]'1.2.20211231.0'
 
 #region License
 ###############################################################################################
@@ -45,7 +45,8 @@ $strSubfolderPath = Join-Path '.' 'MAME_2010_Resources'
 #    MAME 2010 DAT file instead of having to download it from GitHub:
 # $strLocalXMLFilePath = Join-Path $strSubfolderPath 'mame2010.xml'
 
-$strOutputFilePath = Join-Path '.' 'MAME_2010_DAT.csv'
+$strOutputFilePathMachineSummary = Join-Path '.' 'MAME_2010_DAT.csv'
+$strOutputFilePathROMFileCRCs = Join-Path '.' 'MAME_2010_DAT_ROM_File_CRCs.csv'
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
@@ -156,6 +157,64 @@ function Test-MachineCompletelyFunctionalRecursively {
             }
         }
         $boolCompletelyFunctionalROMPackage
+    }
+}
+
+function Get-ROMHashInfoRecursively {
+    # This functions supports recursive ROM lookups in a MAME/FBNeo DAT to gather the ROM file
+    # hashes in this machine and any parents. CHDs (disks) are not included
+    #
+    # The function takes four positional arguments.
+    #
+    # The first argument is a reference to an hashtable. Before calling the function,
+    # a variable must be initialized to an empty hashtable (@{}). After completion of the
+    # function, the hashtable is set to a series of keys, each of which is the CRC of a ROM
+    # file in the specified ROM package. The value (in the key-value pair) is left $null
+    #
+    # The second argument is a string containing the short name of the machine (ROM package).
+    #
+    # The third argument is a reference to a hashtable of all the ROM information obtained
+    # from the DAT, indexed by the ROM name.
+    #
+    # The function returns $true if successful, $false otherwise
+    #
+    # Example:
+    # $strROMName = 'mario'
+    # $hashtableROMCRCs = @{}
+    # $boolSuccess = Get-ROMHashInfoRecursively ([ref]$hashtableROMCRCs) $strROMName ([ref]$hashtableEmulatorDAT)
+
+    $refHashtableROMCRCs = $args[0]
+    $strThisROMName = $args[1]
+    $refHashtableDAT = $args[2]
+
+    $strThisFunctionVersionNumber = [version]'1.0.20211230.0'
+
+    $game = ($refHashtableDAT.Value).Item($strThisROMName)
+    $boolParentSuccess = $true
+    if ($null -ne $game.romof) {
+        # This game has a parent ROM
+        $boolParentSuccess = Get-ROMHashInfoRecursively $refHashtableROMCRCs ($game.romof) $refHashtableDAT
+    }
+
+    if ($boolParentSuccess -eq $false) {
+        $false
+    } else {
+        $boolSuccess = $true
+
+        if ($null -ne $game.rom) {
+            @($game.rom) | ForEach-Object {
+                $file = $_
+                if ($file.status -ne 'nodump') {
+                    if ($null -ne $file.crc) {
+                        if (($refHashtableROMCRCs.Value).ContainsKey($file.crc) -eq $false) {
+                            ($refHashtableROMCRCs.Value).Add($file.crc, $null)
+                        }
+                    }
+                }
+            }
+        }
+
+        $boolSuccess
     }
 }
 
@@ -354,7 +413,10 @@ $intTotalROMPackages = @($xmlMAME2010.mame.game).Count
 $intCurrentROMPackage = 1
 $timeDateStartOfProcessing = Get-Date
 
-$arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
+$arrCSVMAME2010 = @()
+$arrCSVMAME2010ROMCRCs = @()
+
+@($xmlMAME2010.mame.game) | ForEach-Object {
     $game = $_
 
     if ($intCurrentROMPackage -ge 101) {
@@ -372,33 +434,44 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
         $hashtableInputCountsForPlayerOne.Item($strInputType) = 0
     }
 
-    $PSCustomObject = New-Object PSCustomObject
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMName' -Value $game.name
+    $PSCustomObjectMachineSummary = New-Object PSCustomObject
+    $PSCustomObjectROMFileCRCInfo = New-Object PSCustomObject
+
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'ROMName' -Value $game.name
+
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMName' -Value $game.name
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMName' -Value $game.name
+
     if ($null -eq $game.description) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value ''
+        $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value $game.description
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value $game.description
+        $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMDisplayName' -Value $game.description
     }
+
+    ###########################################################################################
+
     if ($null -eq $game.manufacturer) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_Manufacturer' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_Manufacturer' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_Manufacturer' -Value $game.manufacturer
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_Manufacturer' -Value $game.manufacturer
     }
     if ($null -eq $game.year) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_Year' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_Year' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_Year' -Value $game.year
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_Year' -Value $game.year
     }
     if ($null -eq $game.cloneof) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CloneOf' -Value ''
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CloneOf' -Value ''
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CloneOf' -Value $game.cloneof
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CloneOf' -Value $game.cloneof
     }
     if (($null -eq $game.isbios) -or ($game.isbios -eq 'no')) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_IsBIOSROM' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_IsBIOSROM' -Value 'False'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_IsBIOSROM' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_IsBIOSROM' -Value 'True'
     }
 
     $boolROMPackageContainsROMs = $false
@@ -406,22 +479,41 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
     $boolROMFunctional = Test-MachineCompletelyFunctionalRecursively ([ref]$boolROMPackageContainsROMs) ([ref]$boolROMPackageContainsCHD) ($game.name) ([ref]$hashtableMAME2010)
 
     if ($boolROMFunctional -eq $true) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_FunctionalROMPackage' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_FunctionalROMPackage' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_FunctionalROMPackage' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_FunctionalROMPackage' -Value 'False'
     }
 
     if ($boolROMPackageContainsROMs -eq $true) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMFilesPartOfPackage' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMFilesPartOfPackage' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMFilesPartOfPackage' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMFilesPartOfPackage' -Value 'False'
     }
 
     if ($boolROMPackageContainsCHD -eq $true) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CHDsPartOfPackage' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CHDsPartOfPackage' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CHDsPartOfPackage' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CHDsPartOfPackage' -Value 'False'
     }
+
+    ###########################################################################################
+
+    $hashtableROMFileCRCs = New-BackwardCompatibleCaseInsensitiveHashtable
+    $boolSuccess = Get-ROMHashInfoRecursively ([ref]$hashtableROMFileCRCs) ($game.name) ([ref]$hashtableMAME2010)
+
+    if ($boolSuccess -eq $true) {
+        $arrSortedCRCs = @(@($hashtableROMFileCRCs.Keys) | Sort-Object)
+        if ($arrSortedCRCs.Count -ge 1) {
+            $strSortedCRCs = [string]::Join("`t", $arrSortedCRCs)
+        } else {
+            $strSortedCRCs = ''
+        }
+    } else {
+        $strSortedCRCs = ''
+    }
+    $PSCustomObjectROMFileCRCInfo | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMFileString' -Value $strSortedCRCs
+
+    ###########################################################################################
 
     $boolSamplePresent = $false
     if ($null -ne $game.sample) {
@@ -431,16 +523,16 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
     }
 
     if ($boolSamplePresent -eq $true) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundSamplesPartOfPackage' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundSamplesPartOfPackage' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundSamplesPartOfPackage' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundSamplesPartOfPackage' -Value 'False'
     }
 
     if ($null -eq $game.display) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_DisplayCount' -Value '0'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_DisplayCount' -Value '0'
         $intPrimaryDisplayIndex = -1
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_DisplayCount' -Value ([string](@($game.display).Count))
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_DisplayCount' -Value ([string](@($game.display).Count))
         $intPrimaryDisplayIndex = (@($game.display).Count) - 1
     }
 
@@ -462,26 +554,26 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
 
     if ($intPrimaryDisplayIndex -ge 0) {
         if ((@($game.display)[$intPrimaryDisplayIndex].rotate -eq '90') -or (@($game.display)[$intPrimaryDisplayIndex].rotate -eq '270')) {
-            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'Vertical'
+            $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'Vertical'
             $intCurrentDisplayHeight = [int](@($game.display)[$intPrimaryDisplayIndex].width)
             $intCurrentDisplayWidth = [int](@($game.display)[$intPrimaryDisplayIndex].height)
         } else {
-            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'Horizontal'
+            $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'Horizontal'
             $intCurrentDisplayWidth = [int](@($game.display)[$intPrimaryDisplayIndex].width)
             $intCurrentDisplayHeight = [int](@($game.display)[$intPrimaryDisplayIndex].height)
         }
         $doubleRefreshRate = [double](@($game.display)[$intPrimaryDisplayIndex].refresh)
         $strResolution = ([string]$intCurrentDisplayWidth) + 'x' + ([string]$intCurrentDisplayHeight) + '@' + ([string]$doubleRefreshRate) + 'Hz'
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayResolution' -Value $strResolution
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayResolution' -Value $strResolution
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'N/A'
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayResolution' -Value 'N/A'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayOrientation' -Value 'N/A'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PrimaryDisplayResolution' -Value 'N/A'
     }
 
     if ($null -ne $game.sound) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasSound' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasSound' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasSound' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasSound' -Value 'False'
     }
 
     $strNumPlayers = 'N/A'
@@ -526,22 +618,22 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
                 }
             }
         }
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasInput' -Value 'True'
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfPlayers' -Value $strNumPlayers
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfButtons' -Value $strNumButtons
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasInput' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfPlayers' -Value $strNumPlayers
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfButtons' -Value $strNumButtons
         $arrControlsTotal | ForEach-Object {
             $strInputType = $_
             $intNumControlsOfThisType = $hashtableInputCountsForPlayerOne.Item($strInputType)
-            $PSCustomObject | Add-Member -MemberType NoteProperty -Name ('MAME2010_P1_NumInputControls_' + $strInputType) -Value ([string]$intNumControlsOfThisType)
+            $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name ('MAME2010_P1_NumInputControls_' + $strInputType) -Value ([string]$intNumControlsOfThisType)
         }
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasInput' -Value 'False'
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfPlayers' -Value $strNumPlayers
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfButtons' -Value $strNumButtons
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ROMPackageHasInput' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfPlayers' -Value $strNumPlayers
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_NumberOfButtons' -Value $strNumButtons
         $arrControlsTotal | ForEach-Object {
             $strInputType = $_
             $intNumControlsOfThisType = 0
-            $PSCustomObject | Add-Member -MemberType NoteProperty -Name ('MAME2010_P1_NumInputControls_' + $strInputType) -Value ([string]$intNumControlsOfThisType)
+            $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name ('MAME2010_P1_NumInputControls_' + $strInputType) -Value ([string]$intNumControlsOfThisType)
         }
     }
 
@@ -566,15 +658,15 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
         }
     }
     if ($boolFreePlaySupported) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_FreePlaySupported' -Value 'True'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_FreePlaySupported' -Value 'True'
     } else {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_FreePlaySupported' -Value 'False'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_FreePlaySupported' -Value 'False'
     }
     if ($arrSupportedCabinetTypes.Count -eq 0) {
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CabinetTypes' -Value 'Unknown'
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CabinetTypes' -Value 'Unknown'
     } else {
         $strCabinetTypes = ($arrSupportedCabinetTypes | Sort-Object) -join ';'
-        $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CabinetTypes' -Value $strCabinetTypes
+        $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CabinetTypes' -Value $strCabinetTypes
     }
 
     $strOverallStatus = 'Unknown'
@@ -663,23 +755,27 @@ $arrCSVMAME2010 = @($xmlMAME2010.mame.game) | ForEach-Object {
             $strPaletteSize = $driver.palettesize
         }
     }
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_OverallStatus' -Value $strOverallStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_EmulationStatus' -Value $strEmulationStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ColorStatus' -Value $strColorStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundStatus' -Value $strSoundStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_GraphicStatus' -Value $strGraphicStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_CocktailStatus' -Value $strCocktailStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_ProtectionStatus' -Value $strProtectionStatus
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_SaveStateSupported' -Value $strSaveStateSupported
-    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAME2010_PaletteSize' -Value $strPaletteSize
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_OverallStatus' -Value $strOverallStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_EmulationStatus' -Value $strEmulationStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ColorStatus' -Value $strColorStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_SoundStatus' -Value $strSoundStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_GraphicStatus' -Value $strGraphicStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_CocktailStatus' -Value $strCocktailStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_ProtectionStatus' -Value $strProtectionStatus
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_SaveStateSupported' -Value $strSaveStateSupported
+    $PSCustomObjectMachineSummary | Add-Member -MemberType NoteProperty -Name 'MAME2010_PaletteSize' -Value $strPaletteSize
 
-    $PSCustomObject
+    $arrCSVMAME2010 += $PSCustomObjectMachineSummary
+    $arrCSVMAME2010ROMCRCs += $PSCustomObjectROMFileCRCInfo
 
     $intCurrentROMPackage++
 }
 
-Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePath)
+Write-Verbose ('Exporting results to CSV: ' + $strOutputFilePathMachineSummary)
 $arrCSVMAME2010 | Sort-Object -Property @('ROMName') |
-    Export-Csv -Path $strOutputFilePath -NoTypeInformation
+    Export-Csv -Path $strOutputFilePathMachineSummary -NoTypeInformation
+
+$arrCSVMAME2010ROMCRCs | Sort-Object -Property @('ROMName') |
+    Export-Csv -Path $strOutputFilePathROMFileCRCs -NoTypeInformation
 
 $VerbosePreference = $actionPreferenceFormerVerbose
