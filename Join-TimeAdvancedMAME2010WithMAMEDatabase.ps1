@@ -1,6 +1,6 @@
 # Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1
 
-$strThisScriptVersionNumber = [version]'1.0.20211229.0'
+$strThisScriptVersionNumber = [version]'1.0.20211230.0'
 
 #region License
 ###############################################################################################
@@ -122,7 +122,7 @@ if ($arrLoadedModules.Count -eq 0) {
 }
 
 Write-Verbose ('Joining the MAME database with ' + $strTimeAdvancedDATToJoinDisplayName + '. This may take a while...')
-$arrJoinedData = Join-Object -Left $arrMAMEDatabase -Right $arrTimeAdvancedDATToJoin -LeftJoinProperty 'ROMName' -RightJoinProperty 'ROMName' -Type 'AllInBoth' -AddKey 'ROMName' -ExcludeLeftProperties 'ROMName' -ExcludeRightProperties 'ROMName' # -AddKey 'ROMName' -ExcludeLeftProperties 'User Name' -ExcludeRightProperties 'SAMAccountName'
+$arrJoinedData = Join-Object -Left $arrMAMEDatabase -Right $arrTimeAdvancedDATToJoin -LeftJoinProperty 'ROMName' -RightJoinProperty 'ROMName' -Type 'AllInBoth' -AddKey 'ROMName' -ExcludeLeftProperties 'ROMName' -ExcludeRightProperties 'ROMName'
 
 if ($boolBackupMAMEDatabaseBeforeOverwrite -eq $true) {
     $strBackupFileName = ($strLocalMAMEDatabaseBackupPrefix + ([string]($dateTimeStart.Year) + '-' + [string]($dateTimeStart.Month) + '-' + [string]($dateTimeStart.Day) + '_' + [string]($dateTimeStart.Hour) + [string]($dateTimeStart.Minute) + [string]($dateTimeStart.Second)) + $strLocalMAMEDatabaseBackupSuffix)
