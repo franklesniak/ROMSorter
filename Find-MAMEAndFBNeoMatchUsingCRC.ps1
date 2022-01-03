@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoMatchUsingCRC.ps1
 
-$strThisScriptVersionNumber = [version]'1.0.20220102.0'
+$strThisScriptVersionNumber = [version]'2.0.20220103.0'
 
 #region License
 ###############################################################################################
@@ -217,6 +217,15 @@ if ((Test-Path $strLocalDATToCompareToMAMEIncludingCRC) -ne $true) {
     $boolErrorOccurred = $true
 }
 
+$VerbosePreference = $actionPreferenceFormerVerbose
+$arrModules = @(Get-Module Communary.PASM -ListAvailable)
+$VerbosePreference = $actionPreferenceNewVerbose
+
+if ($arrModules.Count -eq 0) {
+    Write-Error 'This script requires the module "Communary.PASM". On PowerShell version 5.0 and newer, it can be instaled using the command "Install-Module Communary.PASM". Please install it and re-run the script'
+    $boolErrorOccurred = $true
+}
+
 if ($boolErrorOccurred -eq $true) {
     break
 }
@@ -227,10 +236,28 @@ $arrMAMEDATWithCRCInfo = @(Import-Csv -Path $strLocalMAMEDATWithCRCInfoCSV)
 Write-Verbose ('Importing ' + $strLocalDATToCompareToMAMEDisplayName + '...')
 $arrLocalDATToCompareToMAME = @(Import-Csv -Path $strLocalDATToCompareToMAMEIncludingCRC)
 
-Write-Verbose ('Building hashtables of ' + $strMAMEDATDisplayName + ' for rapid lookup...')
+$arrLoadedModules = @(Get-Module Communary.PASM)
+if ($arrLoadedModules.Count -eq 0) {
+    $VerbosePreference = $actionPreferenceFormerVerbose
+    Import-Module Communary.PASM
+    $VerbosePreference = $actionPreferenceNewVerbose
+}
+
+# Build hashtables of MAME DAT for rapid lookup
+$timeDateStartOfProcessing = Get-Date
+$intTotalROMPackages = $arrMAMEDATWithCRCInfo.Count
 $hashtableMAMEROMFileCRCsToROMNames = New-BackwardCompatibleCaseInsensitiveHashtable
 $hashtableMAMEROMNamesToROMFileCount = New-BackwardCompatibleCaseInsensitiveHashtable
-for ($intCounter = 0; $intCounter -lt $arrMAMEDATWithCRCInfo.Count; $intCounter++) {
+for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
+    if ($intCounter -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCounter * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = $intCounter / $intTotalROMPackages * 100
+        Write-Progress -Activity ('Building ' + $strMAMEDATDisplayName + ' hashtables...') -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
+
     $arrMAMEProperties = @(($arrMAMEDATWithCRCInfo[$intCounter]).PSObject.Properties)
     $strMAMEROMName = ($arrMAMEProperties | Where-Object { $_.Name -eq $strMAMEDATROMNameColumnHeader }).Value
     $strMAMEROMFileCRCs = ($arrMAMEProperties | Where-Object { $_.Name -eq $strMAMEDATROMFileCRCsColumnHeader }).Value
@@ -256,9 +283,20 @@ for ($intCounter = 0; $intCounter -lt $arrMAMEDATWithCRCInfo.Count; $intCounter+
     }
 }
 
-Write-Verbose ('Going through ' + $strLocalDATToCompareToMAMEDisplayName + ' and comparing them to ' + $strMAMEDATDisplayName + '...')
+# Compare local DAT to MAME
+$timeDateStartOfProcessing = Get-Date
+$intTotalROMPackages = $arrLocalDATToCompareToMAME.Count
 $arrOutput = @()
-for ($intCounter = 0; $intCounter -lt $arrLocalDATToCompareToMAME.Count; $intCounter++) {
+for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
+    if ($intCounter -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCounter * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = $intCounter / $intTotalROMPackages * 100
+        Write-Progress -Activity ('Comparing ' + $strLocalDATToCompareToMAMEDisplayName + ' to ' + $strMAMEDATDisplayName + '...') -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
+
     $hashtableMatchedROMs = New-BackwardCompatibleCaseInsensitiveHashtable
 
     $arrMachineToCompareToMAMEProperties = @(($arrLocalDATToCompareToMAME[$intCounter]).PSObject.Properties)
@@ -307,15 +345,17 @@ for ($intCounter = 0; $intCounter -lt $arrLocalDATToCompareToMAME.Count; $intCou
             $doublePercentMatchFromPerspectiveOfMAME = 0
         }
         $doubleAveragePercentMatch = ($doublePercentMatchFromPerspectiveOfMachineToCompareToMAME + $doublePercentMatchFromPerspectiveOfMAME) / 2
+        $doubleMatchedROMNamePercentSimilarity = (Get-PasmScore -String1 $strMachineToCompareToMAMEROMName -String2 $strMatchedROMName -CaseSensitive:$false -Algorithm LevenshteinDistance) / 100
 
         $PSObjectRevisedTopMatch = New-Object PSObject
         $PSObjectRevisedTopMatch | Add-Member -MemberType NoteProperty -Name 'MatchedROMName' -Value $strMatchedROMName
         $PSObjectRevisedTopMatch | Add-Member -MemberType NoteProperty -Name 'AvgPercentMatch' -Value $doubleAveragePercentMatch
+        $PSObjectRevisedTopMatch | Add-Member -MemberType NoteProperty -Name 'PercentMatchROMName' -Value $doubleMatchedROMNamePercentSimilarity
         $PSObjectRevisedTopMatch | Add-Member -MemberType NoteProperty -Name 'PercentMatchFromPerspectiveOfMachineToCompareToMAME' -Value $doublePercentMatchFromPerspectiveOfMachineToCompareToMAME
         $PSObjectRevisedTopMatch | Add-Member -MemberType NoteProperty -Name 'PercentMatchFromPerspectiveOfMAME' -Value $doublePercentMatchFromPerspectiveOfMAME
 
         $PSObjectRevisedTopMatch
-    } | Sort-Object -Property 'AvgPercentMatch' -Descending
+    } | Sort-Object -Property @('AvgPercentMatch', 'PercentMatchROMName') -Descending
 
     $PSObjectMatches = New-Object PSObject
     $PSObjectMatches | Add-Member -MemberType NoteProperty -Name $strLocalDATToCompareToMAMEROMNameColumnHeader -Value $strMachineToCompareToMAMEROMName
@@ -347,7 +387,14 @@ for ($intCounter = 0; $intCounter -lt $arrLocalDATToCompareToMAME.Count; $intCou
 }
 
 Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFile)
-$arrOutput | Sort-Object -Property @($strLocalDATToCompareToMAMEROMNameColumnHeader) | Export-Csv -Path $strCSVOutputFile -NoTypeInformation
+$strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
+$strScriptblock = '$_.' + $strColumnName
+$scriptblock = [scriptblock]::Create($strScriptblock)
+$hashtableSortDescendingProperty = New-BackwardCompatibleCaseInsensitiveHashtable
+$hashtableSortDescendingProperty.Add('Expression', $scriptblock)
+$hashtableSortDescendingProperty.Add('Ascending', $false)
+$strAscendingProperty = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
+$arrOutput | Sort-Object -Property @($strAscendingProperty, $hashtableSortDescendingProperty) | Export-Csv -Path $strCSVOutputFile -NoTypeInformation
 
 Write-Verbose "Done!"
 
