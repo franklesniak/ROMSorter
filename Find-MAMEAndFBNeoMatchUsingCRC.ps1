@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoMatchUsingCRC.ps1
 
-$strThisScriptVersionNumber = [version]'2.0.20220103.1'
+$strThisScriptVersionNumber = [version]'2.1.20220103.0'
 
 #region License
 ###############################################################################################
@@ -38,15 +38,21 @@ $strMAMEDATColumnPrefix = $null
 $strMAMEDATROMNameColumnHeader = $null
 $strMAMEDATROMDisplaNameColumnHeader = $null
 $strMAMEDATROMFileCRCsColumnHeader = $null
+$strMAMEDATCSVFilePrefix = $null
 $strLocalDATToCompareToMAMEIncludingCRC = $null
+$strLocalDATToCompareToMAME = $null
+$strLocalDATToCompareToMAMEPrimaryKeyColumnHeader = $null
 $strScriptToGenerateLocalDATToCompareToMAMEIncludingCRC = 'coresponding "Convert-..."'
 $strLocalDATToCompareToMAMEDisplayName = 'this DAT to compare to MAME'
 $strLocalDATToCompareToMAMEColumnPrefix = $null
 $strLocalDATToCompareToMAMEROMNameColumnHeader = $null
 $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader = $null
 $strLocalDATToCompareToMAMEROMFileCRCsColumnHeader = $null
+$strLocalDATToCompareToMAMECSVFilePrefix = $null
 $strROMFileCRCSeparator = '`t'
 $strCSVOutputFileMatchedROMInfo = $null
+$boolAlwaysAppendUnmatchedROMWithLocalDATToCompareToMAMEColumnPrefix = $false
+$strCSVOutputFileRenamedROMDAT = $null
 $actionPreferenceNewVerbose = $VerbosePreference
 $actionPreferenceNewDebug = $DebugPreference
 
@@ -67,10 +73,17 @@ $strMAMEDATColumnPrefix = 'MAME'
 $strMAMEDATROMNameColumnHeader = 'MAME_ROMName'
 $strMAMEDATROMDisplaNameColumnHeader = 'MAME_ROMDisplayName'
 $strMAMEDATROMFileCRCsColumnHeader = 'MAME_ROMFileString'
+$strMAMEDATCSVFilePrefix = 'MAME_DAT'
 
 # This script also requires another CSV including alphabetized CRC information, which will be
 # compared to the MAME DAT. Set the following path to point to the corresponding CSV:
 $strLocalDATToCompareToMAMEIncludingCRC = Join-Path '.' 'FBNeo_Arcade_DAT_ROM_File_CRCs.csv'
+
+# This script requires a DAT converted to CSV, which will be used to perform the "rename"
+# operation that changes ROM names to match MAME
+$strLocalDATToCompareToMAME = Join-Path '.' 'FBNeo_Arcade_DAT.csv'
+
+$strLocalDATToCompareToMAMEPrimaryKeyColumnHeader = 'ROMName'
 
 # If the above CSV is missing, the script will tell the user to go generate it. Adjust the
 # following to match the name of the correct script that the user should be instructed to run:
@@ -83,11 +96,16 @@ $strLocalDATToCompareToMAMEColumnPrefix = 'FBNeo'
 $strLocalDATToCompareToMAMEROMNameColumnHeader = 'FBNeo_ROMName'
 $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader = 'FBNeo_ROMDisplayName'
 $strLocalDATToCompareToMAMEROMFileCRCsColumnHeader = 'FBNeo_ROMFileString'
+$strLocalDATToCompareToMAMECSVFilePrefix = 'FBNeo_Arcade_DAT'
 
 # If the input files use a different separator between ROM file CRC hashes, change this
 $strROMFileCRCSeparator = "`t"
 
-$strCSVOutputFileMatchedROMInfo = Join-Path '.' ($strLocalDATToCompareToMAMEColumnPrefix + 'To' + $strMAMEDATColumnPrefix + 'Mapping.csv')
+$strCSVOutputFileMatchedROMInfo = Join-Path '.' ($strLocalDATToCompareToMAMECSVFilePrefix + '_To_' + $strMAMEDATCSVFilePrefix + '_Mapping.csv')
+
+$boolAlwaysAppendUnmatchedROMWithLocalDATToCompareToMAMEColumnPrefix = $false
+
+$strCSVOutputFileRenamedROMDAT = Join-Path '.' ($strLocalDATToCompareToMAMECSVFilePrefix + '_Renamed_and_CRC-Matched_To_' + $strMAMEDATCSVFilePrefix + '.csv')
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
@@ -217,6 +235,11 @@ if ((Test-Path $strLocalDATToCompareToMAMEIncludingCRC) -ne $true) {
     $boolErrorOccurred = $true
 }
 
+if ((Test-Path $strLocalDATToCompareToMAME) -ne $true) {
+    ('The input file "' + $strLocalDATToCompareToMAME + '" is missing. Please generate it using the ' + $strScriptToGenerateLocalDATToCompareToMAMEIncludingCRC + ' script and then re-run this script')
+    $boolErrorOccurred = $true
+}
+
 $VerbosePreference = $actionPreferenceFormerVerbose
 $arrModules = @(Get-Module Communary.PASM -ListAvailable)
 $VerbosePreference = $actionPreferenceNewVerbose
@@ -234,7 +257,10 @@ Write-Verbose ('Importing ' + $strMAMEDATDisplayName + '...')
 $arrMAMEDATWithCRCInfo = @(Import-Csv -Path $strLocalMAMEDATWithCRCInfoCSV)
 
 Write-Verbose ('Importing ' + $strLocalDATToCompareToMAMEDisplayName + '...')
-$arrLocalDATToCompareToMAME = @(Import-Csv -Path $strLocalDATToCompareToMAMEIncludingCRC)
+$arrLocalDATToCompareToMAMEWithCRCInfo = @(Import-Csv -Path $strLocalDATToCompareToMAMEIncludingCRC)
+
+Write-Verbose ('Importing ' + $strLocalDATToCompareToMAME + '...')
+$arrLocalDATToCompareToMAME = @(Import-Csv -Path $strLocalDATToCompareToMAME)
 
 $arrLoadedModules = @(Get-Module Communary.PASM)
 if ($arrLoadedModules.Count -eq 0) {
@@ -285,7 +311,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
 
 # Compare local DAT to MAME
 $timeDateStartOfProcessing = Get-Date
-$intTotalROMPackages = $arrLocalDATToCompareToMAME.Count
+$intTotalROMPackages = $arrLocalDATToCompareToMAMEWithCRCInfo.Count
 $arrOutput = @()
 for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     if ($intCounter -ge 101) {
@@ -299,7 +325,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
 
     $hashtableMatchedROMs = New-BackwardCompatibleCaseInsensitiveHashtable
 
-    $arrMachineToCompareToMAMEProperties = @(($arrLocalDATToCompareToMAME[$intCounter]).PSObject.Properties)
+    $arrMachineToCompareToMAMEProperties = @(($arrLocalDATToCompareToMAMEWithCRCInfo[$intCounter]).PSObject.Properties)
     $strMachineToCompareToMAMEROMName = ($arrMachineToCompareToMAMEProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
     $strMachineToCompareToMAMEROMDisplayName = ($arrMachineToCompareToMAMEProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader }).Value
     $strMachineToCompareToMAMEROMFileCRCs = ($arrMachineToCompareToMAMEProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMFileCRCsColumnHeader }).Value
@@ -386,7 +412,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     $arrOutput += $PSObjectMatches
 }
 
-Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFileMatchedROMInfo)
+Write-Verbose ('Exporting matching results to CSV: ' + $strCSVOutputFileMatchedROMInfo)
 $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
 $strScriptblock = '$_.' + $strColumnName
 $scriptblock = [scriptblock]::Create($strScriptblock)
@@ -396,6 +422,101 @@ $hashtableSortDescendingProperty.Add('Ascending', $false)
 $strAscendingProperty = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
 $arrSortedOutput = $arrOutput | Sort-Object -Property @($strAscendingProperty, $hashtableSortDescendingProperty, $strLocalDATToCompareToMAMEROMNameColumnHeader)
 $arrSortedOutput | Export-Csv -Path $strCSVOutputFileMatchedROMInfo -NoTypeInformation
+
+$hashtableAllMappings = New-BackwardCompatibleCaseInsensitiveHashtable
+
+$timeDateStartOfProcessing = Get-Date
+$intTotalROMPackages = $arrSortedOutput.Count
+$intCounter = 0
+$arrSortedOutput | ForEach-Object {
+    if ($intCounter -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCounter * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = $intCounter / $intTotalROMPackages * 100
+        Write-Progress -Activity ('Finalizing ' + $strLocalDATToCompareToMAMEDisplayName + ' to ' + $strMAMEDATDisplayName + '...') -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
+
+    $objThisMatchedROM = $_
+    $arrMatchedROMProperties = @($objThisMatchedROM.PSObject.Properties)
+    $strThisLocalDATROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
+    $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
+    $strThisMAMEROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value
+    $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
+    $doubleAveragePercentMatch = [double](($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value)
+    
+    $boolUnmatched = $true
+    if ($doubleAveragePercentMatch -ge 0.5) {
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -eq $true) {
+            # This is normal/expected, so treat as unmatched
+        } else {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $boolUnmatched = $false
+            }
+        }
+    }
+
+    if ($boolUnmatched -eq $true) {
+        # We concluded that this ROM does not match a MAME ROM
+        if ($hashtableMAMEROMNamesToROMFileCount.ContainsKey($strThisLocalDATROMName) -or $boolAlwaysAppendUnmatchedROMWithLocalDATToCompareToMAMEColumnPrefix -eq $true) {
+            # ... but the MAME ROM set already contains a ROM with this name
+            # so, let's append the name of the ROM set in front of it:
+            $strUnmatchedROMName = $strLocalDATToCompareToMAMEColumnPrefix + '_' + $strThisLocalDATROMName
+            if ($hashtableMAMEROMNamesToROMFileCount.ContainsKey($strUnmatchedROMName)) {
+                Write-Warning ('Somehow, ' + $strMAMEDATDisplayName + ' already contains an entry for ' + $strUnmatchedROMName + ', which may cause an incorrect ROM match in a downstream process.')
+            }
+        } else {
+            $strUnmatchedROMName = $strThisLocalDATROMName
+        }
+
+        if ($hashtableAllMappings.ContainsValue($strUnmatchedROMName) -eq $true) {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strUnmatchedROMName + '. So we are dropping an entry, which may cause an incomplete database')
+        } else {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we are dropping an entry, which may cause an incomplete database')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strUnmatchedROMName)
+            }
+        }
+    }
+
+    $intCounter++
+}
+
+$timeDateStartOfProcessing = Get-Date
+$intTotalROMPackages = $arrLocalDATToCompareToMAME.Count
+$intCounter = 0
+Write-Verbose ('Applying ROM renames to ' + $strLocalDATToCompareToMAMEDisplayName + '...')
+$arrRevisedDAT = $arrLocalDATToCompareToMAME | ForEach-Object {
+    if ($intCounter -ge 101) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCounter * $intTotalROMPackages
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = $intCounter / $intTotalROMPackages * 100
+        Write-Progress -Activity ('Applying ROM renames to ' + $strLocalDATToCompareToMAMEDisplayName + '...') -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
+    $objThisMachineToCompareToMAME = $_
+    $arrMachineProperties = @($objThisMachineToCompareToMAME.PSObject.Properties)
+    $strThisLocalDATROMName = ($arrMachineProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
+    if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+        $strNewROMName = $hashtableAllMappings.Item($strThisLocalDATROMName)
+        ($arrMachineProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEPrimaryKeyColumnHeader }).Value = $strNewROMName
+    } else {
+        Write-Warning ('Somehow, our ROM mapping hashtable did not contain a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will not adjust its "ROMName" (primary key) in the revised DAT file. This may result in a naming collision')
+    }
+    $objThisMachineToCompareToMAME
+    $intCounter++
+}
+
+Write-Verbose ('Exporting matching results to CSV: ' + $strCSVOutputFileRenamedROMDAT)
+$arrRevisedDAT | Sort-Object -Property $strLocalDATToCompareToMAMEPrimaryKeyColumnHeader |
+    Export-Csv -Path $strCSVOutputFileRenamedROMDAT -NoTypeInformation
 
 Write-Verbose "Done!"
 
