@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoMatchUsingCRC.ps1
 
-$strThisScriptVersionNumber = [version]'2.0.20220103.0'
+$strThisScriptVersionNumber = [version]'2.0.20220103.1'
 
 #region License
 ###############################################################################################
@@ -46,7 +46,7 @@ $strLocalDATToCompareToMAMEROMNameColumnHeader = $null
 $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader = $null
 $strLocalDATToCompareToMAMEROMFileCRCsColumnHeader = $null
 $strROMFileCRCSeparator = '`t'
-$strCSVOutputFile = $null
+$strCSVOutputFileMatchedROMInfo = $null
 $actionPreferenceNewVerbose = $VerbosePreference
 $actionPreferenceNewDebug = $DebugPreference
 
@@ -87,7 +87,7 @@ $strLocalDATToCompareToMAMEROMFileCRCsColumnHeader = 'FBNeo_ROMFileString'
 # If the input files use a different separator between ROM file CRC hashes, change this
 $strROMFileCRCSeparator = "`t"
 
-$strCSVOutputFile = Join-Path '.' ($strLocalDATToCompareToMAMEColumnPrefix + 'To' + $strMAMEDATColumnPrefix + 'Mapping.csv')
+$strCSVOutputFileMatchedROMInfo = Join-Path '.' ($strLocalDATToCompareToMAMEColumnPrefix + 'To' + $strMAMEDATColumnPrefix + 'Mapping.csv')
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
@@ -386,7 +386,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     $arrOutput += $PSObjectMatches
 }
 
-Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFile)
+Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFileMatchedROMInfo)
 $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
 $strScriptblock = '$_.' + $strColumnName
 $scriptblock = [scriptblock]::Create($strScriptblock)
@@ -394,7 +394,8 @@ $hashtableSortDescendingProperty = New-BackwardCompatibleCaseInsensitiveHashtabl
 $hashtableSortDescendingProperty.Add('Expression', $scriptblock)
 $hashtableSortDescendingProperty.Add('Ascending', $false)
 $strAscendingProperty = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
-$arrOutput | Sort-Object -Property @($strAscendingProperty, $hashtableSortDescendingProperty) | Export-Csv -Path $strCSVOutputFile -NoTypeInformation
+$arrSortedOutput = $arrOutput | Sort-Object -Property @($strAscendingProperty, $hashtableSortDescendingProperty, $strLocalDATToCompareToMAMEROMNameColumnHeader)
+$arrSortedOutput | Export-Csv -Path $strCSVOutputFileMatchedROMInfo -NoTypeInformation
 
 Write-Verbose "Done!"
 
