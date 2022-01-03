@@ -217,15 +217,6 @@ if ((Test-Path $strLocalDATToCompareToMAMEIncludingCRC) -ne $true) {
     $boolErrorOccurred = $true
 }
 
-$VerbosePreference = $actionPreferenceFormerVerbose
-$arrModules = @(Get-Module Communary.PASM -ListAvailable)
-$VerbosePreference = $actionPreferenceNewVerbose
-
-if ($arrModules.Count -eq 0) {
-    Write-Error 'This script requires the module "Communary.PASM". On PowerShell version 5.0 and newer, it can be instaled using the command "Install-Module Communary.PASM". Please install it and re-run the script'
-    $boolErrorOccurred = $true
-}
-
 if ($boolErrorOccurred -eq $true) {
     break
 }
@@ -235,13 +226,6 @@ $arrMAMEDATWithCRCInfo = @(Import-Csv -Path $strLocalMAMEDATWithCRCInfoCSV)
 
 Write-Verbose ('Importing ' + $strLocalDATToCompareToMAMEDisplayName + '...')
 $arrLocalDATToCompareToMAME = @(Import-Csv -Path $strLocalDATToCompareToMAMEIncludingCRC)
-
-$arrLoadedModules = @(Get-Module Communary.PASM)
-if ($arrLoadedModules.Count -eq 0) {
-    $VerbosePreference = $actionPreferenceFormerVerbose
-    Import-Module Communary.PASM
-    $VerbosePreference = $actionPreferenceNewVerbose
-}
 
 Write-Verbose ('Building hashtables of ' + $strMAMEDATDisplayName + ' for rapid lookup...')
 $hashtableMAMEROMFileCRCsToROMNames = New-BackwardCompatibleCaseInsensitiveHashtable
