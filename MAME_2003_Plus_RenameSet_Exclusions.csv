@@ -6,7 +6,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.79.101.0,D,nebulbee,
 0.80.100.0,D,4in1boot,
 0.82.102.0,D,tgmj,
-0.84.106.0,D,column2j
+0.84.106.0,D,column2j,
 0.90.103.0,R,kabukiz,kabukizj
 0.92.100.0,R,astorm,astormj
 0.92.100.0,R,astorm2p,astorm
@@ -79,6 +79,6 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.206.100.0,R,chopper,chopperb
 0.206.100.0,R,choppera,chopper
 0.206.100.0,R,chopperb,choppera
-0.214.100.0,birdtry,birdtrya
+0.214.100.0,R,birdtry,birdtrya
 0.216.100.0,R,eeekk,eeekkp
 0.227.100.0,D,shtngmst,
