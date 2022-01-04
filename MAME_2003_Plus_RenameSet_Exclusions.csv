@@ -39,6 +39,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.119.103.0,R,crkdown,crkdownu
 0.124.102.0,R,cupsoc2,cupsoc
 0.124.104.0,R,1942,1942a
+0.124.104.0,R,1942a,1942b
 0.124.104.0,R,1942b,1942
 0.127.103.0,R,imago,imagoa
 0.129.104.0,R,hvysmsh,hvysmshj
@@ -71,7 +72,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.172.100.0,R,crimfght,crimfghtu
 0.188.100.0,D,kinst14,
 0.196.100.0,R,ataxx,ataxxa
-0.196.100,0,R,ataxxa,ataxx
+0.196.100.0,R,ataxxa,ataxx
 0.206.100.0,R,chopper,chopperb
 0.206.100.0,R,choppera,chopper
 0.206.100.0,R,chopperb,choppera
