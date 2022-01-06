@@ -8,6 +8,8 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.82.102.0,D,tgmj,
 0.84.106.0,D,column2j,
 0.90.103.0,R,kabukiz,kabukizj
+0.91.100.0,R,ga2,ga2u
+0.91.100.0,R,ga2j,ga2
 0.92.100.0,R,astorm,astormj
 0.92.100.0,R,astorm2p,astorm
 0.92.100.0,R,bayrouta,bayroute
@@ -70,6 +72,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.146.101.0,R,bzone2,bzone
 0.146.103.0,R,daioh,daioha
 0.147.100.0,R,f1lap,f1lapj
+0.148.103.0,R,galaga3,galaga3a
 0.149.100.0,R,ambush,ambushh
 0.149.100.0,R,contrajb,contrabj1
 0.150.100.0,R,ddtoda,ddtodar1
