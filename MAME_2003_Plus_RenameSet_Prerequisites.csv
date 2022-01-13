@@ -1,7 +1,6 @@
 Operation,OldROMPackageName,NewROMPackageName
 D,goldnaxb,
 D,stridrja,
-R,1942,1942_MAME2003Plus
 R,bayroute,bayroute_MAME2003Plus
 R,bwing,bwing_MAME2003Plus
 R,cninja,cninja_MAME2003Plus
@@ -14,6 +13,7 @@ R,arkatayt,arktayt2
 R,baraduke,aliensec
 R,chopperb,legofair
 R,slapfigh,slapfighb1
+R,1942,1942w
 R,1942a,1942b
 R,1942b,1942a
 R,agallet,agallett
