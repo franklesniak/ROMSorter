@@ -36,8 +36,6 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.105.101.0,R,fghthist,fghthstu
 0.105.105.0,D,ddp3,
 0.108.104.0,R,arkatayt,arktayt2
-0.111.106.0,R,batwings,bwings
-0.111.106.0,R,bwing,bwingso
 0.116.104.0,R,brapboys,brapboyj
 0.117.101.0,R,battleg,bgaregcn
 0.117.101.0,R,battlega,bgaregga
@@ -92,9 +90,6 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.188.100.0,D,kinst14,
 0.196.100.0,R,ataxx,ataxxa
 0.196.100.0,R,ataxxa,ataxx
-0.206.100.0,R,chopper,chopperb
-0.206.100.0,R,choppera,chopper
-0.206.100.0,R,chopperb,choppera
 0.214.100.0,R,birdtry,birdtrya
 0.216.100.0,R,eeekk,eeekkp
 0.227.100.0,D,shtngmst,
