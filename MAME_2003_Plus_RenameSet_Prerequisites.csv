@@ -2,7 +2,6 @@ Operation,OldROMPackageName,NewROMPackageName
 D,goldnaxb,
 D,stridrja,
 R,bayroute,bayroute_MAME2003Plus
-R,cupsoc,cupsoc_MAME2003Plus
 R,funnymou,funnymou_MAME2003Plus
 R,legofair,legofair_MAME2003Plus
 R,arkatayt,arktayt2
@@ -43,7 +42,7 @@ R,cottona,cottonjad
 R,crimfgt2,crimfghtu
 R,crkdown,crkdownj
 R,crush,crushbl3
-R,cupsoc2,cupsocs2
+R,cupsoc2,cupsoca
 R,cybsled,cybsleda
 R,ddp3blk,ddpdojblkb
 R,ddragon3,ddragon3p
