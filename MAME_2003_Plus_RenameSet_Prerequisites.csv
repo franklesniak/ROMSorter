@@ -2,10 +2,8 @@ Operation,OldROMPackageName,NewROMPackageName
 D,goldnaxb,
 D,stridrja,
 R,bayroute,bayroute_MAME2003Plus
-R,legofair,legofair_MAME2003Plus
 R,arkatayt,arktayt2
 R,baraduke,aliensec
-R,chopperb,legofair
 R,slapfigh,slapfighb1
 R,1942,1942w
 R,1942a,1942b
@@ -30,7 +28,6 @@ R,berlwalt,berlwallt
 R,bzone2,bzonea
 R,centiped,centipdd
 R,centtime,centiped3
-R,choppera,chopperb
 R,circusc2,circusc4
 R,circusc,circusc2
 R,ckong,ckongpt2ss
