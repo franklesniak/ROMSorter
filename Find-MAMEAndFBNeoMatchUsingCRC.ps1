@@ -1,10 +1,10 @@
 # Find-MAMEAndFBNeoMatchUsingCRC.ps1
 
-$strThisScriptVersionNumber = [version]'2.1.20220103.0'
+$strThisScriptVersionNumber = [version]'2.2.202201015.0'
 
 #region License
 ###############################################################################################
-# Copyright 2021 Frank Lesniak
+# Copyright 2022 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -353,7 +353,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     }
 
     $arrTopMatches = @($hashtableMatchedROMs.GetEnumerator() | Sort-Object -Property 'Value' -Descending |
-            Select-Object -First 5)
+            Select-Object -First 12)
 
     $arrRevisedTopMatches = $arrTopMatches | ForEach-Object {
         $strMatchedROMName = $_.Key
@@ -387,7 +387,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     $PSObjectMatches | Add-Member -MemberType NoteProperty -Name $strLocalDATToCompareToMAMEROMNameColumnHeader -Value $strMachineToCompareToMAMEROMName
     $PSObjectMatches | Add-Member -MemberType NoteProperty -Name $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader -Value $strMachineToCompareToMAMEROMDisplayName
 
-    for ($intInnerCounter = 0; $intInnerCounter -lt 5; $intInnerCounter++) {
+    for ($intInnerCounter = 0; $intInnerCounter -lt 12; $intInnerCounter++) {
         if ($intInnerCounter -lt $arrRevisedTopMatches.Count) {
             $strThisMatchedROMName = ($arrRevisedTopMatches[$intInnerCounter]).MatchedROMName
             $strAveragePercentMatch = [string](($arrRevisedTopMatches[$intInnerCounter]).AvgPercentMatch)
