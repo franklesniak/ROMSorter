@@ -353,7 +353,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     }
 
     $arrTopMatches = @($hashtableMatchedROMs.GetEnumerator() | Sort-Object -Property 'Value' -Descending |
-            Select-Object -First 12)
+            Select-Object -First 25)
 
     $arrRevisedTopMatches = $arrTopMatches | ForEach-Object {
         $strMatchedROMName = $_.Key
@@ -387,7 +387,7 @@ for ($intCounter = 0; $intCounter -lt $intTotalROMPackages; $intCounter++) {
     $PSObjectMatches | Add-Member -MemberType NoteProperty -Name $strLocalDATToCompareToMAMEROMNameColumnHeader -Value $strMachineToCompareToMAMEROMName
     $PSObjectMatches | Add-Member -MemberType NoteProperty -Name $strLocalDATToCompareToMAMEROMDisplaNameColumnHeader -Value $strMachineToCompareToMAMEROMDisplayName
 
-    for ($intInnerCounter = 0; $intInnerCounter -lt 12; $intInnerCounter++) {
+    for ($intInnerCounter = 0; $intInnerCounter -lt 25; $intInnerCounter++) {
         if ($intInnerCounter -lt $arrRevisedTopMatches.Count) {
             $strThisMatchedROMName = ($arrRevisedTopMatches[$intInnerCounter]).MatchedROMName
             $strAveragePercentMatch = [string](($arrRevisedTopMatches[$intInnerCounter]).AvgPercentMatch)
