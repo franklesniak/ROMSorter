@@ -8,6 +8,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.81.104.0,R,kinst,kinst14
 0.82.102.0,D,tgmj,
 0.84.106.0,D,column2j,
+0.87.102.0,R,titlef,titlefu
 0.90.103.0,R,kabukiz,kabukizj
 0.91.100.0,R,ga2,ga2u
 0.91.100.0,R,ga2j,ga2
@@ -41,6 +42,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.117.101.0,R,battleg,bgaregcn
 0.117.101.0,R,battlega,bgaregga
 0.119.103.0,R,crkdown,crkdownu
+0.124.100.0,R,tdragon,tdragon1
 0.124.102.0,R,cupsoc2,cupsoc
 0.124.104.0,R,1942,1942a
 0.124.104.0,R,1942a,1942b
@@ -91,6 +93,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.188.100.0,D,kinst14,
 0.196.100.0,R,ataxx,ataxxa
 0.196.100.0,R,ataxxa,ataxx
+0.198.100.0,R,strider2,strider2u
 0.214.100.0,R,birdtry,birdtrya
 0.216.100.0,R,eeekk,eeekkp
 0.227.100.0,D,shtngmst,
