@@ -1,7 +1,6 @@
 Operation,OldROMPackageName,NewROMPackageName
 D,goldnaxb,
 D,stridrja,
-R,bayroute,bayroute_MAME2003Plus
 R,arkatayt,arktayt2
 R,baraduke,aliensec
 R,slapfigh,slapfighb1
@@ -10,7 +9,6 @@ R,ambusht,ambushv
 R,arlingtn,arlingtna
 R,armwar,armwarr1
 R,baraduka,baraduke
-R,bayrouta,bayroute1
 R,berlwalt,berlwallt
 R,bzone2,bzonea
 R,centiped,centipdd
