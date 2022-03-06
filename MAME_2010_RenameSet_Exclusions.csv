@@ -1,4 +1,5 @@
 MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
+0.139.102.0,R,gangwarsb,gangwars
 0.141.101.0,R,batsugun,batsuguna
 0.141.101.0,R,stcc,stcca
 0.142.100.0,R,batman,batmantv
@@ -6,6 +7,7 @@ MAMEVersionPowerShellFriendly,Operation,OldROMPackageName,NewROMPackageName
 0.142.100.0,R,horizon,horizdd
 0.143.107.0,D,demonwld4,
 0.144.101.0,R,dolphin,dolphunk
+0.148.103.0,R,gaplus,galaga3
 0.179.100.0,R,demonwld1,demonwld2
 0.179.100.0,R,demonwld2,demonwld3
 0.179.100.0,R,demonwld3,demonwld4
