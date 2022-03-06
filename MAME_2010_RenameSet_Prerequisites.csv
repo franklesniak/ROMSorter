@@ -1,4 +1,5 @@
 Operation,OldROMPackageName,NewROMPackageName
+D,demonwld4,
 D,kinst2k4,
 D,raiden2c,
 D,smgpu1,
@@ -10,4 +11,7 @@ R,batsuguna,batsugun
 R,daioh,daioha
 R,ddp2,ddp2100
 R,ddp2a,ddp2
+R,demonwld1,demonwld2
+R,demonwld2,demonwld3
+R,demonwld3,demonwld4
 R,smgpu3,smgpu1
