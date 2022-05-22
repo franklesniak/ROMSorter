@@ -1,6 +1,6 @@
-# Convert-FBNeoCSVToRenamedROMPackagesMatchingCurrentMAME.ps1
+# Find-MAMEAndFBNeoArcadeMatchUsingStringMatch.ps1
 
-$strThisScriptVersionNumber = [version]'1.0.20220522.0'
+$strThisScriptVersionNumber = [version]'0.1.20220522.0'
 
 #region License
 #######################################################################################

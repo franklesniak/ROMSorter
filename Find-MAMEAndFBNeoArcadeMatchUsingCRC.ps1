@@ -1,4 +1,4 @@
-# Find-MAMEAndFBNeoMatchUsingCRC.ps1
+# Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1
 
 $strThisScriptVersionNumber = [version]'2.2.202201015.0'
 
