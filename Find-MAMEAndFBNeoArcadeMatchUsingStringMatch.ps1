@@ -105,18 +105,25 @@ $arrMAMEROMPackageMetadata | ForEach-Object {
 
 $intTotalToProcess = ($arrFBNeoROMPackageMetadata.Count) * ($arrMAMEROMPackageMetadata.Count)
 $intCurrentItem = 0
-$refIntCurrentItem = [ref]$intCurrentItem
 $timeDateStartOfProcessing = Get-Date
 
 $arrFBNeoROMPackageMetadata | ForEach-Object {
     $strFBNeoROMName = $_.FBNeo_ROMName
     $strFBNeoROMDisplayName = $_.FBNeo_ROMDisplayName
 
-    $job = $arrMAMEROMPackageMetadata | ForEach-Object -AsJob -ThrottleLimit 16 -Parallel {
+    $arrMatches = $arrMAMEROMPackageMetadata | ForEach-Object {
+        if ($intCurrentItem -ge 100) {
+            $timeDateCurrent = Get-Date
+            $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+            $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCurrentItem * $intTotalToProcess
+            $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+            $doublePercentComplete = $intCurrentItem / $intTotalToProcess * 100
+            Write-Progress -Activity 'Comparing FBNeo ROMs to MAME ROMs' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+        }
         $strMAMEROMName = $_.MAME_ROMName
         $strMAMEROMDisplayName = $_.MAME_ROMDisplayName
-        $dblJaccardIndexROMName = Get-JaccardIndex -a $using:strFBNeoROMName -b $strMAMEROMName -CaseSensitive:$false
-        $dblJaccardIndexDisplayName = Get-JaccardIndex -a $using:strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
+        $dblJaccardIndexROMName = Get-JaccardIndex -a $strFBNeoROMName -b $strMAMEROMName -CaseSensitive:$false
+        $dblJaccardIndexDisplayName = Get-JaccardIndex -a $strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
         $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexDisplayName) / 2
 
         $PSObjectMatchToMAME = New-Object PSObject
@@ -127,7 +134,7 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $strFBNeoROMDisplayName
 
         # Stash this match info on the corresponding MAME hashtable:
-        (($using:hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME)
+        (($hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME)
 
         $PSObjectMatchToFBNeo = New-Object PSObject
         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
@@ -136,69 +143,15 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMDisplayName' -Value $dblJaccardIndexDisplayName
         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value $strMAMEROMDisplayName
 
-        $null = [Threading.Interlocked]::Increment($using:refIntCurrentItem)
+        $intCurrentItem++
 
         return $PSObjectMatchToFBNeo
-    }
-
-    #While $job is running, update progress bar
-    while ($job.State -eq 'Running') {
-        if ($intCurrentItem -ge 100) {
-            $timeDateCurrent = Get-Date
-            $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
-            $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCurrentItem * $intTotalToProcess
-            $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
-            $doublePercentComplete = $intCurrentItem / $intTotalToProcess * 100
-            Write-Progress -Activity 'Comparing FBNeo ROMs to MAME ROMs' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
-        }
-        Start-Sleep -Milliseconds 500
-    }
-
-    $arrMatches = Receive-Job $job |
-        Sort-Object -Property 'AverageScore' -Descending |
-        Select-Object -First 20
+    } | Sort-Object -Property 'AverageScore' -Descending | Select-Object -First 20
 
     $hashtableFBNeoROMNameToMatches.Add($strFBNeoROMName, $arrMatches)
 }
 
-#     $arrMatches = $arrMAMEROMPackageMetadata | ForEach-Object -ThrottleLimit 5 -Parallel {
-#         if ($using:intCurrentItem -ge 100) {
-#             $timeDateCurrent = Get-Date
-#             $timeSpanElapsed = $timeDateCurrent - $using:timeDateStartOfProcessing
-#             $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $using:intCurrentItem * $intTotalToProcess
-#             $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
-#             $doublePercentComplete = $using:intCurrentItem / $using:intTotalToProcess * 100
-#             Write-Progress -Activity 'Comparing FBNeo ROMs to MAME ROMs' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
-#         }
-#         $strMAMEROMName = $_.MAME_ROMName
-#         $strMAMEROMDisplayName = $_.MAME_ROMDisplayName
-#         $dblJaccardIndexROMName = Get-JaccardIndex -a $using:strFBNeoROMName -b $strMAMEROMName -CaseSensitive:$false
-#         $dblJaccardIndexDisplayName = Get-JaccardIndex -a $using:strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
-#         $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexDisplayName) / 2
-
-#         $PSObjectMatchToMAME = New-Object PSObject
-#         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
-#         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMName' -Value $dblJaccardIndexROMName
-#         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strFBNeoROMName
-#         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMDisplayName' -Value $dblJaccardIndexDisplayName
-#         $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $strFBNeoROMDisplayName
-
-#         # Stash this match info on the corresponding MAME hashtable:
-#         (($using:hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME)
-
-#         $PSObjectMatchToFBNeo = New-Object PSObject
-#         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
-#         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMName' -Value $dblJaccardIndexROMName
-#         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strMAMEROMName
-#         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMDisplayName' -Value $dblJaccardIndexDisplayName
-#         $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value $strMAMEROMDisplayName
-
-#         $null = [Threading.Interlocked]::Increment($using:refIntCurrentItem)
-
-#         return $PSObjectMatchToFBNeo
-#     } | Sort-Object -Property 'AverageScore' -Descending | Select-Object -First 20
-#     $hashtableFBNeoROMNameToMatches.Add($strFBNeoROMName, $arrMatches)
-# }
+# TODO: Finish this script
 
 $VerbosePreference = $actionPreferenceFormerVerbose
 $DebugPreference = $actionPreferenceFormerDebug
