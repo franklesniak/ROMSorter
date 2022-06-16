@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoArcadeMatchUsingStringMatch.ps1
 
-$strThisScriptVersionNumber = [version]'0.1.20220522.0'
+$strThisScriptVersionNumber = [version]'0.2.20220616.0'
 
 #region License
 #######################################################################################
