@@ -94,7 +94,11 @@ $arrMAMEROMPackageMetadata | ForEach-Object {
 
 #region Initialize hashtables for holding matches
 Write-Verbose 'Initializing data structures for holding string-matching metadata...'
-$hashtableFBNeoROMNameToMatches = @{}
+$hashtableFBNeoROMNameToAllMatches = @{}
+$arrFBNeoROMPackageMetadata | ForEach-Object {
+    $arrayListMAMEMatches = New-Object -TypeName 'System.Collections.ArrayList'
+    $hashtableFBNeoROMNameToAllMatches.Add($_.FBNeo_ROMName, $arrayListMAMEMatches)
+}
 
 $hashtableMAMEROMNameToAllMatches = @{}
 $arrMAMEROMPackageMetadata | ForEach-Object {
@@ -111,8 +115,8 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
     $strFBNeoROMName = $_.FBNeo_ROMName
     $strFBNeoROMDisplayName = $_.FBNeo_ROMDisplayName
 
-    $arrMatches = $arrMAMEROMPackageMetadata | ForEach-Object {
-        if ($intCurrentItem -ge 100) {
+    $arrMAMEROMPackageMetadata | ForEach-Object {
+        if ($intCurrentItem -ge 1000) {
             $timeDateCurrent = Get-Date
             $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
             $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCurrentItem * $intTotalToProcess
@@ -126,29 +130,30 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
         $dblJaccardIndexDisplayName = Get-JaccardIndex -a $strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
         $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexDisplayName) / 2
 
-        $PSObjectMatchToMAME = New-Object PSObject
-        $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
-        $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMName' -Value $dblJaccardIndexROMName
-        $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strFBNeoROMName
-        $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMDisplayName' -Value $dblJaccardIndexDisplayName
-        $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $strFBNeoROMDisplayName
+        if ($dblAvgScore -gt 0.5) {
+            $PSObjectMatchToMAME = New-Object PSObject
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMName' -Value $dblJaccardIndexROMName
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strFBNeoROMName
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMDisplayName' -Value $dblJaccardIndexDisplayName
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $strFBNeoROMDisplayName
 
-        # Stash this match info on the corresponding MAME hashtable:
-        (($hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME)
+            # Stash this match info on the corresponding MAME hashtable:
+            (($hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME) | Out-Null
 
-        $PSObjectMatchToFBNeo = New-Object PSObject
-        $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
-        $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMName' -Value $dblJaccardIndexROMName
-        $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strMAMEROMName
-        $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMDisplayName' -Value $dblJaccardIndexDisplayName
-        $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value $strMAMEROMDisplayName
+            $PSObjectMatchToFBNeo = New-Object PSObject
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMName' -Value $dblJaccardIndexROMName
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strMAMEROMName
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMDisplayName' -Value $dblJaccardIndexDisplayName
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value $strMAMEROMDisplayName
+
+            # Stash this match info on the corresponding FBNeo hashtable:
+            (($hashtableFBNeoROMNameToAllMatches).Item($strFBNeoROMName)).Add($PSObjectMatchToFBNeo) | Out-Null
+        }
 
         $intCurrentItem++
-
-        return $PSObjectMatchToFBNeo
-    } | Sort-Object -Property 'AverageScore' -Descending | Select-Object -First 20
-
-    $hashtableFBNeoROMNameToMatches.Add($strFBNeoROMName, $arrMatches)
+    } # | Sort-Object -Property 'AverageScore' -Descending | Select-Object -First 20
 }
 
 # TODO: Finish this script
