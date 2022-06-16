@@ -98,8 +98,8 @@ $hashtableFBNeoROMNameToMatches = @{}
 
 $hashtableMAMEROMNameToAllMatches = @{}
 $arrMAMEROMPackageMetadata | ForEach-Object {
-    $arrayList = New-Object -TypeName 'System.Collections.ArrayList'
-    $hashtableMAMEROMNameToAllMatches.Add($_.MAME_ROMName, $arrayList)
+    $arrayListFBNeoMatches = New-Object -TypeName 'System.Collections.ArrayList'
+    $hashtableMAMEROMNameToAllMatches.Add($_.MAME_ROMName, $arrayListFBNeoMatches)
 }
 #endregion Initialize hashtables for holding matches
 
