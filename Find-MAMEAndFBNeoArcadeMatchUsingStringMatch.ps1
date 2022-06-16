@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoArcadeMatchUsingStringMatch.ps1
 
-$strThisScriptVersionNumber = [version]'0.2.20220616.0'
+$strThisScriptVersionNumber = [version]'0.3.20220616.0'
 
 #region License
 #######################################################################################
@@ -94,8 +94,8 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
     $strLowercaseROMDisplayName = ($_.FBNeo_ROMDisplayName).ToLower()
     $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
     $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
-    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMName -as 'System.Char[]')
-    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMDisplayName -as 'System.Char[]')
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, ($arrCharLowercaseROMName -as 'System.Char[]'))
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, ($arrCharLowercaseROMDisplayName -as 'System.Char[]'))
     $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
     $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
     $hashtableFBNeoROMNameToROMInfo.Add($_.FBNeo_ROMName, $_)
@@ -112,8 +112,8 @@ $arrMAMEROMPackageMetadata | ForEach-Object {
     $strLowercaseROMDisplayName = ($_.MAME_ROMDisplayName).ToLower()
     $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
     $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
-    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMName -as 'System.Char[]')
-    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMDisplayName -as 'System.Char[]')
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, ($arrCharLowercaseROMName -as 'System.Char[]'))
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, ($arrCharLowercaseROMDisplayName -as 'System.Char[]'))
     $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
     $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
     $hashtableMAMEROMNameToROMInfo.Add($_.MAME_ROMName, $_)
@@ -139,14 +139,11 @@ $intTotalToProcess = ($arrFBNeoROMPackageMetadata.Count) * ($arrMAMEROMPackageMe
 $intCurrentItem = 0
 $timeDateStartOfProcessing = Get-Date
 
-$arrFBNeoROMPackageMetadata | Select-Object -First 100 | ForEach-Object {
+$arrFBNeoROMPackageMetadata | ForEach-Object {
     $refStrFBNeoROMName = [ref]($_.FBNeo_ROMName)
     $refStrFBNeoROMDisplayName = [ref]($_.FBNeo_ROMDisplayName)
     $refHashsetFBNeoLowercaseROMName = [ref]($_.FBNeo_ROMName_Lowercase_Hashset)
     $refHashsetFBNeoLowercaseROMDisplayName = [ref]($_.FBNeo_ROMDisplayName_Lowercase_Hashset)
-
-    $strFBNeoROMName = $_.FBNeo_ROMName # TODO: Delete
-    $strFBNeoROMDisplayName = $_.FBNeo_ROMDisplayName # TODO: Delete
 
     $arrMAMEROMPackageMetadata | ForEach-Object {
         if ($intCurrentItem -ge 1000) {
@@ -163,12 +160,19 @@ $arrFBNeoROMPackageMetadata | Select-Object -First 100 | ForEach-Object {
         $refHashsetMAMELowercaseROMName = [ref]($_.MAME_ROMName_Lowercase_Hashset)
         $refHashsetMAMELowercaseROMDisplayName = [ref]($_.MAME_ROMDisplayName_Lowercase_Hashset)
 
-        $strMAMEROMName = $_.MAME_ROMName # TODO: Delete
-        $strMAMEROMDisplayName = $_.MAME_ROMDisplayName # TODO: Delete
+        $hashsetWorkingROMNameIntersection = New-Object System.Collections.Generic.HashSet[System.Char] ($refHashsetMAMELowercaseROMName.Value)
+        $hashsetWorkingROMDisplayNameIntersection = New-Object System.Collections.Generic.HashSet[System.Char] ($refHashsetMAMELowercaseROMDisplayName.Value)
+        $hashsetWorkingROMNameUnion = New-Object System.Collections.Generic.HashSet[System.Char] ($refHashsetMAMELowercaseROMName.Value)
+        $hashsetWorkingROMDisplayNameUnion = New-Object System.Collections.Generic.HashSet[System.Char] ($refHashsetMAMELowercaseROMDisplayName.Value)
 
-        $dblJaccardIndexROMName = Get-JaccardIndex -a $strFBNeoROMName -b $strMAMEROMName -CaseSensitive:$false
-        $dblJaccardIndexDisplayName = Get-JaccardIndex -a $strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
-        $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexDisplayName) / 2
+        $hashsetWorkingROMNameIntersection.IntersectWith($refHashsetFBNeoLowercaseROMName.Value)
+        $hashsetWorkingROMDisplayNameIntersection.IntersectWith($refHashsetFBNeoLowercaseROMDisplayName.Value)
+        $hashsetWorkingROMNameUnion.UnionWith($refHashsetFBNeoLowercaseROMName.Value)
+        $hashsetWorkingROMDisplayNameUnion.UnionWith($refHashsetFBNeoLowercaseROMDisplayName.Value)
+
+        $dblJaccardIndexROMName = (($hashsetWorkingROMNameIntersection.Count) / ($hashsetWorkingROMNameUnion.Count))
+        $dblJaccardIndexROMDisplayName = (($hashsetWorkingROMDisplayNameIntersection.Count) / ($hashsetWorkingROMDisplayNameUnion.Count))
+        $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexROMDisplayName) / 2
 
         if ($dblAvgScore -gt 0.5) {
             $PSObjectMatchToMAME = New-Object PSObject
