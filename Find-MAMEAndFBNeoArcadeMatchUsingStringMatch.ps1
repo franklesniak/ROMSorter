@@ -80,17 +80,45 @@ if ($boolErrorOccurred -eq $true) {
 
 Write-Verbose "Loading FBNeo Arcade ROM set's ROM package metadata..."
 $arrFBNeoROMPackageMetadata = Import-Csv $strPathToFBNeoROMPackageMetadataCSV
-$hashtableFBNeoROMNameToROMInfo = @{}
-$arrFBNeoROMPackageMetadata | ForEach-Object {
-    $hashtableFBNeoROMNameToROMInfo.Add($_.FBNeo_ROMName, $_)
-}
 
 Write-Verbose "Loading MAME ROM set's ROM package metadata..."
 $arrMAMEROMPackageMetadata = Import-Csv $strPathToMAMEROMPackageMetadataCSV
+
+#region Perform preprocessing on FBNeo ROM package metadata
+# This speeds up processing later by eliminating the need to convert to a lowercase
+# character array over and over...
+Write-Verbose 'Performing pre-processing on FBNeo ROM package metadata...'
+$hashtableFBNeoROMNameToROMInfo = @{}
+$arrFBNeoROMPackageMetadata | ForEach-Object {
+    $strLowercaseROMName = ($_.FBNeo_ROMName).ToLower()
+    $strLowercaseROMDisplayName = ($_.FBNeo_ROMDisplayName).ToLower()
+    $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
+    $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMName
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMDisplayName
+    $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
+    $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
+    $hashtableFBNeoROMNameToROMInfo.Add($_.FBNeo_ROMName, $_)
+}
+#endregionPerform preprocessing on FBNeo ROM package metadata
+
+#region Perform preprocessing on MAME ROM package metadata
+# This speeds up processing later by eliminating the need to convert to a lowercase
+# character array over and over...
+Write-Verbose 'Performing pre-processing on MAME ROM package metadata...'
 $hashtableMAMEROMNameToROMInfo = @{}
 $arrMAMEROMPackageMetadata | ForEach-Object {
+    $strLowercaseROMName = ($_.MAME_ROMName).ToLower()
+    $strLowercaseROMDisplayName = ($_.MAME_ROMDisplayName).ToLower()
+    $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
+    $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMName
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMDisplayName
+    $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
+    $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
     $hashtableMAMEROMNameToROMInfo.Add($_.MAME_ROMName, $_)
 }
+#endregion Perform preprocessing on MAME ROM package metadata
 
 #region Initialize hashtables for holding matches
 Write-Verbose 'Initializing data structures for holding string-matching metadata...'
@@ -112,8 +140,13 @@ $intCurrentItem = 0
 $timeDateStartOfProcessing = Get-Date
 
 $arrFBNeoROMPackageMetadata | ForEach-Object {
-    $strFBNeoROMName = $_.FBNeo_ROMName
-    $strFBNeoROMDisplayName = $_.FBNeo_ROMDisplayName
+    $refStrFBNeoROMName = [ref]($_.FBNeo_ROMName)
+    $refStrFBNeoROMDisplayName = [ref]($_.FBNeo_ROMDisplayName)
+    $refHashsetFBNeoLowercaseROMName = [ref]($_.FBNeo_ROMName_Lowercase_Hashset)
+    $refHashsetFBNeoLowercaseROMDisplayName = [ref]($_.FBNeo_ROMDisplayName_Lowercase_Hashset)
+
+    $strFBNeoROMName = $_.FBNeo_ROMName # TODO: Delete
+    $strFBNeoROMDisplayName = $_.FBNeo_ROMDisplayName # TODO: Delete
 
     $arrMAMEROMPackageMetadata | ForEach-Object {
         if ($intCurrentItem -ge 1000) {
@@ -124,8 +157,15 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
             $doublePercentComplete = $intCurrentItem / $intTotalToProcess * 100
             Write-Progress -Activity 'Comparing FBNeo ROMs to MAME ROMs' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
         }
-        $strMAMEROMName = $_.MAME_ROMName
-        $strMAMEROMDisplayName = $_.MAME_ROMDisplayName
+
+        $refStrMAMEROMName = [ref]($_.MAME_ROMName)
+        $refStrMAMEROMDisplayName = [ref]($_.MAME_ROMDisplayName)
+        $refHashsetMAMELowercaseROMName = [ref]($_.MAME_ROMName_Lowercase_Hashset)
+        $refHashsetMAMELowercaseROMDisplayName = [ref]($_.MAME_ROMDisplayName_Lowercase_Hashset)
+
+        $strMAMEROMName = $_.MAME_ROMName # TODO: Delete
+        $strMAMEROMDisplayName = $_.MAME_ROMDisplayName # TODO: Delete
+
         $dblJaccardIndexROMName = Get-JaccardIndex -a $strFBNeoROMName -b $strMAMEROMName -CaseSensitive:$false
         $dblJaccardIndexDisplayName = Get-JaccardIndex -a $strFBNeoROMDisplayName -b $strMAMEROMDisplayName -CaseSensitive:$false
         $dblAvgScore = ($dblJaccardIndexROMName + $dblJaccardIndexDisplayName) / 2
@@ -134,22 +174,22 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
             $PSObjectMatchToMAME = New-Object PSObject
             $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
             $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMName' -Value $dblJaccardIndexROMName
-            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strFBNeoROMName
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value ($refStrFBNeoROMName.Value)
             $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToFBNeoROMDisplayName' -Value $dblJaccardIndexDisplayName
-            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value $strFBNeoROMDisplayName
+            $PSObjectMatchToMAME | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName' -Value ($refStrFBNeoROMDisplayName.Value)
 
             # Stash this match info on the corresponding MAME hashtable:
-            (($hashtableMAMEROMNameToAllMatches).Item($strMAMEROMName)).Add($PSObjectMatchToMAME) | Out-Null
+            (($hashtableMAMEROMNameToAllMatches).Item($refStrMAMEROMName.Value)).Add($PSObjectMatchToMAME) | Out-Null
 
             $PSObjectMatchToFBNeo = New-Object PSObject
             $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'AverageScore' -Value $dblAvgScore
             $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMName' -Value $dblJaccardIndexROMName
-            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strMAMEROMName
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value ($refStrMAMEROMName.Value)
             $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'JaccardIndexToMAMEROMDisplayName' -Value $dblJaccardIndexDisplayName
-            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value $strMAMEROMDisplayName
+            $PSObjectMatchToFBNeo | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName' -Value ($refStrMAMEROMDisplayName.Value)
 
             # Stash this match info on the corresponding FBNeo hashtable:
-            (($hashtableFBNeoROMNameToAllMatches).Item($strFBNeoROMName)).Add($PSObjectMatchToFBNeo) | Out-Null
+            (($hashtableFBNeoROMNameToAllMatches).Item($refStrFBNeoROMName.Value)).Add($PSObjectMatchToFBNeo) | Out-Null
         }
 
         $intCurrentItem++
