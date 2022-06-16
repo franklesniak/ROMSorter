@@ -94,8 +94,8 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
     $strLowercaseROMDisplayName = ($_.FBNeo_ROMDisplayName).ToLower()
     $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
     $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
-    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMName
-    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMDisplayName
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMName -as 'System.Char[]')
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMDisplayName -as 'System.Char[]')
     $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
     $_ | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
     $hashtableFBNeoROMNameToROMInfo.Add($_.FBNeo_ROMName, $_)
@@ -112,8 +112,8 @@ $arrMAMEROMPackageMetadata | ForEach-Object {
     $strLowercaseROMDisplayName = ($_.MAME_ROMDisplayName).ToLower()
     $arrCharLowercaseROMName = @($strLowercaseROMName.ToCharArray())
     $arrCharLowercaseROMDisplayName = @($strLowercaseROMDisplayName.ToCharArray())
-    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMName
-    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] $arrCharLowercaseROMDisplayName
+    $hashsetLowercaseROMName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMName -as 'System.Char[]')
+    $hashsetLowercaseROMDisplayName = New-Object System.Collections.Generic.HashSet[System.Char] (, $arrCharLowercaseROMDisplayName -as 'System.Char[]')
     $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName_Lowercase_Hashset' -Value $hashsetLowercaseROMName
     $_ | Add-Member -MemberType NoteProperty -Name 'MAME_ROMDisplayName_Lowercase_Hashset' -Value $hashsetLowercaseROMDisplayName
     $hashtableMAMEROMNameToROMInfo.Add($_.MAME_ROMName, $_)
@@ -139,7 +139,7 @@ $intTotalToProcess = ($arrFBNeoROMPackageMetadata.Count) * ($arrMAMEROMPackageMe
 $intCurrentItem = 0
 $timeDateStartOfProcessing = Get-Date
 
-$arrFBNeoROMPackageMetadata | ForEach-Object {
+$arrFBNeoROMPackageMetadata | Select-Object -First 100 | ForEach-Object {
     $refStrFBNeoROMName = [ref]($_.FBNeo_ROMName)
     $refStrFBNeoROMDisplayName = [ref]($_.FBNeo_ROMDisplayName)
     $refHashsetFBNeoLowercaseROMName = [ref]($_.FBNeo_ROMName_Lowercase_Hashset)
