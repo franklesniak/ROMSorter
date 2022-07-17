@@ -200,7 +200,80 @@ $arrFBNeoROMPackageMetadata | ForEach-Object {
     } # | Sort-Object -Property 'AverageScore' -Descending | Select-Object -First 20
 }
 
-# TODO: Finish this script
+$arrayListFBNeoToMAMEExactMatches = New-Object -TypeName 'System.Collections.ArrayList'
+$arrayListFBNeoToMAMEMatchesWithDifferentROMNames = New-Object -TypeName 'System.Collections.ArrayList'
+$arrayListUnmatchedFBNeoROMs = New-Object -TypeName 'System.Collections.ArrayList'
+
+$intTotalToProcess = @($hashtableFBNeoROMNameToAllMatches.Keys).Count
+$intCurrentItem = 0
+$timeDateStartOfProcessing = Get-Date
+
+$hashtableFBNeoROMNameToAllMatches.Keys | Sort-Object | ForEach-Object {
+    if (($intCurrentItem / $intTotalToProcess) -ge 0.02) {
+        $timeDateCurrent = Get-Date
+        $timeSpanElapsed = $timeDateCurrent - $timeDateStartOfProcessing
+        $doubleTotalProcessingTimeInSeconds = $timeSpanElapsed.TotalSeconds / $intCurrentItem * $intTotalToProcess
+        $doubleRemainingProcessingTimeInSeconds = $doubleTotalProcessingTimeInSeconds - $timeSpanElapsed.TotalSeconds
+        $doublePercentComplete = $intCurrentItem / $intTotalToProcess * 100
+        Write-Progress -Activity 'Confirming FBNeo to MAME Matches' -PercentComplete $doublePercentComplete -SecondsRemaining $doubleRemainingProcessingTimeInSeconds
+    }
+
+    $strFBNeoROMName = $_
+    $arrThisFBNeoROMMAMEMatches = @($hashtableFBNeoROMNameToAllMatches.Item($strFBNeoROMName) | Sort-Object -Property 'AverageScore' -Descending)
+    if ($arrThisFBNeoROMMAMEMatches.Count -ge 1) {
+        $strBestMatchingMAMEROMName = ($arrThisFBNeoROMMAMEMatches[0]).MAME_ROMName
+        $arrThisFBNeoROMsBestMAMEMatchMatches = @($hashtableMAMEROMNameToAllMatches.Item($strBestMatchingMAMEROMName) | Sort-Object -Property 'AverageScore' -Descending)
+        if ($arrThisFBNeoROMsBestMAMEMatchMatches.Count -ge 1) {
+            $strBestMatchingMAMEROMsBestMatchingFBNeoROMName = ($arrThisFBNeoROMsBestMAMEMatchMatches[0]).FBNeo_ROMName
+            if ($strFBNeoROMName -eq $strBestMatchingMAMEROMName -and $strBestMatchingMAMEROMName -eq $strBestMatchingMAMEROMsBestMatchingFBNeoROMName) {
+                # FBNeo-ROMName ---matched---> Same MAME_ROMName ---matched--->
+                # FBNeo-ROMName
+                $arrayListFBNeoToMAMEExactMatches.Add($strFBNeoROMName) | Out-Null
+            } elseif ($strFBNeoROMName -eq $strBestMatchingMAMEROMsBestMatchingFBNeoROMName) {
+                # FBNeo-ROMName ---matched---> Different MAME_ROMName ---matched--->
+                # FBNeo-ROMName
+                $PSObjectMatchedWithDifferentROMNames = New-Object PSObject
+                $PSObjectMatchedWithDifferentROMNames | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strFBNeoROMName
+                $PSObjectMatchedWithDifferentROMNames | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strBestMatchingMAMEROMName
+                $arrayListFBNeoToMAMEMatchesWithDifferentROMNames.Add($PSObjectMatchedWithDifferentROMNames) | Out-Null
+            } else {
+                Write-Output ('Did not match ' + $strFBNeoROMName)
+            }
+        } else {
+            Write-Warning ('The MAME ROM ' + $strBestMatchingMAMEROMName + ' was matched to FBNeo ROM ' + $strFBNeoROMName + '; however, the MAME ROM ' + $strBestMatchingMAMEROMName + ' had no matches.')
+            $arrayListUnmatchedFBNeoROMs.Add($strFBNeoROMName) | Out-Null
+        }
+    } else {
+        Write-Warning ('The FBNeo ROM ' + $strFBNeoROMName + ' had no matches.')
+        $arrayListUnmatchedFBNeoROMs.Add($strFBNeoROMName) | Out-Null
+    }
+    $intCurrentItem++
+}
+
+$arrayListOutput = New-Object -TypeName 'System.Collections.ArrayList'
+
+$arrayListFBNeoToMAMEExactMatches | ForEach-Object {
+    $strThisFBNeoROMName = $_
+    $PSObjectOutputMatch = New-Object PSObject
+    $PSObjectOutputMatch | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strThisFBNeoROMName
+    $PSObjectOutputMatch | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value $strThisFBNeoROMName
+    $arrayListOutput.Add($PSObjectOutputMatch) | Out-Null
+}
+
+$arrayListFBNeoToMAMEMatchesWithDifferentROMNames | ForEach-Object {
+    $PSObjectOutput = $_
+    $arrayListOutput.Add($PSObjectOutput) | Out-Null
+}
+
+$arrayListUnmatchedFBNeoROMs | ForEach-Object {
+    $strThisFBNeoROMName = $_
+    $PSObjectOutputMatch = New-Object PSObject
+    $PSObjectOutputMatch | Add-Member -MemberType NoteProperty -Name 'FBNeo_ROMName' -Value $strThisFBNeoROMName
+    $PSObjectOutputMatch | Add-Member -MemberType NoteProperty -Name 'MAME_ROMName' -Value '????'
+    $arrayListOutput.Add($PSObjectOutputMatch) | Out-Null
+}
+
+$arrayListOutput | Sort-Object -Property 'FBNeo_ROMName' | Export-Csv -Path $strCSVOutputFile -NoTypeInformation
 
 $VerbosePreference = $actionPreferenceFormerVerbose
 $DebugPreference = $actionPreferenceFormerDebug
