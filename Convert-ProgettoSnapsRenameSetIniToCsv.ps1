@@ -1,11 +1,11 @@
 # Convert-ProgettoSnapsRenameSetIniToCsv.ps1 converts the AntoPISA RenameSet to a tabular data
 # format that is easier to ingest and use in downstream scripts.
 
-$strThisScriptVersionNumber = [version]'1.0.20211228.0'
+$strThisScriptVersionNumber = [version]'1.0.20220717.0'
 
 #region License
 ###############################################################################################
-# Copyright 2021 Frank Lesniak
+# Copyright 2022 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -34,13 +34,15 @@ $actionPreferenceFormerVerbose = $VerbosePreference
 
 #region Inputs
 ###############################################################################################
-# Download the renameSET.ini file from http://www.progettosnaps.net/renameset/ and put it in
-# the following folder:
-# .\Progetto_Snaps_Resources
-# or if on Linux / MacOS: ./Progetto_Snaps_Resources
-# i.e., the folder that this script is in should have a subfolder called:
-# Progetto_Snaps_Resources
+$strDownloadPageURL = 'http://www.progettosnaps.net/renameset/'
+$strURL = 'https://www.progettosnaps.net/download/?tipo=renameset&file=pS_renameSET_245.zip'
+
 $strSubfolderPath = Join-Path '.' 'Progetto_Snaps_Resources'
+
+# Uncomment and configure the following line if you prefer that the script use a local copy of
+#   the MAME DAT file instead of having to download it from GitHub:
+
+# $strLocalINIFilePath = Join-Path $strSubfolderPath 'renameSET.ini'
 
 # The file will be processed and output as a CSV to
 # .\Progetto_Snaps_RenameSet.csv
@@ -409,124 +411,226 @@ function Convert-MAMEVersionNumberToRepresentativePowerShellVersion {
     [version]$strPowerShellFriendlyVersion
 }
 
-$boolErrorOccurred = $false
+function Get-AbsoluteURLFromRelative {
+    # This functions takes a potentially relative URL (/etc/foo.html) and turns it into an
+    # absolute URL if it is, in fact, a relative URL. If the URL is an absolute URL, then the
+    # function simply returns the absolute URL.
+    #
+    # The function takes two positional arguments.
+    #
+    # The first argument is a string containing the base URL (i.e., the parent URL) from which
+    # the second URL is derived
+    #
+    # The second argument is a string containing the (potentially) relative URL.
+    #
+    # Example 1:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = '/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/downloads/list.txt'
+    #
+    # Example 2:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Example 3:
+    # $strURLBase = 'http://foo.net/stuff/index.html'
+    # $strURLRelative = 'http://foo.net/stuff/downloads/list.txt'
+    # $strURLAbsolute = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+    # # $strURLAbsolute is 'http://foo.net/stuff/downloads/list.txt'
+    #
+    # Note: this function is converted from https://stackoverflow.com/a/34603567/2134110
+    # Thanks to Vikash Rathee for pointing me in the right direction
 
-# Progetto Snaps RenameSet renameSET.ini file
-$strURLProgettoSnapsRenameSet = 'www.progettosnaps.net/renameset/'
-$strFilePathProgettoSnapsRenameSetIni = Join-Path $strSubfolderPath 'renameSET.ini'
+    $strURLBase = $args[0]
+    $strURLRelative = $args[1]
 
-if ((Test-Path $strFilePathProgettoSnapsRenameSetIni) -ne $true) {
-    Write-Error ('The Progetto Snaps RenameSet file "renameSET.ini" is missing. Please download it from the following URL and place it in the following location.' + "`n`n" + 'URL: ' + $strURLProgettoSnapsRenameSet + "`n`n" + 'File Location:' + "`n" + $strFilePathProgettoSnapsRenameSetIni)
-    $boolErrorOccurred = $true
+    $strThisFunctionVersionNumber = [version]'1.0.20201004.0'
+
+    $uriKindRelativeOrAbsolute = [System.UriKind]::RelativeOrAbsolute
+    $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLRelative, $uriKindRelativeOrAbsolute)
+    if ($uriWorking.IsAbsoluteUri -ne $true) {
+        $uriBase = New-Object -TypeName 'System.Uri' -ArgumentList @($strURLBase)
+        $uriWorking = New-Object -TypeName 'System.Uri' -ArgumentList @($uriBase, $strURLRelative)
+    }
+    $uriWorking.ToString()
 }
 
-if ($boolErrorOccurred -eq $false) {
-    # We have all the files, let's do stuff
+$VerbosePreference = $actionPreferenceNewVerbose
 
-    $hashtablePrimary = New-BackwardCompatibleCaseInsensitiveHashtable
-
-    $arrCharCommentIndicator = @(';')
-    $boolIgnoreComments = $true
-    $boolCommentsMustBeOnOwnLine = $false
-    $strNullSectionName = 'NoSection'
-    $boolAllowKeysWithoutValuesThatOmitEqualSign = $true
-
-    ###########################################################################################
-
-    $strFilePath = $strFilePathProgettoSnapsRenameSetIni
-    $hashtableIniFile = $null
-    Write-Verbose ('Ingesting data from file ' + $strFilePath + '...')
-    $intReturnCode = Convert-IniToHashTable ([ref]$hashtableIniFile) $strFilePath $arrCharCommentIndicator $boolIgnoreComments $boolCommentsMustBeOnOwnLine $strNullSectionName $boolAllowKeysWithoutValuesThatOmitEqualSign
-
-    if ($intReturnCode -eq 0) {
-        $hashtablePrimary.Add($strFilePath, $hashtableIniFile)
+$arrCommands = @(Get-Command Expand-Archive)
+$boolZIPExtractAvailable = ($arrCommands.Count -ge 1)
+$arrCommands = @(Get-Command Invoke-WebRequest)
+$boolInvokeWebRequestAvailable = ($arrCommands.Count -ge 1)
+if ($null -eq $strLocalINIFilePath -and $boolZIPExtractAvailable -and $boolInvokeWebRequestAvailable) {
+    $VerbosePreference = $actionPreferenceFormerVerbose
+    $arrModules = @(Get-Module PowerHTML -ListAvailable)
+    $VerbosePreference = $actionPreferenceNewVerbose
+    if ($arrModules.Count -eq 0) {
+        Write-Warning 'It is recommended that you install the PowerHTML module using "Install-Module PowerHTML" before continuing. Doing so will allow this script to obtain the URL for the most-current INI file automatically. Without PowerHTML, this script is using a potentially-outdated URL. Break out of ths script now to install PowerHTML, then re-run the script'
+        $strEffectiveURL = $strURL
     } else {
-        Write-Error ('An error occurred while procesing file ' + $strFilePath + ' and it will be skipped.')
+        Write-Verbose ('Parsing site ' + $strDownloadPageURL + ' to dynamically obtain INI download URL...')
+        $arrLoadedModules = @(Get-Module PowerHTML)
+        if ($arrLoadedModules.Count -eq 0) {
+            $VerbosePreference = $actionPreferenceFormerVerbose
+            Import-Module PowerHTML
+            $VerbosePreference = $actionPreferenceNewVerbose
+        }
+        $strNextDownloadPageURL = $strDownloadPageURL
+        $HtmlNodeDownloadPage = ConvertFrom-Html -URI $strNextDownloadPageURL
+        $arrNodes = @($HtmlNodeDownloadPage.SelectNodes('//a[@href]') | Where-Object { $_.InnerText.ToLower().Contains('renameset.dat') -and (-not $_.InnerText.ToLower().Contains('(whatsnew)')) })
+        if ($arrNodes.Count -eq 0) {
+            Write-Error ('Failed to download the INI file. Please download the file that looks like pS_renameSET_*.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strSubfolderPath + "`n`n" + 'Once downloaded, set the script variable $strLocalINIFilePath to point to the path of the downloaded and extracted INI file.')
+            break
+        }
+        $strNextURL = $arrNodes[0].Attributes['href'].Value
+
+        $strURLBase = $strNextDownloadPageURL
+        $strURLRelative = $strNextURL
+        $strNextURL = Get-AbsoluteURLFromRelative $strURLBase $strURLRelative
+
+        $strEffectiveURL = $strNextURL
+    }
+    if ((Test-Path $strSubfolderPath) -ne $true) {
+        New-Item $strSubfolderPath -ItemType Directory | Out-Null
+    }
+    Write-Verbose ('Downloading compressed INI from ' + $strEffectiveURL + '...')
+    $VerbosePreference = $actionPreferenceFormerVerbose
+    $strINIZIPFileName = 'pS_renameSET.zip'
+    Invoke-WebRequest -Uri $strEffectiveURL -OutFile (Join-Path $strSubfolderPath $strINIZIPFileName)
+    $VerbosePreference = $actionPreferenceNewVerbose
+
+    if (Test-Path (Join-Path $strSubfolderPath $strINIZIPFileName)) {
+        # Successful download
+        Write-Verbose 'Extracting INI from compressed ZIP...'
+        # TODO: Create backward compatible alternative to Expand-Archive
+        Expand-Archive -Path (Join-Path $strSubfolderPath $strINIZIPFileName) -DestinationPath $strSubfolderPath -Force
+        $fileInfoExtractedINI = Get-ChildItem $strSubfolderPath | Where-Object { $_.Name.ToLower() -eq 'renameset.ini' }
+        $strAbsoluteINIFilePath = $fileInfoExtractedINI.FullName
+        $strFilePathProgettoSnapsRenameSetIni = $strAbsoluteINIFilePath
+    } else {
+        Write-Error ('Failed to download the renameSET.ini file. Please download the file that looks like pS_renameSET_*.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strSubfolderPath + "`n`n" + 'Once downloaded, set the script variable $strLocalINIFilePath to point to the path of the downloaded and extracted INI file.')
+        break
+    }
+} else {
+    if ((Test-Path $strLocalINIFilePath) -ne $true) {
+        Write-Error ('The renameSET.ini file is missing. Please download the file that looks like pS_renameSET_*.zip from the following URL, extract the ZIP, and place it in the following location.' + "`n`n" + 'URL: ' + $strDownloadPageURL + "`n`n" + 'File Location:' + "`n" + $strSubfolderPath + "`n`n" + 'Once downloaded, set the script variable $strLocalINIFilePath to point to the path of the downloaded and extracted INI file.')
+        break
+    }
+    $strAbsoluteINIFilePath = (Resolve-Path $strLocalINIFilePath).Path
+    $strFilePathProgettoSnapsRenameSetIni = $strAbsoluteINIFilePath
+}
+
+$hashtablePrimary = New-BackwardCompatibleCaseInsensitiveHashtable
+
+$arrCharCommentIndicator = @(';')
+$boolIgnoreComments = $true
+$boolCommentsMustBeOnOwnLine = $false
+$strNullSectionName = 'NoSection'
+$boolAllowKeysWithoutValuesThatOmitEqualSign = $true
+
+###########################################################################################
+
+$strFilePath = $strFilePathProgettoSnapsRenameSetIni
+$hashtableIniFile = $null
+Write-Verbose ('Ingesting data from file ' + $strFilePath + '...')
+$intReturnCode = Convert-IniToHashTable ([ref]$hashtableIniFile) $strFilePath $arrCharCommentIndicator $boolIgnoreComments $boolCommentsMustBeOnOwnLine $strNullSectionName $boolAllowKeysWithoutValuesThatOmitEqualSign
+
+if ($intReturnCode -eq 0) {
+    $hashtablePrimary.Add($strFilePath, $hashtableIniFile)
+} else {
+    Write-Error ('An error occurred while procesing file ' + $strFilePath + ' and it will be skipped.')
+}
+
+###########################################################################################
+
+$arrCSVRenameSetInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Keys | Sort-Object |
+    ForEach-Object {
+        $strMAMEVersion = $_
+        if ($strMAMEVersion -ne $strNullSectionName) {
+            $PSCustomObject = New-Object PSCustomObject
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
+
+            $versionPowerShellFriendly = Convert-MAMEVersionNumberToRepresentativePowerShellVersion $strMAMEVersion
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
+
+            $strMAMEDate = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item('Stat_01')
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
+
+            $PSCustomObject
+        }
+    } | Sort-Object -Property 'MAMEVersionPowerShellFriendly' | ForEach-Object {
+        $PSCustomObjectHeader = $_
+        $strMAMEVersion = $PSCustomObjectHeader.MAMEVersion
+        $versionPowerShellFriendly = $PSCustomObjectHeader.MAMEVersionPowerShellFriendly
+        $strMAMEDate = $PSCustomObjectHeader.MAMEDate
+        $arrAllKeys = @($hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Keys)
+        $arrDelKeys = @($arrAllKeys | ForEach-Object {
+                $strMAMEVersionMetadataItem = $_
+                if ($strMAMEVersionMetadataItem.ToLower().Contains('del_')) {
+                    $strMAMEVersionMetadataItem
+                }
+            })
+        $arrRenKeys = @($arrAllKeys | ForEach-Object {
+                $strMAMEVersionMetadataItem = $_
+                if ($strMAMEVersionMetadataItem.ToLower().Contains('ren_')) {
+                    $strMAMEVersionMetadataItem
+                }
+            })
+
+        $arrDelROMPackages = @($arrDelKeys | ForEach-Object {
+                $strDelKey = $_
+                $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strDelKey)
+            })
+        $arrRenROMPackages = @($arrRenKeys | ForEach-Object {
+                $strRenKey = $_
+                $strRenInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strRenKey)
+                $arrRenInfoA = Split-StringOnLiteralString $strRenInfo '> '
+                $arrRenInfoB = Split-StringOnLiteralString $arrRenInfoA[$arrRenInfoA.Length - 1] ' '
+                $strNewName = ($arrRenInfoB[0]).ToLower()
+                $arrRenInfoC = Split-StringOnLiteralString $strRenInfo ' '
+                $strOldName = ($arrRenInfoC[0]).ToLower()
+
+                $PSCustomObject = New-Object PSCustomObject
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
+                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
+                $PSCustomObject
+            })
+
+        $arrDelROMPackages | ForEach-Object {
+            $strOldName = $_
+            $strNewName = ''
+            $PSCustomObject = New-Object PSCustomObject
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'D'
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
+            $PSCustomObject
+        }
+
+        $arrRenROMPackages | ForEach-Object {
+            $PSCustomObjectRenameInfo = $_
+            $strOldName = $PSCustomObjectRenameInfo.OldROMPackageName
+            $strNewName = $PSCustomObjectRenameInfo.NewROMPackageName
+            $PSCustomObject = New-Object PSCustomObject
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'R'
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
+            $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
+            $PSCustomObject
+        }
     }
 
-    ###########################################################################################
+Write-Verbose ('Exporting results to CSV: ' + $strCSVOutputFile)
+$arrCSVRenameSetInfo |
+    Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'Operation', 'OldROMPackageName') |
+    Export-Csv -Path $strCSVOutputFile -NoTypeInformation
 
-    $arrCSVRenameSetInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Keys | Sort-Object |
-        ForEach-Object {
-            $strMAMEVersion = $_
-            if ($strMAMEVersion -ne $strNullSectionName) {
-                $PSCustomObject = New-Object PSCustomObject
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
-
-                $versionPowerShellFriendly = Convert-MAMEVersionNumberToRepresentativePowerShellVersion $strMAMEVersion
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
-
-                $strMAMEDate = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item('Stat_01')
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
-
-                $PSCustomObject
-            }
-        } | Sort-Object -Property 'MAMEVersionPowerShellFriendly' | ForEach-Object {
-            $PSCustomObjectHeader = $_
-            $strMAMEVersion = $PSCustomObjectHeader.MAMEVersion
-            $versionPowerShellFriendly = $PSCustomObjectHeader.MAMEVersionPowerShellFriendly
-            $strMAMEDate = $PSCustomObjectHeader.MAMEDate
-            $arrAllKeys = @($hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Keys)
-            $arrDelKeys = @($arrAllKeys | ForEach-Object {
-                    $strMAMEVersionMetadataItem = $_
-                    if ($strMAMEVersionMetadataItem.ToLower().Contains('del_')) {
-                        $strMAMEVersionMetadataItem
-                    }
-                })
-            $arrRenKeys = @($arrAllKeys | ForEach-Object {
-                    $strMAMEVersionMetadataItem = $_
-                    if ($strMAMEVersionMetadataItem.ToLower().Contains('ren_')) {
-                        $strMAMEVersionMetadataItem
-                    }
-                })
-
-            $arrDelROMPackages = @($arrDelKeys | ForEach-Object {
-                    $strDelKey = $_
-                    $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strDelKey)
-                })
-            $arrRenROMPackages = @($arrRenKeys | ForEach-Object {
-                    $strRenKey = $_
-                    $strRenInfo = $hashtablePrimary.Item($strFilePathProgettoSnapsRenameSetIni).Item($strMAMEVersion).Item($strRenKey)
-                    $arrRenInfoA = Split-StringOnLiteralString $strRenInfo '> '
-                    $arrRenInfoB = Split-StringOnLiteralString $arrRenInfoA[$arrRenInfoA.Length - 1] ' '
-                    $strNewName = ($arrRenInfoB[0]).ToLower()
-                    $arrRenInfoC = Split-StringOnLiteralString $strRenInfo ' '
-                    $strOldName = ($arrRenInfoC[0]).ToLower()
-
-                    $PSCustomObject = New-Object PSCustomObject
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
-                    $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
-                    $PSCustomObject
-                })
-
-            $arrDelROMPackages | ForEach-Object {
-                $strOldName = $_
-                $strNewName = ''
-                $PSCustomObject = New-Object PSCustomObject
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'D'
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
-                $PSCustomObject
-            }
-
-            $arrRenROMPackages | ForEach-Object {
-                $PSCustomObjectRenameInfo = $_
-                $strOldName = $PSCustomObjectRenameInfo.OldROMPackageName
-                $strNewName = $PSCustomObjectRenameInfo.NewROMPackageName
-                $PSCustomObject = New-Object PSCustomObject
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersion' -Value $strMAMEVersion
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEVersionPowerShellFriendly' -Value $versionPowerShellFriendly
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'MAMEDate' -Value $strMAMEDate
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'Operation' -Value 'R'
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'OldROMPackageName' -Value $strOldName
-                $PSCustomObject | Add-Member -MemberType NoteProperty -Name 'NewROMPackageName' -Value $strNewName
-                $PSCustomObject
-            }
-        }
-    $arrCSVRenameSetInfo |
-        Sort-Object -Property @('MAMEVersionPowerShellFriendly', 'Operation', 'OldROMPackageName') |
-        Export-Csv -Path $strCSVOutputFile -NoTypeInformation
-}
+$VerbosePreference = $actionPreferenceFormerVerbose
