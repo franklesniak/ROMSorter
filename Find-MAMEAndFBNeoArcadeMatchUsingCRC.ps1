@@ -1,6 +1,6 @@
 # Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1
 
-$strThisScriptVersionNumber = [version]'2.2.202201015.0'
+$strThisScriptVersionNumber = [version]'2.2.20220717.0'
 
 #region License
 ###############################################################################################
@@ -423,6 +423,34 @@ $strAscendingProperty = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' 
 $arrSortedOutput = $arrOutput | Sort-Object -Property @($strAscendingProperty, $hashtableSortDescendingProperty, $strLocalDATToCompareToMAMEROMNameColumnHeader)
 $arrSortedOutput | Export-Csv -Path $strCSVOutputFileMatchedROMInfo -NoTypeInformation
 
+Write-Verbose ('Building a pair of hashtables for quick lookup of the number of times that a ' + $strMAMEDATColumnPrefix + ' ROM was best-matched to a ' + $strLocalDATToCompareToMAMEColumnPrefix + ' ROM, as well as the overall best-matched ' + $strLocalDATToCompareToMAMEColumnPrefix + ' ROM for each ' + $strMAMEDATColumnPrefix + ' ROM...')
+$hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT = New-BackwardCompatibleCaseInsensitiveHashtable
+$hashtableMAMEROMTopMatchingLocalDAT = New-BackwardCompatibleCaseInsensitiveHashtable
+$arrSortedOutput | ForEach-Object {
+    $objThisMatchedROM = $_
+    $arrMatchedROMProperties = @($objThisMatchedROM.PSObject.Properties)
+
+    $strThisLocalDATROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
+
+    $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
+    $strThisMAMEROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value
+
+    if ($hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.ContainsKey($strThisMAMEROMName) -eq $false) {
+        $hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.Add($strThisMAMEROMName, 1)
+    } else {
+        $intCount = $hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.Item($strThisMAMEROMName)
+        $intCount++
+        $hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.Item($strThisMAMEROMName) = $intCount
+    }
+
+    if ($hashtableMAMEROMTopMatchingLocalDAT.ContainsKey($strThisMAMEROMName) -eq $false) {
+        $hashtableMAMEROMTopMatchingLocalDAT.Add($strThisMAMEROMName, $strThisLocalDATROMName)
+    } else {
+        # Do nothing; because of the sort order, we can be assured we've already
+        # recorded the best match
+    }
+}
+
 $hashtableAllMappings = New-BackwardCompatibleCaseInsensitiveHashtable
 
 $timeDateStartOfProcessing = Get-Date
@@ -440,47 +468,171 @@ $arrSortedOutput | ForEach-Object {
 
     $objThisMatchedROM = $_
     $arrMatchedROMProperties = @($objThisMatchedROM.PSObject.Properties)
+
     $strThisLocalDATROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
+
     $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_ROMName')
     $strThisMAMEROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value
+
     $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
     $doubleAveragePercentMatch = [double](($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value)
-    
-    $boolUnmatched = $true
-    if ($doubleAveragePercentMatch -ge 0.5) {
-        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -eq $true) {
-            # This is normal/expected, so treat as unmatched
+
+    if ([string]::IsNullOrEmpty($strThisMAMEROMName) -eq $false) {
+        if ($hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.ContainsKey($strThisMAMEROMName)) {
+            $intNumberOfMatchesForThisMAMEROMName = $hashtableMAMEROMNumberOfTimesTopMatchedToLocalDAT.Item($strThisMAMEROMName)
         } else {
+            $intNumberOfMatchesForThisMAMEROMName = 0
+        }
+    } else {
+        $intNumberOfMatchesForThisMAMEROMName = 0
+    }
+
+    $strUnmatchedROM = $strThisLocalDATROMName
+
+    if (($strThisLocalDATROMName -eq $strThisMAMEROMName) -and ($doubleAveragePercentMatch -eq 1) -and ($intNumberOfMatchesForThisMAMEROMName -eq 1)) {
+        # ROM names match, ROM hashes match, and this MAME match only has one well-
+        # matched ROM from the local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 1 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
             if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
                 # This is unexpected, throw a warning
                 Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
             } else {
                 $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
-                $boolUnmatched = $false
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } elseif (($strThisLocalDATROMName -ne $strThisMAMEROMName) -and ($doubleAveragePercentMatch -eq 1) -and ($intNumberOfMatchesForThisMAMEROMName -eq 1)) {
+        # ROM names do not match, but ROM hashes match and this MAME match only has one
+        # well-matched ROM from the local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 2 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } elseif (($strThisLocalDATROMName -eq $strThisMAMEROMName) -and ($doubleAveragePercentMatch -ge 0.8) -and ($intNumberOfMatchesForThisMAMEROMName -eq 1)) {
+        # ROM names match, 80% of the ROM hashes match, and this MAME match only has
+        # one well-matched ROM from the local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 3 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } elseif (($strThisLocalDATROMName -eq $strThisMAMEROMName) -and ($doubleAveragePercentMatch -eq 1) -and ($intNumberOfMatchesForThisMAMEROMName -ne 1)) {
+        # ROM names match, ROM hashes match, but this MAME ROM has multiple well-
+        # matched ROMs from the local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 4 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } elseif (($strThisLocalDATROMName -eq $strThisMAMEROMName) -and ($intNumberOfMatchesForThisMAMEROMName -eq 1)) {
+        # ROM names match and this MAME match only has one well-matched ROM from the
+        # local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 5 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } elseif (($doubleAveragePercentMatch -ge 0.7) -and ($intNumberOfMatchesForThisMAMEROMName -eq 1)) {
+        # 80% of the ROM hashes match, and this MAME match only has one well-matched
+        # ROM from the local DAT.
+
+        Write-Debug ($strThisLocalDATROMName + ' type 6 match to ' + $strThisMAMEROMName)
+        if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+            if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                # This is unexpected, throw a warning
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+            } else {
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                $strUnmatchedROM = $null
+            }
+        } else {
+            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
+        }
+    } else {
+        if ($hashtableMAMEROMTopMatchingLocalDAT.ContainsKey($strThisMAMEROMName)) {
+            $strBestMatchedLocalDATROMNameForMatchedMAMEROM = $hashtableMAMEROMTopMatchingLocalDAT.Item($strThisMAMEROMName)
+        } else {
+            $strBestMatchedLocalDATROMNameForMatchedMAMEROM = ''
+        }
+        if (($strThisLocalDATROMName -eq $strBestMatchedLocalDATROMNameForMatchedMAMEROM) -and ($doubleAveragePercentMatch -ge 0.7)) {
+            # The local DAT matched to this MAME ROM better than any other ROM in the
+            # local DAT, and the ROM hash match percentage is >= 70%
+
+            Write-Debug ($strThisLocalDATROMName + ' type 7 match to ' + $strThisMAMEROMName)
+            if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -ne $true) {
+                if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                    # This is unexpected, throw a warning
+                    Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will try treating it as an unmatched ROM')
+                } else {
+                    $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisMAMEROMName)
+                    $strUnmatchedROM = $null
+                }
+            } else {
+                Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisMAMEROMName + '. This is unexpected. We will try treating ' + $strThisLocalDATROMName + ' as an unmatched ROM')
             }
         }
     }
 
-    if ($boolUnmatched -eq $true) {
-        # We concluded that this ROM does not match a MAME ROM
-        if ($hashtableMAMEROMNamesToROMFileCount.ContainsKey($strThisLocalDATROMName) -or $boolAlwaysAppendUnmatchedROMWithLocalDATToCompareToMAMEColumnPrefix -eq $true) {
-            # ... but the MAME ROM set already contains a ROM with this name
-            # so, let's append the name of the ROM set in front of it:
-            $strUnmatchedROMName = $strLocalDATToCompareToMAMEColumnPrefix + '_' + $strThisLocalDATROMName
-            if ($hashtableMAMEROMNamesToROMFileCount.ContainsKey($strUnmatchedROMName)) {
-                Write-Warning ('Somehow, ' + $strMAMEDATDisplayName + ' already contains an entry for ' + $strUnmatchedROMName + ', which may cause an incorrect ROM match in a downstream process.')
+    if ([string]::IsNullOrEmpty($strUnmatchedROM) -eq $false) {
+        Write-Debug ($strThisLocalDATROMName + ' unmatched')
+
+        if ($hashtableAllMappings.ContainsValue($strThisLocalDATROMName) -eq $true) {
+            # This is somewhat-unexpected, throw a warning
+            Write-Warning ('Our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisLocalDATROMName + '. In some cases, this can be expected. The ROM ' + $strThisLocalDATROMName + ' will be renamed to ' + $strThisLocalDATROMName + '_' + $strLocalDATToCompareToMAMEColumnPrefix)
+            if ($hashtableAllMappings.ContainsValue($strThisLocalDATROMName + '_' + $strLocalDATToCompareToMAMEColumnPrefix) -eq $true) {
+                # This is unexpected, throw an error
+                Write-Error ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strThisLocalDATROMName + '_' + $strLocalDATToCompareToMAMEColumnPrefix + '. This is unexpected and will prevent further processing of this ROM')
+            } else {
+                if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
+                    # This is unexpected, throw an error
+                    Write-Error ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. This is unexpected and will prevent further processing of this ROM')
+                } else {
+                    $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisLocalDATROMName + '_' + $strLocalDATToCompareToMAMEColumnPrefix)
+                }
             }
         } else {
-            $strUnmatchedROMName = $strThisLocalDATROMName
-        }
-
-        if ($hashtableAllMappings.ContainsValue($strUnmatchedROMName) -eq $true) {
-            Write-Warning ('Somehow, our ROM mapping hashtable already contains a value (in a key-value pair) for ' + $strUnmatchedROMName + '. So we are dropping an entry, which may cause an incomplete database')
-        } else {
             if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
-                Write-Warning ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we are dropping an entry, which may cause an incomplete database')
+                # This is unexpected, throw an error
+                Write-Error ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. This is unexpected and will prevent further processing of this ROM')
             } else {
-                $hashtableAllMappings.Add($strThisLocalDATROMName, $strUnmatchedROMName)
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $null)
             }
         }
     }
@@ -506,6 +658,9 @@ $arrRevisedDAT = $arrLocalDATToCompareToMAME | ForEach-Object {
     $strThisLocalDATROMName = ($arrMachineProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEROMNameColumnHeader }).Value
     if ($hashtableAllMappings.ContainsKey($strThisLocalDATROMName) -eq $true) {
         $strNewROMName = $hashtableAllMappings.Item($strThisLocalDATROMName)
+        if ([string]::IsNullOrEmpty($strNewROMName)) {
+            $strNewROMName = $strThisLocalDATROMName
+        }
         ($arrMachineProperties | Where-Object { $_.Name -eq $strLocalDATToCompareToMAMEPrimaryKeyColumnHeader }).Value = $strNewROMName
     } else {
         Write-Warning ('Somehow, our ROM mapping hashtable did not contain a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. So we will not adjust its "ROMName" (primary key) in the revised DAT file. This may result in a naming collision')
