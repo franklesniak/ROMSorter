@@ -1,10 +1,10 @@
 # Join-FBNeoWithMAMEDatabase.ps1
 
-$strThisScriptVersionNumber = [version]'1.0.20211231.0'
+$strThisScriptVersionNumber = [version]'1.0.20220719.0'
 
 #region License
 ###############################################################################################
-# Copyright 2021 Frank Lesniak
+# Copyright 2022 Frank Lesniak
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 # and associated documentation files (the "Software"), to deal in the Software without
@@ -27,6 +27,9 @@ $strThisScriptVersionNumber = [version]'1.0.20211231.0'
 # The most up-to-date version of this script can be found on the author's GitHub repository
 # at https://github.com/franklesniak/ROMSorter
 #endregion DownloadLocationNotice
+
+$actionPreferenceFormerVerbose = $VerbosePreference
+$actionPreferenceFormerDebug = $DebugPreference
 
 $strLocalMAMEDatabaseCSV = $null
 $boolBackupMAMEDatabaseBeforeOverwrite = $true
@@ -54,15 +57,15 @@ $strLocalMAMEDatabaseBackupPrefix = Join-Path '.' 'MAME_Database_Backup_'
 $strLocalMAMEDatabaseBackupSuffix = '.csv'
 
 # If the time-advanced CSV below is missing, the user is prompted to run the following script:
-$strScriptToGenerateTimeAdvancedDAT = '"Convert-FBNeoArcadeDATToCSV"'
+$strScriptToGenerateTimeAdvancedDAT = '"Find-MAMEAndFBNeoArcadeMatchUsingCRC"'
 
 # This script also requires a "time-advanced" version of another MAME DAT (i.e., the one to
 # join to the database), converted to CSV format. Time advancement occurs by applying the
 # Progetto Snaps RenameSet against the DAT:
-$strLocalTimeAdvancedDATToJoinCSV = Join-Path '.' 'FBNeo_Arcade_DAT.csv'
+$strLocalTimeAdvancedDATToJoinCSV = Join-Path '.' 'FBNeo_Arcade_DAT_Renamed_and_CRC-Matched_To_MAME_DAT.csv'
 
 # This display name is used in progress output:
-$strTimeAdvancedDATToJoinDisplayName = 'the FBNeo Arcade DAT'
+$strTimeAdvancedDATToJoinDisplayName = "the FBNeo Arcade DAT CRC-matched to MAME's DAT"
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
