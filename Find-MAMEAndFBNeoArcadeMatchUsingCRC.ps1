@@ -632,7 +632,7 @@ $arrSortedOutput | ForEach-Object {
                 # This is unexpected, throw an error
                 Write-Error ('Somehow, our ROM mapping hashtable already contains a key (in a key-value pair) for ' + $strThisLocalDATROMName + '. This is unexpected and will prevent further processing of this ROM')
             } else {
-                $hashtableAllMappings.Add($strThisLocalDATROMName, $null)
+                $hashtableAllMappings.Add($strThisLocalDATROMName, $strThisLocalDATROMName)
             }
         }
     }
