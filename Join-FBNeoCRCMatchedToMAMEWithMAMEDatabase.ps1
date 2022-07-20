@@ -35,9 +35,9 @@ $strLocalMAMEDatabaseCSV = $null
 $boolBackupMAMEDatabaseBeforeOverwrite = $true
 $strLocalMAMEDatabaseBackupPrefix = $null
 $strLocalMAMEDatabaseBackupSuffix = $null
-$strScriptToGenerateTimeAdvancedDAT = 'coresponding "Convert-..."'
-$strLocalTimeAdvancedDATToJoinCSV = $null
-$strTimeAdvancedDATToJoinDisplayName = 'this time-advanced DAT'
+$strScriptToGenerateCRCMatchedDAT = 'coresponding "Convert-..."'
+$strLocalCRCMatchedDATToJoinCSV = $null
+$strCRCMatchedDATToJoinDisplayName = 'this CRC-matched DAT'
 $actionPreferenceNewVerbose = $VerbosePreference
 $actionPreferenceNewDebug = $DebugPreference
 
@@ -56,16 +56,16 @@ $strLocalMAMEDatabaseCSV = Join-Path '.' 'MAME_Database.csv'
 $strLocalMAMEDatabaseBackupPrefix = Join-Path '.' 'MAME_Database_Backup_'
 $strLocalMAMEDatabaseBackupSuffix = '.csv'
 
-# If the time-advanced CSV below is missing, the user is prompted to run the following script:
-$strScriptToGenerateTimeAdvancedDAT = '"Find-MAMEAndFBNeoArcadeMatchUsingCRC"'
+# If the CRC-matched CSV below is missing, the user is prompted to run the following script:
+$strScriptToGenerateCRCMatchedDAT = '"Find-MAMEAndFBNeoArcadeMatchUsingCRC"'
 
-# This script also requires a "time-advanced" version of another MAME DAT (i.e., the one to
-# join to the database), converted to CSV format. Time advancement occurs by applying the
-# Progetto Snaps RenameSet against the DAT:
-$strLocalTimeAdvancedDATToJoinCSV = Join-Path '.' 'FBNeo_Arcade_DAT_Renamed_and_CRC-Matched_To_MAME_DAT.csv'
+# This script also requires a CRC-matched version of the FBNeo Arcade DAT (i.e., the
+# one to join to the database), converted to CSV format. CRC matching occurs by
+# comparing the ROM file CRCs across the two ROM sets
+$strLocalCRCMatchedDATToJoinCSV = Join-Path '.' 'FBNeo_Arcade_DAT_Renamed_and_CRC-Matched_To_MAME_DAT.csv'
 
 # This display name is used in progress output:
-$strTimeAdvancedDATToJoinDisplayName = "the FBNeo Arcade DAT CRC-matched to MAME's DAT"
+$strCRCMatchedDATToJoinDisplayName = "the FBNeo Arcade DAT CRC-matched to MAME's DAT"
 
 # Comment-out the following line if you prefer that the script operate silently.
 $actionPreferenceNewVerbose = [System.Management.Automation.ActionPreference]::Continue
@@ -89,8 +89,8 @@ if ((Test-Path $strLocalMAMEDatabaseCSV) -ne $true) {
     $boolErrorOccurred = $true
 }
 
-if ((Test-Path $strLocalTimeAdvancedDATToJoinCSV) -ne $true) {
-    Write-Error ('The input file "' + $strLocalTimeAdvancedDATToJoinCSV + '" is missing. Please generate it using the ' + $strScriptToGenerateTimeAdvancedDAT + ' script and then re-run this script')
+if ((Test-Path $strLocalCRCMatchedDATToJoinCSV) -ne $true) {
+    Write-Error ('The input file "' + $strLocalCRCMatchedDATToJoinCSV + '" is missing. Please generate it using the ' + $strScriptToGenerateCRCMatchedDAT + ' script and then re-run this script')
     $boolErrorOccurred = $true
 }
 
@@ -110,8 +110,8 @@ if ($boolErrorOccurred -eq $true) {
 Write-Verbose ('Importing the MAME database...')
 $arrMAMEDatabase = @(Import-Csv -Path $strLocalMAMEDatabaseCSV)
 
-Write-Verbose ('Importing ' + $strTimeAdvancedDATToJoinDisplayName + '...')
-$arrTimeAdvancedDATToJoin = @(Import-Csv -Path $strLocalTimeAdvancedDATToJoinCSV)
+Write-Verbose ('Importing ' + $strCRCMatchedDATToJoinDisplayName + '...')
+$arrCRCMatchedDATToJoin = @(Import-Csv -Path $strLocalCRCMatchedDATToJoinCSV)
 
 $arrLoadedModules = @(Get-Module Join-Object)
 if ($arrLoadedModules.Count -eq 0) {
@@ -120,8 +120,8 @@ if ($arrLoadedModules.Count -eq 0) {
     $VerbosePreference = $actionPreferenceNewVerbose
 }
 
-Write-Verbose ('Joining the MAME database with ' + $strTimeAdvancedDATToJoinDisplayName + '. This may take a while...')
-$arrJoinedData = Join-Object -Left $arrMAMEDatabase -Right $arrTimeAdvancedDATToJoin -LeftJoinProperty 'ROMName' -RightJoinProperty 'ROMName' -Type 'AllInBoth' -AddKey 'ROMName' -ExcludeLeftProperties 'ROMName' -ExcludeRightProperties 'ROMName'
+Write-Verbose ('Joining the MAME database with ' + $strCRCMatchedDATToJoinDisplayName + '. This may take a while...')
+$arrJoinedData = Join-Object -Left $arrMAMEDatabase -Right $arrCRCMatchedDATToJoin -LeftJoinProperty 'ROMName' -RightJoinProperty 'ROMName' -Type 'AllInBoth' -AddKey 'ROMName' -ExcludeLeftProperties 'ROMName' -ExcludeRightProperties 'ROMName'
 
 if ($boolBackupMAMEDatabaseBeforeOverwrite -eq $true) {
     $strBackupFileName = ($strLocalMAMEDatabaseBackupPrefix + ([string]($dateTimeStart.Year) + '-' + [string]($dateTimeStart.Month) + '-' + [string]($dateTimeStart.Day) + '_' + [string]($dateTimeStart.Hour) + [string]($dateTimeStart.Minute) + [string]($dateTimeStart.Second)) + $strLocalMAMEDatabaseBackupSuffix)
