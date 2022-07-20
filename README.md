@@ -27,9 +27,16 @@ Set the script execution policy to bypass (or equivalent, e.g.: `Set-ExecutionPo
 
 ### Use File Hashes to Match the FinalBurn Neo ROMs to the Current Version of MAME
 
-1. Run `Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1` to match the FinalBurn Neo (FBNeo) ROMs with the current version of MAME's ROMs based on the CRC of each file in each ROM package. The output file of the script is `FBNeo_Arcade_DAT_Renamed_and_CRC-Matched_To_MAME_DAT`.
+1. Run `Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1` to match the FinalBurn Neo (FBNeo) ROMs with the current version of MAME's ROMs based on the CRC of each file in each ROM package. The output file of the script is `FBNeo_Arcade_DAT_Renamed_and_CRC-Matched_To_MAME_DAT.csv`.
 
 > Note: because there is no RenameSet for FinalBurn Neo (FBNeo), we use the file hashes (CRCs) to compare the two ROM sets.
+
+### Join MAME, MAME 2003 Plus, MAME 2010, and FinalBurn Neo DATs Into a Single CSV File
+
+1. Run `Copy-MAMEDATToMAMEDatabase.ps1` to make a working copy of the tabular (CSV) MAME DAT file. The output file of the script is `MAME_Database.csv`
+1. Run `Join-TimeAdvancedMAME2003PlusWithMAMEDatabase.ps1` to join the time-advanced MAME 2003 Plus ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
+1. Run `Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1` to join the time-advanced MAME 2010 ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
+1. Run `Join-FBNeoCRCMatchedToMAMEWithMAMEDatabase.ps1` to join the CRC-matched FinalBurn Neo (FBNeo) Arcade ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
 
 ### Work in progress
 
