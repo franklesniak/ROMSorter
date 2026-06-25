@@ -1,0 +1,9 @@
+{
+  "window.title": "ROMSorter",
+  "[powershell]": {
+    "files.encoding": "utf8"
+  },
+  "files.associations": {
+    "**/CODEOWNERS": "ignore"
+  }
+}
