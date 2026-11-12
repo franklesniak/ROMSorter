@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/franklesniak/copilot-repo-template/HEAD/schemas/instruction-contracts.schema.json",
+  "title": "Standalone Instruction Contracts",
+  "description": "Reviewed static obligations for explicit local instruction profiles.",
+  "type": "object",
+  "required": [
+    "instruction_contracts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "instruction_contracts": {
+      "type": "array",
+      "description": "Required heading and phrase anchors for protected instruction files.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/instructionContract"
+      }
+    },
+    "protected_guide_section_obligations": {
+      "type": "array",
+      "description": "Protected-guide headings and phrases that become stale when a downstream adoption excludes the module family they describe.",
+      "items": {
+        "$ref": "#/$defs/protectedGuideSectionObligation"
+      }
+    },
+    "protected_guide_reference_obligations": {
+      "type": "array",
+      "description": "Protected-guide references that become stale when a downstream adoption excludes their target module family.",
+      "items": {
+        "$ref": "#/$defs/protectedGuideReferenceObligation"
+      }
+    }
+  },
+  "$defs": {
+    "moduleName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$(?![\\s\\S])",
+      "enum": [
+        "instruction-enforcement",
+        "agent-copilot",
+        "agent-codex",
+        "agent-claude",
+        "agent-cursor",
+        "agent-gemini",
+        "agent-hermes",
+        "baseline",
+        "git-lfs",
+        "agent-instructions",
+        "github-platform",
+        "azure-devops-platform",
+        "github-actions",
+        "azure-pipelines",
+        "github-templates",
+        "azure-devops-collaboration",
+        "template-onboarding",
+        "template-sync-support",
+        "markdown",
+        "powershell",
+        "json",
+        "yaml",
+        "schema",
+        "python",
+        "terraform"
+      ]
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contractKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$(?![\\s\\S])"
+    },
+    "repositoryFilePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*/$)[^\\n\\r\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "anchorList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "policyHeading": {
+      "type": "string",
+      "pattern": "^#{1,6} [^\\r\\n]*[^ \\t\\r\\n](?![\\s\\S])",
+      "description": "Exact single-line ATX heading spelling, without trailing ASCII space or tab. Internal whitespace and Unicode remain literal."
+    },
+    "policyCell": {
+      "type": "string",
+      "pattern": "^[^|\\u0009-\\u000d\\u001c-\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028-\\u2029\\u202f\\u205f\\u3000\\ufeff]+(?: [^|\\u0009-\\u000d\\u001c-\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028-\\u2029\\u202f\\u205f\\u3000\\ufeff]+)*(?![\\s\\S])",
+      "description": "One nonempty canonical cell: non-whitespace words separated by single ASCII spaces, without pipes or leading/trailing whitespace."
+    },
+    "policyRow": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/policyCell"
+      }
+    },
+    "requiredTable": {
+      "type": "object",
+      "required": [
+        "headers",
+        "rows"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "headers": {
+          "$ref": "#/$defs/policyRow",
+          "uniqueItems": true
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/policyRow"
+          },
+          "description": "Exact ordered data rows. The semantic validator also requires header-width rows and unique first-column conditions."
+        }
+      }
+    },
+    "requiredSection": {
+      "type": "object",
+      "required": [
+        "heading",
+        "next_heading"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "heading": {
+          "$ref": "#/$defs/policyHeading",
+          "description": "Unique live ATX heading. Its direct body ends before the next heading of any level; contract child sections separately."
+        },
+        "next_heading": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/policyHeading"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact unique immediate next live heading, or null for EOF. Downstream may follow the declared acyclic successor chain only through absent sections whose requires_modules are not retained. Present optional sections remain boundaries. Added unrecognized headings fail; the successor itself is outside this section's scope."
+        },
+        "requires_modules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/moduleName"
+          },
+          "description": "Optional additional modules, all required along with the parent contract modules for downstream enforcement. Omit for parent-only applicability. Upstream enforces every section; the semantic loader rejects unknown modules."
+        },
+        "required_paragraphs": {
+          "$ref": "#/$defs/anchorList",
+          "description": "Complete ordered inventory of operative paragraphs or top-level list items; extra and duplicate paragraphs fail. Only ASCII space, tab, CR and LF wrapping is normalized; other characters remain literal. The semantic loader rejects empty, whitespace-only and normalized-duplicate clauses. All words, punctuation, case, and Markdown markup remain significant."
+        },
+        "required_tables": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/requiredTable"
+          },
+          "description": "All tables in this section, in order. Extra, duplicate, malformed, reordered, or changed rows fail."
+        },
+        "required_block_order": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "paragraph",
+              "table"
+            ]
+          },
+          "description": "Complete paragraph/table interleaving. Omission means all required paragraphs followed by all required tables. The semantic loader requires each token count to match its corresponding inventory."
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "required_paragraphs"
+          ]
+        },
+        {
+          "required": [
+            "required_tables"
+          ]
+        }
+      ]
+    },
+    "instructionContract": {
+      "type": "object",
+      "required": [
+        "path",
+        "requires_modules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "requires_modules": {
+          "type": "array",
+          "description": "All template modules that must be retained before the downstream validator applies this contract entry.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/moduleName"
+          }
+        },
+        "required_headings": {
+          "$ref": "#/$defs/anchorList"
+        },
+        "required_phrases": {
+          "$ref": "#/$defs/anchorList"
+        },
+        "required_sections": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/requiredSection"
+          },
+          "description": "Scoped policy contracts. Fenced, quoted, indented, and commented examples cannot supply operative clauses."
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "required_headings"
+          ]
+        },
+        {
+          "required": [
+            "required_phrases"
+          ]
+        },
+        {
+          "required": [
+            "required_sections"
+          ]
+        }
+      ]
+    },
+    "protectedGuideSectionObligation": {
+      "type": "object",
+      "required": [
+        "key",
+        "path",
+        "target_modules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/contractKey"
+        },
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "target_modules": {
+          "type": "array",
+          "description": "Module family that keeps this protected-guide section relevant. Downstream validation applies the obligation only when none of these modules are retained.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/moduleName"
+          }
+        },
+        "stale_headings": {
+          "$ref": "#/$defs/anchorList"
+        },
+        "stale_phrases": {
+          "$ref": "#/$defs/anchorList"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "stale_headings"
+          ]
+        },
+        {
+          "required": [
+            "stale_phrases"
+          ]
+        }
+      ]
+    },
+    "protectedGuideReferenceObligation": {
+      "type": "object",
+      "required": [
+        "key",
+        "path",
+        "reference_kind",
+        "target_modules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/contractKey"
+        },
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "reference_kind": {
+          "type": "string",
+          "enum": [
+            "markdown-relative-link",
+            "absolute-url",
+            "prose-reference"
+          ]
+        },
+        "target_path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "target_modules": {
+          "type": "array",
+          "description": "Module family that keeps this protected-guide reference relevant. Downstream validation applies the obligation only when none of these modules are retained, or when target_path is mapped and excluded.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/moduleName"
+          }
+        },
+        "tokens": {
+          "$ref": "#/$defs/anchorList"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reference_kind": {
+                "const": "markdown-relative-link"
+              }
+            },
+            "required": [
+              "reference_kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "target_path"
+            ],
+            "not": {
+              "required": [
+                "tokens"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reference_kind": {
+                "enum": [
+                  "absolute-url",
+                  "prose-reference"
+                ]
+              }
+            },
+            "required": [
+              "reference_kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "tokens"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
