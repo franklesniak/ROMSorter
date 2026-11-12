@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import importlib
-from typing import Any, cast
+from typing import TYPE_CHECKING
 
-pytest = cast(Any, importlib.import_module("pytest"))
+if TYPE_CHECKING:
+    import pytest
+else:
+    pytest = importlib.import_module("pytest")
 
 __all__ = ["pytest"]
