@@ -1161,6 +1161,14 @@ def is_pytest_configuration_retained(
     retained_modules: Collection[str] | None,
 ) -> bool:
     """Return whether the retained profile includes the pytest configuration."""
+    # A downstream support suite can use pytest.ini without Python product packaging.
+    if optional_regular_file_exists(repo_root, "pytest.ini"):
+        relation = selected_manifest_relation_for_path("pytest.ini", manifest_mappings)
+        return (
+            retained_modules is None
+            or relation is None
+            or relation.is_retained_by(retained_modules)
+        )
     if not optional_regular_file_exists(repo_root, PYTEST_CONFIG_PATH):
         return False
     if retained_modules is None:
@@ -1189,7 +1197,7 @@ def pytest_gate_plan(
             commands=(),
             notes=(
                 (
-                    f"Pytest gate skipped: pytest configuration pruned ({PYTEST_CONFIG_PATH} "
+                    f"Pytest gate skipped: pytest configuration pruned (pytest.ini or {PYTEST_CONFIG_PATH} "
                     "is not retained by the current module state or is not present)."
                 ),
             ),

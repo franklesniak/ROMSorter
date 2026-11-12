@@ -707,6 +707,89 @@ def test_check_plan_includes_pytest_from_explicit_retained_modules(
     assert not any("Pytest gate skipped" in note for note in plan.notes)
 
 
+def test_pytest_ini_plans_support_tests_without_python_product(tmp_path: Path) -> None:
+    """A real downstream configuration enables the retained support test command."""
+    _write_pytest_gate_manifest(tmp_path)
+    _write_text(tmp_path, "pytest.ini", "[pytest]\n")
+    files = ("pytest.ini", "tests/test_run_first_adoption_checks.py")
+    plan = first_adoption.pytest_gate_plan(
+        tmp_path, files, explicit_retained_modules=("template-sync-support",)
+    )
+    assert [item.command for item in plan.commands] == [
+        (sys.executable, "-m", "pytest", "-m", "not upstream_template_only")
+    ]
+
+
+def test_pytest_ini_does_not_enable_excluded_tests(tmp_path: Path) -> None:
+    """Configuration presence does not override test ownership."""
+    _write_pytest_gate_manifest(tmp_path)
+    _write_text(tmp_path, "pytest.ini", "[pytest]\n")
+    plan = first_adoption.pytest_gate_plan(
+        tmp_path,
+        ("pytest.ini", "tests/test_example.py"),
+        explicit_retained_modules=("template-sync-support",),
+    )
+    assert not plan.commands
+
+
+def test_pytest_ini_gate_propagates_test_failure(tmp_path: Path, monkeypatch: Any) -> None:
+    """A scheduled support test failure remains a failed adoption check."""
+    _write_pytest_gate_manifest(tmp_path)
+    _write_text(tmp_path, "pytest.ini", "[pytest]\n")
+    _write_text(tmp_path, "tests/test_run_first_adoption_checks.py")
+    _run_git(tmp_path, "init")
+    commands: list[tuple[str, ...]] = []
+
+    def runner(command: Sequence[str], _root: Path) -> int:
+        commands.append(tuple(command))
+        return 7 if "pytest" in command else 0
+
+    result = first_adoption.run_first_adoption_checks(
+        tmp_path, retained_modules=("template-sync-support",),
+        command_runner=runner, git_status_reader=lambda _root: (), stdout=io.StringIO(),
+    )
+    assert any("pytest" in command for command in commands)
+    assert result != 0
+
+
+def test_pytest_ini_gate_positive_control_detects_removed_guard(tmp_path: Path, monkeypatch: Any) -> None:
+    """The expected command distinguishes a removed configuration predicate."""
+    _write_pytest_gate_manifest(tmp_path)
+    _write_text(tmp_path, "pytest.ini", "[pytest]\n")
+    monkeypatch.setattr(first_adoption, "is_pytest_configuration_retained", lambda *a, **kw: False)
+    plan = first_adoption.pytest_gate_plan(
+        tmp_path, ("pytest.ini", "tests/test_run_first_adoption_checks.py"),
+        explicit_retained_modules=("template-sync-support",),
+    )
+    with pytest.raises(AssertionError):
+        assert [item.command for item in plan.commands] == [
+            (sys.executable, "-m", "pytest", "-m", "not upstream_template_only")
+        ]
+
+
+def test_missing_pytest_ini_does_not_plan_support_tests(tmp_path: Path) -> None:
+    """Support test retention still requires a configuration file."""
+    _write_pytest_gate_manifest(tmp_path)
+    plan = first_adoption.pytest_gate_plan(
+        tmp_path,
+        ("tests/test_run_first_adoption_checks.py",),
+        explicit_retained_modules=("template-sync-support",),
+    )
+    assert not plan.commands
+
+
+def test_explicitly_excluded_pytest_ini_stays_excluded(tmp_path: Path) -> None:
+    """A manifest configuration restriction remains authoritative."""
+    _write_manifest(tmp_path, "template_manifest:\n  path_mappings:\n    - pattern: 'pytest.ini'\n      requires_all: [python]\n")
+    _write_text(tmp_path, "pytest.ini", "[pytest]\n")
+    plan = first_adoption.pytest_gate_plan(
+        tmp_path, ("pytest.ini", "tests/test_example.py"),
+        explicit_retained_modules=("template-sync-support",),
+    )
+    assert not plan.commands
+    assert any("configuration pruned" in note for note in plan.notes)
+
+
 def test_marker_state_overrides_explicit_modules_and_file_presence(
     tmp_path: Path,
     monkeypatch: Any,

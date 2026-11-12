@@ -45,6 +45,10 @@ More to come!
 ## Development and Support
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and validation.
+The first-adoption helper includes the retained support regression suite when
+`pytest.ini` is present. Use `python .template-sync/scripts/run_first_adoption_checks.py --plan-only`
+to inspect the commands, or `--check` to run them. A failed pytest command fails
+the adoption check.
 Use [GitHub Discussions](https://github.com/franklesniak/ROMSorter/discussions) for
 usage help and troubleshooting. Report reproducible bugs and enhancement requests
 through [GitHub Issues](https://github.com/franklesniak/ROMSorter/issues).
