@@ -1,0 +1,13 @@
+.git/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.terraform/
+.venv/
+__pycache__/
+build/
+coverage/
+dist/
+htmlcov/
+node_modules/
+venv/

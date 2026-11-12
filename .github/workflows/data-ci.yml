@@ -1,0 +1,275 @@
+# Data file linting CI Workflow
+#
+# Purpose: Run JSON, YAML, and GitHub Actions workflow validation as a
+# first-class, dedicated CI workflow alongside the aggregate pre-commit gate
+# (precommit-ci.yml) and the per-language workflows (python-ci.yml,
+# powershell-ci.yml, terraform-ci.yml, markdownlint.yml).
+#
+# Hooks executed (all from .pre-commit-config.yaml):
+#   - check-json        — strict JSON syntax (.json only; .jsonc excluded)
+#   - check-toml        — TOML syntax (any *.toml; covers .codex/config.toml
+#                         and any other TOML file added downstream)
+#   - check-yaml        — YAML parse check (.yml / .yaml)
+#   - validate-template-placeholders-manifest
+#                         — JSON Schema validation for
+#                           `.github/template-placeholders.json`.
+#   - validate-template-placeholders-valid-examples
+#                         — JSON Schema validation for valid placeholder
+#                           manifest fixtures under
+#                           `schemas/examples/template-placeholders/`.
+#   - validate-template-placeholders-schema
+#                         — JSON Schema metaschema validation for the
+#                           placeholder manifest schema.
+#   - validate-template-placeholders-invalid-examples
+#                         — Assert-fails validation proving invalid placeholder
+#                           manifest fixtures are rejected.
+# template-sync: begin yaml-only
+#   - yamllint          — YAML style enforcement per .yamllint.yml
+# template-sync: end yaml-only
+#   - actionlint        — GitHub Actions workflow linting
+# template-sync: begin template-sync-support-only
+#   - validate-template-sync-marker-valid-examples
+#                         — JSON Schema validation for valid template-sync
+#                           marker fixtures under
+#                           `schemas/examples/template-sync-marker/`.
+#   - validate-template-sync-instruction-contracts-valid-examples
+#                         — JSON Schema validation for valid template-sync
+#                           instruction-contract fixtures under
+#                           `schemas/examples/template-sync-instruction-contracts/`.
+#   - validate-first-adoption-quality-suppressions-valid-examples
+#                         — JSON Schema validation for valid first-adoption
+#                           quality suppression fixtures under
+#                           `schemas/examples/first-adoption-quality-suppressions/`.
+#   - validate-template-sync-manifest-schema
+#                         — JSON Schema metaschema validation for the
+#                           template sync manifest schema.
+#   - validate-template-sync-marker-schema
+#                         — JSON Schema metaschema validation for the
+#                           template sync marker schema.
+#   - validate-template-sync-instruction-contracts-schema
+#                         — JSON Schema metaschema validation for the
+#                           template sync instruction contracts schema.
+#   - validate-first-adoption-quality-suppressions-schema
+#                         — JSON Schema metaschema validation for the
+#                           first-adoption quality suppressions schema.
+#   - validate-template-sync-manifest
+#                         — JSON Schema validation for
+#                           `.template-sync/manifest.yml`.
+#   - validate-template-sync-marker
+#                         — JSON Schema validation for
+#                           `.template-sync/marker.yml` when present.
+#   - validate-template-sync-instruction-contracts
+#                         — JSON Schema validation for
+#                           `.template-sync/instruction-contracts.yml`.
+#   - validate-first-adoption-quality-suppressions
+#                         — JSON Schema validation for
+#                           `.template-sync/first-adoption/quality-suppressions.json`
+#                           when present.
+#   - validate-instruction-contracts-upstream
+#                         — Required-anchor validation for the upstream
+#                           template's protected instruction files.
+#   - validate-instruction-contracts-downstream
+#                         — Required-anchor validation for downstream retained
+#                           protected instruction files.
+# template-sync: end template-sync-support-only
+# template-sync: begin github-platform-only
+#   - validate-dependabot-config
+#                         — JSON Schema validation for `.github/dependabot.yml`
+#                           against `vendor.dependabot`.
+#   - validate-dependabot-config-valid-examples
+#                         — JSON Schema validation for the documented
+#                           Dependabot optional-field fixtures under
+#                           `tests/fixtures/dependabot/` against the same
+#                           pinned `vendor.dependabot` schema; the fixture is
+#                           also re-validated under pytest in
+#                           `tests/test_dependabot_schema.py`.
+# template-sync: end github-platform-only
+#
+# Schema-backed checks are invoked by pre-commit alias instead of the aggregate
+# `check-jsonschema` or `check-metaschema` hook IDs so module-owned validation
+# can be removed without leaving CI steps that call stripped or unrelated hooks.
+#
+# Design Decisions:
+#
+# 1. CI Ownership / Relationship to precommit-ci.yml:
+#    `precommit-ci.yml` runs the full `pre-commit run --all-files` pipeline
+#    as the single canonical aggregate pre-commit gate. This
+#    workflow does NOT replace that — it adds dedicated visibility and a
+#    distinct required-check identity for JSON/YAML/Actions validation so
+#    branch protection rules and contributors can reason about data-file
+#    quality independently of the aggregate gate and Python CI.
+#
+#    Trade-off: the JSON/YAML/actionlint hooks run in both workflows. This
+#    duplication is intentional and accepted in exchange for clearer
+#    ownership and parity with the other per-language workflows. See the
+#    "Dedicated data-file CI workflow (data-ci.yml)" entry in
+#    `.github/TEMPLATE_DESIGN_DECISIONS.md` for the full rationale.
+#
+# 2. Relationship to auto-fix-precommit.yml:
+#    `.github/workflows/auto-fix-precommit.yml` is intentionally NOT a peer
+#    of this workflow. It is an optional read-only fix preview scoped to
+#    Copilot-agent pushes on `copilot/**` branches. It records hook failures
+#    and publishes an untrusted patch; its wrapper does not commit or push.
+#    `data-ci.yml` is a contract enforcement gate for all PRs and pushes.
+#
+# 3. Template Repository Trigger Policy:
+#    This workflow does NOT use path-based filtering. This repository is a
+#    template, and existing aggregate/per-language workflows
+#    (precommit-ci.yml, python-ci.yml, powershell-ci.yml, terraform-ci.yml)
+#    intentionally avoid path filters so the workflow itself is exercised on
+#    every change and copied accurately by downstream consumers. This workflow
+#    mirrors that convention by running on all pushes and pull requests, plus
+#    `workflow_dispatch` to match `precommit-ci.yml`, `python-ci.yml`, and
+#    `terraform-ci.yml`.
+#
+# 4. Job and Workflow Naming:
+#    The workflow name (`Data file linting`) and job name (`Data file
+#    linting`) are deliberately distinct from `Pre-commit CI` / `Pre-commit`
+#    so that branch protection rules can require data-file validation
+#    independently from aggregate pre-commit validation.
+
+name: Data file linting
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data-file-linting:
+    permissions:
+      contents: read
+    name: Data file linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          # See: .github/instructions/yaml.instructions.md (GitHub Actions Setup Version Pins).
+          python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: requirements-pre-commit.txt
+
+      - name: Cache pre-commit hooks
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml', 'requirements-pre-commit.txt') }}
+
+      - name: Install pre-commit
+        shell: python
+        run: |
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          requirement = Path("requirements-pre-commit.txt").read_text(encoding="utf-8").strip()
+          if re.fullmatch(r"pre-commit==[0-9]+\.[0-9]+\.[0-9]+", requirement) is None:
+              raise SystemExit("requirements-pre-commit.txt must contain one exact pre-commit pin")
+          subprocess.run(
+              [sys.executable, "-m", "pip", "install", "--requirement", "requirements-pre-commit.txt"],
+              check=True,
+          )
+          expected = requirement.replace("==", " ", 1)
+          actual = subprocess.check_output(["pre-commit", "--version"], text=True).strip()
+          if actual != expected:
+              raise SystemExit(f"pre-commit version mismatch: expected {expected}, got {actual}")
+          print(actual)
+
+      - name: Run check-json
+        run: pre-commit run check-json --all-files
+
+      - name: Run check-toml
+        run: pre-commit run check-toml --all-files
+
+      - name: Run check-yaml
+        run: pre-commit run check-yaml --all-files
+
+      - name: Run validate-template-placeholders-manifest
+        run: pre-commit run validate-template-placeholders-manifest --all-files
+
+      - name: Run validate-template-placeholders-valid-examples
+        run: pre-commit run validate-template-placeholders-valid-examples --all-files
+
+      - name: Run validate-template-placeholders-schema
+        run: pre-commit run validate-template-placeholders-schema --all-files
+
+      - name: Run validate-template-placeholders-invalid-examples
+        run: pre-commit run validate-template-placeholders-invalid-examples --all-files
+
+      # template-sync: begin yaml-only
+      - name: Run yamllint
+        run: pre-commit run yamllint --all-files
+      # template-sync: end yaml-only
+
+      - name: Run actionlint
+        run: pre-commit run actionlint --all-files
+
+      # template-sync: begin template-sync-support-only
+      - name: Run validate-template-sync-marker-valid-examples
+        run: pre-commit run validate-template-sync-marker-valid-examples --all-files
+
+      - name: Run validate-template-sync-instruction-contracts-valid-examples
+        run: pre-commit run validate-template-sync-instruction-contracts-valid-examples --all-files
+
+      - name: Run validate-first-adoption-quality-suppressions-valid-examples
+        run: pre-commit run validate-first-adoption-quality-suppressions-valid-examples --all-files
+
+      - name: Run validate-template-sync-manifest-schema
+        run: pre-commit run validate-template-sync-manifest-schema --all-files
+
+      - name: Run validate-template-sync-marker-schema
+        run: pre-commit run validate-template-sync-marker-schema --all-files
+
+      - name: Run validate-template-sync-instruction-contracts-schema
+        run: pre-commit run validate-template-sync-instruction-contracts-schema --all-files
+
+      - name: Run validate-first-adoption-quality-suppressions-schema
+        run: pre-commit run validate-first-adoption-quality-suppressions-schema --all-files
+
+      - name: Run validate-template-sync-manifest
+        run: pre-commit run validate-template-sync-manifest --all-files
+
+      - name: Run validate-template-sync-marker
+        run: pre-commit run validate-template-sync-marker --all-files
+
+      - name: Run validate-template-sync-instruction-contracts
+        run: pre-commit run validate-template-sync-instruction-contracts --all-files
+
+      - name: Run validate-first-adoption-quality-suppressions
+        run: pre-commit run validate-first-adoption-quality-suppressions --all-files
+
+      - name: Run validate-instruction-contracts-upstream
+        run: pre-commit run validate-instruction-contracts-upstream --all-files
+
+      - name: Run validate-instruction-contracts-downstream
+        run: pre-commit run validate-instruction-contracts-downstream --all-files
+      # template-sync: end template-sync-support-only
+
+      # template-sync: begin github-platform-only
+      - name: Run validate-dependabot-config
+        run: pre-commit run validate-dependabot-config --all-files
+
+      - name: Run validate-dependabot-config-valid-examples
+        run: pre-commit run validate-dependabot-config-valid-examples --all-files
+      # template-sync: end github-platform-only
+
+      - name: Run validate-workflow-security
+        run: pre-commit run validate-workflow-security --all-files
+
+      # template-sync: begin instruction-enforcement-only
+      - name: Run validate-instruction-profile
+        run: pre-commit run validate-instruction-profile --all-files
+      # template-sync: end instruction-enforcement-only

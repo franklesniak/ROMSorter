@@ -1,0 +1,22 @@
+# CODEOWNERS file - Defines code ownership for pull request reviews
+#
+# TEMPLATE NOTE: Replace @franklesniak with your GitHub username or team.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# EXPECTED WARNINGS: GitHub will show "Unknown owner" errors for @franklesniak in
+# the template repository. This is expected and intentional - the placeholder
+# must be replaced after cloning. The check-placeholders.yml workflow enforces
+# this replacement.
+#
+# After customizing, this file ensures the right people are automatically
+# requested to review pull requests.
+
+# Default owners for everything in the repo
+* @franklesniak
+
+# Workflow files require maintainer review
+.github/workflows/ @franklesniak
+
+# Copilot instructions require maintainer review
+.github/copilot-instructions.md @franklesniak
+.github/instructions/ @franklesniak

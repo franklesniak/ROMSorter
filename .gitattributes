@@ -1,0 +1,125 @@
+# ---------------------------------------------------------------------------
+# Byte-exact text artifact protection
+# ---------------------------------------------------------------------------
+# The rules below pin committed text fixtures to LF line endings so that
+# checkouts on Windows hosts with `core.autocrlf=true` do not silently
+# rewrite the on-disk bytes. Any test or tool that performs byte-exact
+# comparison (hash equality, signature verification, snapshot diffing)
+# depends on this stability.
+#
+# The directory-level rules below are broad on purpose: they catch text
+# fixtures regardless of extension (including ad-hoc names like `expected`
+# or `baseline`). Binary file types commonly stored alongside text
+# fixtures (images, archives, media, fonts, compiled artifacts) are
+# declassified further down with Git's built-in `binary` macro so
+# Git does not apply line-ending conversion to them. Later patterns win
+# per-attribute in `.gitattributes`, so the binary overrides take
+# precedence over the directory-wide `text eol=lf` pins.
+#
+# DO NOT DELETE these rules when customizing this template unless you are
+# certain no byte-exact comparison exists in your repository. See
+# .github/instructions/gitattributes.instructions.md for the normative rule
+# and guidance on adding project-specific entries (including how to
+# declassify additional binary types).
+# ---------------------------------------------------------------------------
+
+# Text fixtures: pin LF line endings on checkout.
+tests/**/golden/**            text eol=lf
+tests/**/goldens/**           text eol=lf
+tests/**/snapshots/**         text eol=lf
+tests/**/__snapshots__/**     text eol=lf
+tests/**/fixtures/**          text eol=lf
+testdata/**                   text eol=lf
+
+# YAML files: pin LF so yamllint's `new-lines: type: unix` rule
+# passes on Windows checkouts regardless of `core.autocrlf`.
+*.yml                         text eol=lf
+*.yaml                        text eol=lf
+
+# Template-managed text formats: pin LF to prevent broad CRLF churn
+# during downstream adoption, stack pruning, and repeated cross-platform
+# edits of repository-managed documentation, scripts, and configuration.
+*.md                          text eol=lf
+*.mdc                         text eol=lf
+*.ps1                         text eol=lf
+*.psd1                        text eol=lf
+*.psm1                        text eol=lf
+*.json                        text eol=lf
+*.jsonc                       text eol=lf
+*.toml                        text eol=lf
+*.js                          text eol=lf
+*.mjs                         text eol=lf
+*.py                          text eol=lf
+*.sh                          text eol=lf
+*.hcl                         text eol=lf
+*.tf                          text eol=lf
+*.tfvars                      text eol=lf
+*.tftpl                       text eol=lf
+*.tfbackend                   text eol=lf
+.gitattributes                text eol=lf
+.*ignore                      text eol=lf
+CODEOWNERS                    text eol=lf
+/LICENSE                      text eol=lf
+
+# Preserve the established byte representation of public ROM mapping inputs.
+/MAME_2003_Plus_RenameSet_Exclusions.csv       -text
+/MAME_2003_Plus_RenameSet_Prerequisites.csv    -text
+/MAME_2010_RenameSet_Exclusions.csv           -text
+/MAME_2010_RenameSet_Prerequisites.csv        -text
+
+# Binary overrides: prevent the broad rules above (or any default
+# text-detection) from treating these common binary file types as text.
+# The `binary` macro expands to `-diff -merge -text`.
+
+# Images
+*.png                         binary
+*.jpg                         binary
+*.jpeg                        binary
+*.gif                         binary
+*.webp                        binary
+*.bmp                         binary
+*.ico                         binary
+*.tif                         binary
+*.tiff                        binary
+
+# Documents and archives
+*.pdf                         binary
+*.zip                         binary
+*.tar                         binary
+*.gz                          binary
+*.tgz                         binary
+*.bz2                         binary
+*.xz                          binary
+*.7z                          binary
+*.rar                         binary
+
+# Compiled and packaged artifacts
+*.exe                         binary
+*.dll                         binary
+*.so                          binary
+*.dylib                       binary
+*.class                       binary
+*.jar                         binary
+*.wasm                        binary
+*.pyc                         binary
+
+# Audio and video
+*.mp3                         binary
+*.mp4                         binary
+*.mov                         binary
+*.wav                         binary
+*.ogg                         binary
+*.webm                        binary
+*.mkv                         binary
+*.avi                         binary
+*.flac                        binary
+
+# Fonts
+*.ttf                         binary
+*.otf                         binary
+*.woff                        binary
+*.woff2                       binary
+*.eot                         binary
+
+# Git LFS-managed opaque authoring/project formats. This opt-in block is
+# removed for downstream repositories that do not adopt the git-lfs module.

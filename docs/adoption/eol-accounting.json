@@ -1,0 +1,146 @@
+[
+  {
+    "path": "ARCADE_EMULATOR_BACKGROUND_INFO.md",
+    "before_bytes": 7924,
+    "after_bytes": 7841,
+    "crlf_removed": 83,
+    "before_sha256": "135c56d46285b2a1e6814bf4f31e04e710a853e15b31668b39029c41cd238bb3",
+    "after_sha256": "d75c93f2742c368fa9c03aaceacda19c4f9489d0a2f75a0bc0ed49b2fb010a0c",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "before_bytes": 41609,
+    "after_bytes": 40929,
+    "crlf_removed": 680,
+    "before_sha256": "19fb4d7652cf2b9d099389bc27a7336a7a16fa7042c5e934d679ea7b7635c8f1",
+    "after_sha256": "5af899ab25b57b452721e8ddd44cbe8d35c12965e0e5b358a2100612bcef8bac",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ArcadeManagerClassicsListToCsv.ps1",
+    "before_bytes": 4177,
+    "after_bytes": 4099,
+    "crlf_removed": 78,
+    "before_sha256": "7dcdaeea6769900969617d8033e4839f67e1fb77d50e7524f2742edc58e29b55",
+    "after_sha256": "f2b2225891e6a7b6ead0bf62209d7451668e1655d4b67f99c05a2157a91861ea",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "before_bytes": 25084,
+    "after_bytes": 24595,
+    "crlf_removed": 489,
+    "before_sha256": "2659d646c7d79330592c57e81126f88efecc131b16891790fd545c70410b7fe1",
+    "after_sha256": "cfba05749ad4ee0c7062fe8c66f3420c50c8761c6a5e1a27fba9b6e3910d3b32",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "before_bytes": 36738,
+    "after_bytes": 36024,
+    "crlf_removed": 714,
+    "before_sha256": "a6d6a068e5cb48a033953e99893c6ff08740a0c773a00c0ffba9999f8e5ea3a2",
+    "after_sha256": "8fb04f025f16ec92af742f4f511d147c68cd56ed7aa7ca6f08f90ef46163671d",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "before_bytes": 37111,
+    "after_bytes": 36397,
+    "crlf_removed": 714,
+    "before_sha256": "050ced28288cd914b2d76342842046dc08a2c703593070c469017ca3b0c13ea7",
+    "after_sha256": "af354e56ba511fecd176ce4c4ab1d7aa4c6fdb9504254e76d96988e142893beb",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "before_bytes": 39997,
+    "after_bytes": 39216,
+    "crlf_removed": 781,
+    "before_sha256": "b7db36593d84b903d191533b920163fdf9bd180a73bdbcd6f52759f53b19da3b",
+    "after_sha256": "42686a38c2c58c31a9b698b4d01561c8ce43af10c94c1282ae0912b5a21681d0",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "before_bytes": 45811,
+    "after_bytes": 44935,
+    "crlf_removed": 876,
+    "before_sha256": "70e200765389e165caf064e41da2e50096c31337fbbba6427a106f554a6ce41d",
+    "after_sha256": "88d9b70a7d0f22403280762fab2225ba7bef56038503c81c390678a1b0356b22",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "before_bytes": 44719,
+    "after_bytes": 43995,
+    "crlf_removed": 724,
+    "before_sha256": "3f3e8065351c364b5a1e94f15b5b0abddb353f46f3e5405a523aa79e7a7eabcb",
+    "after_sha256": "491c44048544f28e13cf30cbe1c589e08e2f6592d43c84e1f210344e72037245",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "before_bytes": 43250,
+    "after_bytes": 42541,
+    "crlf_removed": 709,
+    "before_sha256": "4cf77738b7e614a04568dc03bf8714dcd5dc52f68ff42f428c39c38385e9dd82",
+    "after_sha256": "346abed585b0779d1e8784db81a2516a3269e48712243d84e6c80daadba585ef",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "before_bytes": 84773,
+    "after_bytes": 83388,
+    "crlf_removed": 1385,
+    "before_sha256": "3d8503ef0d434dee4c092d9227de1636b7ccbabb7d08ac36f1b5b9b90feab14b",
+    "after_sha256": "246eefc9e1cb893feef097d5e51c204846174c8c8f7fa73a0e31f1ecd63619a9",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "before_bytes": 44341,
+    "after_bytes": 43623,
+    "crlf_removed": 718,
+    "before_sha256": "1a40419426943bb5ff843a76889996f409f67191ff3225d31462677056a1d6d6",
+    "after_sha256": "a9d1d0506a85cfa6e4995b5dc8e825fab2ba91a704f0cd4f73d1ea73a21d51e1",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "before_bytes": 40366,
+    "after_bytes": 39707,
+    "crlf_removed": 659,
+    "before_sha256": "295550b36f1577718fa8120ade176de10b57f4054e992c0ecdf8505812d1e62c",
+    "after_sha256": "356f8979a4b652a590367991a9261dfa0780d23ec8e01751d6a4bc3bb32ea61f",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "before_bytes": 35851,
+    "after_bytes": 35215,
+    "crlf_removed": 636,
+    "before_sha256": "f347a3bcbf051d3d2040c5574f0658cb291109d69b4500add4c441b140b1ca56",
+    "after_sha256": "22ad7c0c1a9eb85c753fddbc98ac71728907b1bd2773cc75ecb6592809667726",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "before_bytes": 44339,
+    "after_bytes": 43604,
+    "crlf_removed": 735,
+    "before_sha256": "707de19ae8771b0710e46e29e7680a4e20a48e137ab775dea0df3a3f60de9520",
+    "after_sha256": "f9d6745ff6fcd21e2eecf54d84ddd6ff4ae67b025783aa30e0347e09ea23ef38",
+    "only_crlf_to_lf": true
+  },
+  {
+    "path": "Create-ConsolidatedAllKillerNoFillerGameList.ps1",
+    "before_bytes": 25066,
+    "after_bytes": 24645,
+    "crlf_removed": 421,
+    "before_sha256": "4122a3f553ef42cad74431a4cf0429e9606736950eac007cc348f1b51029824d",
+    "after_sha256": "b9ae84c9fb50def59793384ec3c385047c0252e369ecdb847456543cf9212561",
+    "only_crlf_to_lf": true
+  }
+]

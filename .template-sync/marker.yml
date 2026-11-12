@@ -1,0 +1,260 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - instruction-enforcement
+    - agent-copilot
+    - agent-codex
+    - baseline
+    - agent-instructions
+    - github-platform
+    - github-actions
+    - github-templates
+    - template-sync-support
+    - markdown
+    - powershell
+    - json
+    - yaml
+  local_overrides:
+    - path: README.md
+      reason: Downstream project identity, usage, filenames and examples; only owner-approved narrow development/link/case
+        edits.
+      default_decision: SKIP
+    - path: LICENSE
+      reason: Preserve the existing MIT license and Frank Lesniak copyright while renaming LICENSE.txt to LICENSE.
+      default_decision: SKIP
+    - path: .vscode/settings.json
+      reason: Preserve the existing downstream settings including the pre-existing window.title ROMSorter-BF-Part3 change.
+      default_decision: SKIP
+    - path: .github/workflows/powershell-ci.yml
+      reason: Owner-approved temporary first-adoption analyzer gate and Windows PowerShell 5.1 / supported PowerShell 7.6
+        matrix; preserve trust controls.
+      default_decision: MERGE
+    - path: tests/PowerShell/Placeholder.Tests.ps1
+      reason: Replace demonstration assertions with real parse-only public script syntax coverage in ProductSyntax.Tests.ps1.
+      default_decision: SKIP
+    - path: .template-sync/manifest.yml
+      reason: Retain the two Python import helpers required by selected template-support tests without adopting the Python
+        product module.
+      default_decision: MERGE
+    - path: tests/__init__.py
+      reason: Describe retained support tests accurately; no example Python package adopted.
+      default_decision: MERGE
+    - path: .pre-commit-config.yaml
+      reason: Preserve exact CSV inputs from whitespace and EOL formatters; selected-module hooks remain enabled.
+      default_decision: MERGE
+    - path: CONTRIBUTING.md
+      reason: Maintain confirmed Discussions support routing, supported hosts and temporary analyzer policy.
+      default_decision: MERGE
+    - path: .github/ISSUE_TEMPLATE/config.yml
+      reason: Use Discussions for support; preserve the approved private-security and manual-setting policies.
+      default_decision: MERGE
+    - path: .github/ISSUE_TEMPLATE/bug_report.yml
+      reason: Preserve master branch wording and confirmed labels while rendering repository identity.
+      default_decision: MERGE
+    - path: .github/ISSUE_TEMPLATE/documentation_issue.yml
+      reason: Preserve master branch wording while rendering repository identity.
+      default_decision: MERGE
+    - path: templates/json/README.md
+      reason: Use pinned upstream schema documentation links because the schema module is excluded.
+      default_decision: MERGE
+    - path: SECURITY.md
+      reason: PVR-only policy with 48h/7d/latest-version commitments; content assumes enabled and immediate owner activation
+        is tracked in TODO.
+      default_decision: MERGE
+    - path: CODE_OF_CONDUCT.md
+      reason: Direct conduct reports to generic maintainer contact information on GitHub.
+      default_decision: MERGE
+    - path: .github/CODEOWNERS
+      reason: Sole owner @franklesniak; omit the excluded Azure host path rule.
+      default_decision: MERGE
+    - path: .github/workflows/copilot-setup-steps.yml
+      reason: Pin Pester 5.9.1 to enforce the retained PowerShell guide Pester 5.x requirement; preserve workflow security
+        controls.
+      default_decision: MERGE
+    - path: .gitattributes
+      reason: Preserve the exact bytes of the four existing public CSV inputs with -text; retain selected LF pins and prune
+        unselected Git LFS.
+      default_decision: MERGE
+    - path: package.json
+      reason: Preserve ROMSorter tooling identity and Node.js 24 development minimum aligned with hosted CI and EOL policy.
+      default_decision: MERGE
+    - path: package-lock.json
+      reason: Preserve synchronized root identity and Node.js 24 minimum; dependency entries remain pinned upstream bytes
+        semantically.
+      default_decision: MERGE
+    - path: tests/test_run_first_adoption_checks.py
+      reason: Allow the retained downstream pytest.ini fixture configuration while preserving strict marker and selection
+        assertions; retain upstream pyproject fallback.
+      default_decision: MERGE
+    - path: tests/test_materialize_downstream_adoption.py
+      reason: Mark eight cases requiring the full upstream README or excluded Azure assets upstream_template_only; retain
+        all applicable materialization and security coverage.
+      default_decision: MERGE
+  local_path_ownership:
+    - path: ARCADE_EMULATOR_BACKGROUND_INFO.md
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ArcadeBelgiumNplayersIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ArcadeManagerClassicsListToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-FBNeoArcadeDATToCSV.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAME2003DATToCSV.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAME2003PlusDATToCSV.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAME2010DATToCSV.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-MAMEDATToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoEmmaCatverIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsBestGamesIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsCatverIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsLanguagesIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsRenameSetIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Convert-ProgettoSnapsSeriesIniToCsv.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Copy-MAMEDATToMAMEDatabase.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Create-ConsolidatedAllKillerNoFillerGameList.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Find-MAMEAndFBNeoArcadeMatchUsingStringMatch.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Find-MAMEAndMAME2010MatchUsingCRC.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Join-FBNeoCRCMatchedToMAMEWithMAMEDatabase.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Join-TimeAdvancedMAME2003PlusWithMAMEDatabase.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: MAME_2003_Plus_RenameSet_Exclusions.csv
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: MAME_2003_Plus_RenameSet_Prerequisites.csv
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: MAME_2010_RenameSet_Exclusions.csv
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: MAME_2010_RenameSet_Prerequisites.csv
+      reason: Downstream-owned product script, data or documentation; preserve public path and behavior.
+    - path: _TODO-repo-init.md
+      reason: Downstream adoption decisions and review evidence.
+    - path: _ADOPTION-SUMMARY.md
+      reason: Downstream adoption decisions and review evidence.
+    - path: docs/adoption/
+      reason: Downstream adoption decisions and review evidence.
+    - path: pytest.ini
+      reason: Downstream adoption decisions and review evidence.
+    - path: tests/PowerShell/ProductSyntax.Tests.ps1
+      reason: Parse-only tests of downstream public scripts on supported hosts; never execute product scripts.
+      overlap_exception_reason: Project-specific offline syntax test occupies the selected PowerShell test tree.
+  protected_file_decisions:
+    - path: .github/copilot-instructions.md
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instruction-contracts.yml
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instruction-profile.yml
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instructions/docs.instructions.md
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instructions/gitattributes.instructions.md
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instructions/json.instructions.md
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instructions/powershell.instructions.md
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/instructions/yaml.instructions.md
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: .github/workflow-security-contract.yml
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides. Record only the reviewed PowerShell gate-mode and supported-host
+        matrix controls. Record reviewed Pester 5.9.1 install/import fingerprints in PowerShell CI and Copilot setup, enforcing
+        the existing guide requirement. Record the reviewed Pester-discovery UTF-8 output fingerprint for Windows PowerShell
+        5.1 compatibility.
+    - path: .template-sync/instruction-contracts.yml
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Copy the pinned reviewed catalog intact without pruning obligations.
+    - path: AGENTS.md
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides. Remove the complete excluded Azure DevOps host protocol section
+        under approved module pruning; preserve GitHub/Codex protocol and every retained contract anchor.
+    - path: schemas/instruction-contracts.schema.json
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+    - path: schemas/instruction-profile.schema.json
+      adoption_mode: minimal-preservation
+      decision: TAKE
+      authorization_basis: Owner approved the concrete protected-file actions in the adoption preflight and authorized implementation
+        on 2026-11-11.
+      authorized_scope: Create the selected-module file; substitute confirmed identity, prune complete unadopted module blocks,
+        fix affected links, and record required local overrides.
+  last_reviewed_template_commit: 2f6aa17caa063eaa0b39afb3afb1d27757b4eec3

@@ -1,0 +1,7 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+    - github-platform
+    - github-actions
+    - github-templates

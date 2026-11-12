@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/franklesniak/copilot-repo-template/HEAD/schemas/template-placeholders.schema.json",
+  "title": "Template Placeholder Manifest",
+  "description": "Schema for the baseline placeholder manifest consumed by .github/scripts/replace-template-placeholders.py. The manifest records placeholder tokens, replacement sources, approved path scopes, and scan classifications without duplicating module ownership from .template-sync/manifest.yml.",
+  "type": "object",
+  "required": [
+    "version",
+    "scanContexts",
+    "failureDispositions",
+    "scanFindingKinds",
+    "replacementSources",
+    "pathGroups",
+    "tokens",
+    "rendererPathGroups"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "scanContexts": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/scanContext"
+      },
+      "contains": {
+        "const": "retained-path"
+      }
+    },
+    "failureDispositions": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/failureDisposition"
+      },
+      "contains": {
+        "const": "retained-hard-failure"
+      }
+    },
+    "scanFindingKinds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["kind", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/$defs/findingKind"
+          },
+          "description": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "replacementSources": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["kind", "attribute"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "context-attribute",
+              "context-property",
+              "azure-devops-attribute"
+            ]
+          },
+          "attribute": {
+            "$ref": "#/$defs/sourceAttribute"
+          }
+        }
+      }
+    },
+    "pathGroups": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "#/$defs/repositoryPathPattern"
+        }
+      }
+    },
+    "tokens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "placeholder",
+          "replacementSource",
+          "replacementStyle",
+          "findingKind"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "placeholder": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "replacementSource": {
+            "$ref": "#/$defs/sourceName"
+          },
+          "replacementStyle": {
+            "type": "string",
+            "enum": [
+              "literal",
+              "owner-repo-token",
+              "github-url"
+            ]
+          },
+          "findingKind": {
+            "$ref": "#/$defs/findingKind"
+          },
+          "pathPatterns": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/repositoryPathPattern"
+            }
+          },
+          "pathGroups": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/sourceName"
+            }
+          }
+        },
+        "oneOf": [
+          {
+            "required": ["pathPatterns"],
+            "not": {
+              "required": ["pathGroups"]
+            }
+          },
+          {
+            "required": ["pathGroups"],
+            "not": {
+              "required": ["pathPatterns"]
+            }
+          }
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "replacementStyle": {
+                  "const": "github-url"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "placeholder": {
+                  "pattern": "^https://github\\.com/OWNER/REPO"
+                },
+                "replacementSource": {
+                  "const": "repository"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "replacementStyle": {
+                  "const": "owner-repo-token"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "placeholder": {
+                  "const": "OWNER/REPO"
+                },
+                "replacementSource": {
+                  "const": "repository"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "rendererPathGroups": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "#/$defs/sourceName"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+$(?![\\s\\S])"
+    },
+    "sourceAttribute": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$(?![\\s\\S])"
+    },
+    "repositoryPathPattern": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)[^\\n\\r\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "findingKind": {
+      "type": "string",
+      "enum": [
+        "unresolved-placeholder",
+        "possible-corruption"
+      ]
+    },
+    "scanContext": {
+      "type": "string",
+      "enum": [
+        "retained-path",
+        "excluded-module-path",
+        "local-override",
+        "template-only-delete",
+        "unknown-path"
+      ]
+    },
+    "failureDisposition": {
+      "type": "string",
+      "enum": [
+        "retained-hard-failure",
+        "pruned-informational",
+        "unknown-owner-review",
+        "waived-informational"
+      ]
+    }
+  }
+}

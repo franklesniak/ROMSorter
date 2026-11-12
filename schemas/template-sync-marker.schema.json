@@ -1,0 +1,767 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/franklesniak/copilot-repo-template/HEAD/schemas/template-sync-marker.schema.json",
+  "title": "Template Sync Marker",
+  "description": "Schema for .template-sync/marker.yml, the downstream sync marker that records reviewed template commits, adopted modules, local override decisions, protected-file decisions, deferred protected-file candidates, instruction-contract waivers, and protected-guide contract waivers.",
+  "type": "object",
+  "required": ["template_sync"],
+  "additionalProperties": false,
+  "properties": {
+    "template_sync": {
+      "type": "object",
+      "required": ["source_repo", "included_modules"],
+      "additionalProperties": false,
+      "properties": {
+        "source_repo": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical URL for the upstream template repository."
+        },
+        "last_reviewed_template_commit": {
+          "$ref": "#/$defs/fullLowercaseSha"
+        },
+        "included_modules": {
+          "type": "array",
+          "description": "Template sync modules adopted by the downstream repository. The enum is mirrored from .template-sync/manifest.yml and guarded by tests/test_template_manifest.py.",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/moduleName"
+          }
+        },
+        "local_overrides": {
+          "type": "array",
+          "description": "Path-specific default decisions that preserve known downstream ownership choices while still surfacing upstream activity.",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason", "default_decision"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/repositoryPath"
+              },
+              "reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "default_decision": {
+                "type": "string",
+                "enum": [
+                  "TAKE",
+                  "MERGE",
+                  "SKIP",
+                  "REMOVE-LOCAL",
+                  "DEFER",
+                  "PROTECTED-REVIEW"
+                ]
+              }
+            }
+          }
+        },
+        "local_path_ownership": {
+          "type": "array",
+          "description": "Downstream-owned exact paths or explicit directory-prefix path families that are not upstream template-managed manifest rows.",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/localOwnershipPath"
+              },
+              "reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "overlap_exception_reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        },
+        "deferred_protected_candidates": {
+          "type": "array",
+          "description": "Protected paths whose upstream changes require explicit owner authorization before they can be applied.",
+          "items": {
+            "type": "object",
+            "required": ["path", "source_commit", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/repositoryFilePath"
+              },
+              "source_commit": {
+                "$ref": "#/$defs/fullLowercaseSha"
+              },
+              "reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        },
+        "protected_file_decisions": {
+          "type": "array",
+          "description": "Path-scoped protected-file authorization and adoption decisions for current sync work.",
+          "items": {
+            "$ref": "#/$defs/protectedFileDecision"
+          }
+        },
+        "instruction_contract_waivers": {
+          "type": "array",
+          "description": "Explicit waivers for missing required instruction-contract anchors in retained protected instruction files.",
+          "items": {
+            "$ref": "#/$defs/instructionContractWaiver"
+          }
+        },
+        "protected_guide_contract_waivers": {
+          "type": "array",
+          "description": "Explicit waivers for protected-guide section and reference obligations that would otherwise require protected-file edits or visible owner review.",
+          "items": {
+            "$ref": "#/$defs/protectedGuideContractWaiver"
+          }
+        },
+        "placeholder_waivers": {
+          "type": "array",
+          "description": "Explicit waivers for unresolved placeholder findings in reviewed paths. Waivers are narrow by path or path_pattern and by token or finding_kind.",
+          "items": {
+            "$ref": "#/$defs/placeholderWaiver"
+          }
+        },
+        "issue_label_policy": {
+          "$ref": "#/$defs/issueLabelPolicy"
+        },
+        "issue_labels": {
+          "type": "array",
+          "description": "Custom labels rendered into issue templates when issue_label_policy is custom.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/singleLineNonEmptyString"
+          }
+        },
+        "discussions_policy": {
+          "$ref": "#/$defs/discussionsPolicy"
+        },
+        "collaboration_policy_follow_up_status": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Status text from _TODO-repo-init.md documenting any open manual action for deferred or future-state collaboration template rendering."
+        },
+        "host_provider": {
+          "$ref": "#/$defs/hostProvider"
+        },
+        "azure_devops_organization": {
+          "$ref": "#/$defs/singleLineNonEmptyString"
+        },
+        "azure_devops_organization_url": {
+          "$ref": "#/$defs/azureDevOpsOrganizationUrl"
+        },
+        "azure_devops_project": {
+          "$ref": "#/$defs/singleLineNonEmptyString"
+        },
+        "azure_devops_project_url": {
+          "$ref": "#/$defs/azureDevOpsProjectUrl"
+        },
+        "azure_devops_repository": {
+          "$ref": "#/$defs/singleLineNonEmptyString"
+        },
+        "azure_devops_repository_url": {
+          "$ref": "#/$defs/azureDevOpsRepositoryUrl"
+        },
+        "azure_devops_clone_url": {
+          "$ref": "#/$defs/azureDevOpsRepositoryUrl"
+        },
+        "azure_devops_default_branch": {
+          "$ref": "#/$defs/singleLineNonEmptyString"
+        },
+        "azure_boards_policy": {
+          "$ref": "#/$defs/azureBoardsPolicy"
+        },
+        "azure_repos_pr_template_policy": {
+          "$ref": "#/$defs/azureReposPrTemplatePolicy"
+        },
+        "azure_branch_policy_reviewer_guidance": {
+          "$ref": "#/$defs/azureBranchPolicyReviewerGuidance"
+        },
+        "azure_security_intake_policy": {
+          "$ref": "#/$defs/azureSecurityIntakePolicy"
+        },
+        "azure_security_product_enablement": {
+          "$ref": "#/$defs/azureSecurityProductEnablement"
+        },
+        "azure_dependency_update_policy": {
+          "$ref": "#/$defs/azureDependencyUpdatePolicy"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["issue_labels"]
+          },
+          "then": {
+            "required": ["issue_label_policy"],
+            "properties": {
+              "issue_label_policy": {
+                "const": "custom"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["issue_label_policy"],
+            "properties": {
+              "issue_label_policy": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": ["issue_labels"]
+          }
+        },
+        {
+          "if": {
+            "required": ["issue_label_policy"],
+            "properties": {
+              "issue_label_policy": {
+                "const": "create-manual-follow-up"
+              }
+            }
+          },
+          "then": {
+            "required": ["collaboration_policy_follow_up_status"]
+          }
+        },
+        {
+          "if": {
+            "required": ["discussions_policy"],
+            "properties": {
+              "discussions_policy": {
+                "enum": ["deferred-planned-render", "deferred-not-rendered"]
+              }
+            }
+          },
+          "then": {
+            "required": ["collaboration_policy_follow_up_status"]
+          }
+        },
+        {
+          "if": {
+            "required": ["host_provider"],
+            "properties": {
+              "host_provider": {
+                "enum": ["azure-devops-services", "dual"]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "azure_devops_organization",
+              "azure_devops_project",
+              "azure_devops_repository"
+            ]
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": ["azure_devops_organization"]
+              },
+              {
+                "required": ["azure_devops_organization_url"]
+              },
+              {
+                "required": ["azure_devops_project"]
+              },
+              {
+                "required": ["azure_devops_project_url"]
+              },
+              {
+                "required": ["azure_devops_repository"]
+              },
+              {
+                "required": ["azure_devops_repository_url"]
+              },
+              {
+                "required": ["azure_devops_clone_url"]
+              },
+              {
+                "required": ["azure_devops_default_branch"]
+              },
+              {
+                "required": ["azure_boards_policy"]
+              },
+              {
+                "required": ["azure_repos_pr_template_policy"]
+              },
+              {
+                "required": ["azure_branch_policy_reviewer_guidance"]
+              },
+              {
+                "required": ["azure_security_intake_policy"]
+              },
+              {
+                "required": ["azure_security_product_enablement"]
+              },
+              {
+                "required": ["azure_dependency_update_policy"]
+              }
+            ]
+          },
+          "then": {
+            "required": ["host_provider"],
+            "properties": {
+              "host_provider": {
+                "enum": ["azure-devops-services", "dual"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "fullLowercaseSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$(?![\\s\\S])"
+    },
+    "moduleName": {
+      "type": "string",
+      "enum": [
+        "instruction-enforcement",
+        "agent-copilot",
+        "agent-codex",
+        "agent-claude",
+        "agent-cursor",
+        "agent-gemini",
+        "agent-hermes",
+        "baseline",
+        "git-lfs",
+        "agent-instructions",
+        "github-platform",
+        "azure-devops-platform",
+        "github-actions",
+        "azure-pipelines",
+        "github-templates",
+        "azure-devops-collaboration",
+        "template-onboarding",
+        "template-sync-support",
+        "markdown",
+        "powershell",
+        "json",
+        "yaml",
+        "schema",
+        "python",
+        "terraform"
+      ]
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contractKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$(?![\\s\\S])",
+      "description": "Kebab-case identifier matching a protected-guide obligation key declared in the instruction-contracts schema. Mirrors that schema's contractKey pattern so a malformed waiver key (spaces, uppercase, underscores) is rejected at validation time rather than silently failing to match any obligation."
+    },
+    "singleLineNonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "[\\r\\n]"
+      },
+      "description": "Non-empty string containing no carriage return or line feed, mirroring the renderer's single-line label validation."
+    },
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)[^\\n\\r\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "localOwnershipPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*[*?\\[\\]])[^\\n\\r\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "repositoryFilePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*/$)[^\\n\\r\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "protectedFileDecisionValue": {
+      "type": "string",
+      "enum": [
+        "TAKE",
+        "MERGE",
+        "SKIP",
+        "REMOVE-LOCAL",
+        "DEFER",
+        "PROTECTED-REVIEW"
+      ]
+    },
+    "adoptionMode": {
+      "type": "string",
+      "enum": [
+        "minimal-preservation",
+        "tailored"
+      ]
+    },
+    "issueLabelPolicy": {
+      "type": "string",
+      "enum": [
+        "existing",
+        "create-manual-follow-up",
+        "omit",
+        "custom"
+      ]
+    },
+    "discussionsPolicy": {
+      "type": "string",
+      "enum": [
+        "enabled",
+        "disabled",
+        "deferred-planned-render",
+        "deferred-not-rendered"
+      ]
+    },
+    "hostProvider": {
+      "type": "string",
+      "enum": [
+        "github",
+        "github-enterprise-server",
+        "azure-devops-services",
+        "dual"
+      ]
+    },
+    "azureDevOpsHttpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://(dev\\.azure\\.com|[^/?#@:]+\\.visualstudio\\.com)(:[0-9]+)?(/|$)",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "^https://[^/?#]*@"
+          },
+          {
+            "pattern": "[?#]"
+          }
+        ]
+      }
+    },
+    "azureDevOpsOrganizationUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Azure DevOps Services organization root URL: https://dev.azure.com/<organization> or https://<organization>.visualstudio.com, with no extra path segments, mirroring validate_azure_devops_organization_url.",
+      "pattern": "^https://(dev\\.azure\\.com(:[0-9]+)?/[^/?#@]+/?|[^/?#@:]+\\.visualstudio\\.com(:[0-9]+)?/?)$(?![\\s\\S])",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "^https://[^/?#]*@"
+          },
+          {
+            "pattern": "[?#]"
+          }
+        ]
+      }
+    },
+    "azureDevOpsProjectUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Azure DevOps Services project URL: https://dev.azure.com/<organization>/<project> or https://<organization>.visualstudio.com/<project>, mirroring validate_azure_devops_project_url.",
+      "pattern": "^https://(dev\\.azure\\.com(:[0-9]+)?/[^/?#@]+/[^/?#@]+/?|[^/?#@:]+\\.visualstudio\\.com(:[0-9]+)?/[^/?#@]+/?)$(?![\\s\\S])",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "^https://[^/?#]*@"
+          },
+          {
+            "pattern": "[?#]"
+          }
+        ]
+      }
+    },
+    "azureDevOpsRepositoryUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Azure Repos repository or clone URL: https://dev.azure.com/<organization>/<project>/_git/<repository> or https://<organization>.visualstudio.com/<project>/_git/<repository>, mirroring validate_azure_devops_repository_url.",
+      "pattern": "^https://(dev\\.azure\\.com(:[0-9]+)?/[^/?#@]+/[^/?#@]+/_git/[^/?#@]+/?|[^/?#@:]+\\.visualstudio\\.com(:[0-9]+)?/[^/?#@]+/_git/[^/?#@]+/?)$(?![\\s\\S])",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "^https://[^/?#]*@"
+          },
+          {
+            "pattern": "[?#]"
+          }
+        ]
+      }
+    },
+    "azureBoardsPolicy": {
+      "type": "string",
+      "enum": [
+        "work-items",
+        "disabled",
+        "manual-follow-up"
+      ]
+    },
+    "azureReposPrTemplatePolicy": {
+      "type": "string",
+      "enum": [
+        "materialize",
+        "disabled",
+        "manual-follow-up"
+      ]
+    },
+    "azureBranchPolicyReviewerGuidance": {
+      "type": "string",
+      "enum": [
+        "required-reviewers",
+        "manual-follow-up",
+        "none"
+      ]
+    },
+    "azureSecurityIntakePolicy": {
+      "type": "string",
+      "enum": [
+        "security-contact",
+        "external-process",
+        "manual-follow-up"
+      ]
+    },
+    "azureSecurityProductEnablement": {
+      "type": "string",
+      "enum": [
+        "none",
+        "github-advanced-security",
+        "github-secret-protection",
+        "github-code-security",
+        "github-secret-protection-and-code-security"
+      ]
+    },
+    "azureDependencyUpdatePolicy": {
+      "type": "string",
+      "enum": [
+        "none",
+        "renovate",
+        "manual-follow-up"
+      ]
+    },
+    "protectedFileDecision": {
+      "type": "object",
+      "required": ["path", "decision"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "decision": {
+          "$ref": "#/$defs/protectedFileDecisionValue"
+        },
+        "adoption_mode": {
+          "$ref": "#/$defs/adoptionMode"
+        },
+        "authorization_basis": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "authorized_scope": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "tailored_authorization_basis": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["decision"],
+            "properties": {
+              "decision": {
+                "enum": ["TAKE", "MERGE"]
+              }
+            }
+          },
+          "then": {
+            "required": ["adoption_mode", "authorization_basis", "authorized_scope"]
+          }
+        },
+        {
+          "if": {
+            "required": ["decision"],
+            "properties": {
+              "decision": {
+                "const": "REMOVE-LOCAL"
+              }
+            }
+          },
+          "then": {
+            "required": ["authorization_basis", "authorized_scope", "reason"]
+          }
+        },
+        {
+          "if": {
+            "required": ["decision"],
+            "properties": {
+              "decision": {
+                "enum": ["SKIP", "DEFER", "PROTECTED-REVIEW"]
+              }
+            }
+          },
+          "then": {
+            "required": ["reason"]
+          }
+        },
+        {
+          "if": {
+            "required": ["decision", "adoption_mode"],
+            "properties": {
+              "decision": {
+                "enum": ["SKIP", "REMOVE-LOCAL", "DEFER", "PROTECTED-REVIEW"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "adoption_mode": {
+                "const": "minimal-preservation"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["adoption_mode"],
+            "properties": {
+              "adoption_mode": {
+                "const": "tailored"
+              }
+            }
+          },
+          "then": {
+            "required": ["tailored_authorization_basis"]
+          }
+        }
+      ]
+    },
+    "instructionContractWaiver": {
+      "type": "object",
+      "required": ["path", "anchor", "reason", "authorization_basis"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "anchor": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "authorization_basis": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "protectedGuideContractWaiver": {
+      "type": "object",
+      "required": ["path", "contract_key", "reason", "authorization_basis"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "contract_key": {
+          "$ref": "#/$defs/contractKey"
+        },
+        "target_path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "target_module": {
+          "$ref": "#/$defs/moduleName"
+        },
+        "linked_local_override_path": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "authorization_basis": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["target_path"]
+        },
+        {
+          "required": ["target_module"]
+        }
+      ]
+    },
+    "placeholderWaiver": {
+      "type": "object",
+      "required": ["reason", "authorization_basis", "reviewed_scope"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryFilePath"
+        },
+        "path_pattern": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "token": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "finding_kind": {
+          "type": "string",
+          "enum": [
+            "unresolved-placeholder",
+            "possible-corruption"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "authorization_basis": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reviewed_scope": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "required": ["path"],
+              "not": {
+                "required": ["path_pattern"]
+              }
+            },
+            {
+              "required": ["path_pattern"],
+              "not": {
+                "required": ["path"]
+              }
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "required": ["token"],
+              "not": {
+                "required": ["finding_kind"]
+              }
+            },
+            {
+              "required": ["finding_kind"],
+              "not": {
+                "required": ["token"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+version: 1
+workflows:
+  .github/workflows/example.yml:
+    concurrency:
+      group: example-${{ github.ref }}
+      cancel-in-progress: false
+    events:
+      - push
+    permissions: {}
+    defaults: {}
+    env: {}
+    jobs:
+      check:
+        controls:
+          name: Example check
+          concurrency: example-check-${{ github.ref }}
+          permissions: {}
+        steps: []
+examples:
+  - docs/example.md
+  - .cursor/rules/example.mdc

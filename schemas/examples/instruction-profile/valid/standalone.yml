@@ -1,0 +1,7 @@
+version: 1
+mode: standalone
+modules:
+  - agent-instructions
+  - instruction-enforcement
+  - baseline
+exceptions: []

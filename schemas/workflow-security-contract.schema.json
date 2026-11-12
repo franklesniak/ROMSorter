@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workflow security contract",
+  "description": "Reviewed execution controls; manifest-derived selection, no action version mirrors.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "workflows",
+    "examples"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "workflows": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^\\.github/workflows/[A-Za-z0-9_.-]+\\.ya?ml$(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/workflow"
+      }
+    },
+    "examples": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(?!.*\\.\\.)(?:(?!\\./)[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\\.(md|mdc)$(?![\\s\\S])"
+      }
+    }
+  },
+  "$defs": {
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "events",
+        "permissions",
+        "defaults",
+        "env",
+        "jobs"
+      ],
+      "properties": {
+        "concurrency": {
+          "type": [
+            "string",
+            "object"
+          ]
+        },
+        "events": {
+          "type": [
+            "object",
+            "array",
+            "string"
+          ]
+        },
+        "permissions": {
+          "$ref": "#/$defs/permissions"
+        },
+        "defaults": {
+          "type": "object"
+        },
+        "env": {
+          "type": "object"
+        },
+        "jobs": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "controls",
+              "steps"
+            ],
+            "properties": {
+              "controls": {
+                "type": "object",
+                "required": [
+                  "permissions"
+                ],
+                "properties": {
+                  "name": {},
+                  "concurrency": {
+                    "type": [
+                      "string",
+                      "object"
+                    ]
+                  },
+                  "permissions": {
+                    "$ref": "#/$defs/permissions"
+                  },
+                  "cache-mode": {
+                    "enum": [
+                      "read",
+                      "write",
+                      "write-only",
+                      "none"
+                    ]
+                  },
+                  "outputs": {
+                    "type": "object"
+                  },
+                  "snapshot": {
+                    "type": [
+                      "string",
+                      "object"
+                    ]
+                  }
+                }
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {},
+                    "id": {},
+                    "if": {},
+                    "shell": {},
+                    "continue-on-error": {},
+                    "working-directory": {},
+                    "env": {},
+                    "run_sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+                    },
+                    "action": {
+                      "type": "string"
+                    },
+                    "with": {
+                      "type": "object"
+                    },
+                    "timeout-minutes": {
+                      "type": [
+                        "number",
+                        "string"
+                      ]
+                    },
+                    "background": {
+                      "type": "boolean"
+                    },
+                    "wait": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "wait-all": {
+                      "type": "null"
+                    },
+                    "cancel": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cache-mode": {
+          "enum": [
+            "read",
+            "write",
+            "write-only",
+            "none"
+          ]
+        }
+      }
+    },
+    "permissions": {
+      "enum": [
+        {},
+        {
+          "contents": "read"
+        }
+      ]
+    }
+  },
+  "$id": "https://raw.githubusercontent.com/franklesniak/copilot-repo-template/HEAD/schemas/workflow-security-contract.schema.json"
+}

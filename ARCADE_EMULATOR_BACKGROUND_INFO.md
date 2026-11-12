@@ -1,23 +1,23 @@
 # Emulator Background Information
 
-If you are new to the world of arcade emulation, or not familiar with the differences between the emulators (or if you are asking yourself: _what is an emulator?_), it may be helpful for you to review the following background information before you dive into trying to create a ROM list.
+If you are new to the world of arcade emulation, or not familiar with the differences between the emulators (or if you are asking yourself: *what is an emulator?*), it may be helpful for you to review the following background information before you dive into trying to create a ROM list.
 
 ## Emulators? ROM Packages? ROMs? Time for a Terminology Check
 
 Many arcade systems were created at a time when microprocessors and computer equipment were very different than today's computers.
 As a result, we cannot merely take the arcade game software and run it on a modern microprocessor.
-Instead, modern computer systems need to _pretend_ or _simulate_ that they are running the same microprocessor and hardware that the original arcade system had.
-Emulation is the process of _pretending_ or _simulating_ a different hardware platform, such as those found in 1980s and 1990s arcade systems.
+Instead, modern computer systems need to *pretend* or *simulate* that they are running the same microprocessor and hardware that the original arcade system had.
+Emulation is the process of *pretending* or *simulating* a different hardware platform, such as those found in 1980s and 1990s arcade systems.
 
 Once we can simulate an arcade system's original hardware, we still need the game's software.
-The community calls the software required to run an arcade game a _machine_, a _read-only memory (ROM) package_, or sometimes just a _ROM_.
-Even though _machine_ is arguably the most official term to use, it represents arcade cabinets as having cogs and wheels.
-And while some arcade cabinets _did_ have cogs and wheels, mechanical arcade cabinets do not represent what we are trying to achieve: pretending or simulating hardware to run older arcade cabinets.
+The community calls the software required to run an arcade game a *machine*, a *read-only memory (ROM) package*, or sometimes just a *ROM*.
+Even though *machine* is arguably the most official term to use, it represents arcade cabinets as having cogs and wheels.
+And while some arcade cabinets *did* have cogs and wheels, mechanical arcade cabinets do not represent what we are trying to achieve: pretending or simulating hardware to run older arcade cabinets.
 After all, it is difficult to imagine an accurate simulation of a mechanical arcade cabinet.
 
-And so we are left with the terms _ROM package_ and _ROM_.
+And so we are left with the terms *ROM package* and *ROM*.
 The term ROM package reflects the fact that the oldest arcade systems' software was permanently "etched" into read-only memory chips.
-And because an arcade system typically had several of these memory chips, we call the entire package of software for one game a _ROM package_–that is to say that you have packaged up the ROMs, and they are ready to play.
+And because an arcade system typically had several of these memory chips, we call the entire package of software for one game a *ROM package*–that is to say that you have packaged up the ROMs, and they are ready to play.
 
 ## Emulators Relevant to Playing Arcade Games on a Raspberry Pi 4 B
 
@@ -27,13 +27,13 @@ Therefore, our analysis must consider all three.
 
 The three emulators are:
 
-+ MAME 2003 Plus
-+ MAME 2010
-+ FBNeo
+- MAME 2003 Plus
+- MAME 2010
+- FBNeo
 
 ## Two Versions of MAME
 
-_MAME_ is an abbreviation for Multiple Arcade Machine Emulator.
+*MAME* is an abbreviation for Multiple Arcade Machine Emulator.
 It is still under active development, releasing a few versions per year, each adding support for new ROM packages or improving the support of existing ones.
 Historically, the community at large called a milestone release in a given year "MAME YYYY," where "YYYY" is the release year.
 For example, the community knows MAME version 0.78 as MAME 2003 because the development team released it in 2003.
@@ -47,7 +47,7 @@ Likewise, the community knows MAME 0.139 as MAME 2010, and a set of developers f
 However, unlike MAME 2003 Plus, MAME 2010 is not under active development.
 
 Remembering that MAME adds support for new ROM packages over time, we can assume that MAME 2010 supports more ROM packages than MAME 2003 Plus.
-However, with MAME 2003 Plus under active development, we can also assume that most ROM packages supported by _both_ MAME 2003 Plus _and_ MAME 2010 perform better in MAME 2003 Plus.
+However, with MAME 2003 Plus under active development, we can also assume that most ROM packages supported by *both* MAME 2003 Plus *and* MAME 2010 perform better in MAME 2003 Plus.
 We know a ROM package is supported by both MAME 2003 Plus and MAME 2010 if the ROM package's name is present in both emulators' databases.
 
 However, as the MAME development team releases new versions, they sometimes rename ROM packages or even remove them from the database.
@@ -60,8 +60,8 @@ However, the community generally recommends the use of individual console emulat
 
 ## FBNeo
 
-FBNeo is short for _FinalBurn Neo_.
-Its predecessor, _FinalBurn_, was the first emulator to emulate Capcom Play System (CPS) hardware, which made it popular with the emulation community.
+FBNeo is short for *FinalBurn Neo*.
+Its predecessor, *FinalBurn*, was the first emulator to emulate Capcom Play System (CPS) hardware, which made it popular with the emulation community.
 The original developer moved on from there to add support for Neo Geo arcade systems.
 So the community-at-large knows FinalBurn/FBNeo for its superior emulation of Capcom and Neo Geo systems compared to other emulator options.
 Since the original FinalBurn emulator went open source, a new development team forked the codebase and continued development.

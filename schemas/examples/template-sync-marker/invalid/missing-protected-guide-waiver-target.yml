@@ -1,0 +1,12 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  last_reviewed_template_commit: 0123456789abcdef0123456789abcdef01234567
+  included_modules:
+    - baseline
+    - agent-instructions
+    - template-sync-support
+  protected_guide_contract_waivers:
+    - path: AGENTS.md
+      contract_key: agents-azure-devops-pr-review-protocol
+      reason: Missing target_path and target_module must be rejected.
+      authorization_basis: Owner authorized this protected-guide waiver on 2026-06-29.

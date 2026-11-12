@@ -1,0 +1,172 @@
+# Generate an untrusted pre-commit fix preview for Copilot-agent branches.
+#
+# Candidate hooks run with read-only repository permissions and no persisted
+# checkout credential. The workflow wrapper does not commit or push changes.
+# Review or reproduce the preview locally, include fixes in the substantive
+# change, and let precommit-ci.yml validate the resulting head.
+#
+# Every retained hook still runs, including validators that cannot auto-fix.
+# Hook failure remains a failed workflow after the preview is uploaded.
+# The optional artifact contains tracked-file changes and lists untracked
+# outputs separately; it is not an approval or an acceptance oracle.
+#
+# OPTIONAL: Delete this workflow if local fixes and aggregate pre-commit CI
+# are sufficient. Keep the required aggregate validation workflow.
+
+name: Pre-commit fix preview (Copilot branches)
+
+on:
+  push:
+    branches:
+      - "copilot/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-fix-precommit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fix-preview:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Scope the preview to Copilot pushes; the actor is not a trust boundary.
+    if: github.actor == 'copilot-swe-agent[bot]'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      # template-sync: begin markdown-only
+      - name: Setup Node.js for nested Markdown
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install root Markdown dependencies
+        run: npm ci --ignore-scripts
+      # template-sync: end markdown-only
+
+      - name: Install pre-commit
+        shell: python
+        run: |
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          requirement = Path("requirements-pre-commit.txt").read_text(encoding="utf-8").strip()
+          if re.fullmatch(r"pre-commit==[0-9]+\.[0-9]+\.[0-9]+", requirement) is None:
+              raise SystemExit("requirements-pre-commit.txt must contain one exact pre-commit pin")
+          subprocess.run(
+              [sys.executable, "-m", "pip", "install", "--requirement", "requirements-pre-commit.txt"],
+              check=True,
+          )
+          expected = requirement.replace("==", " ", 1)
+          actual = subprocess.check_output(["pre-commit", "--version"], text=True).strip()
+          if actual != expected:
+              raise SystemExit(f"pre-commit version mismatch: expected {expected}, got {actual}")
+          print(actual)
+
+      - name: Run pre-commit hooks
+        id: hooks
+        continue-on-error: true
+        run: |
+          set +e
+          pre-commit run --all-files
+          hook_exit=$?
+          printf 'exit_code=%s\n' "$hook_exit" >> "$GITHUB_OUTPUT"
+          exit "$hook_exit"
+
+      - name: Capture untrusted fix preview
+        id: preview
+        if: ${{ !cancelled() && (steps.hooks.outcome == 'success' || steps.hooks.outcome == 'failure') }}
+        env:
+          HOOK_EXIT: ${{ steps.hooks.outputs.exit_code }}
+        shell: python
+        run: |
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          event_head = os.environ["GITHUB_SHA"]
+          if re.fullmatch(r"[0-9a-f]{40}", event_head) is None:
+              raise SystemExit("Invalid event commit for fix preview.")
+
+          def require_event_head():
+              observed = subprocess.check_output(
+                  ["git", "rev-parse", "--verify", "HEAD"], text=True
+              ).strip()
+              if observed != event_head:
+                  raise SystemExit("Local HEAD changed; cannot capture event-head preview.")
+
+          require_event_head()
+          preview = Path(os.environ["RUNNER_TEMP"]) / "precommit-fix-preview"
+          preview.mkdir(exist_ok=False)
+
+          def capture(arguments, destination, limit):
+              with destination.open("xb") as output:
+                  with subprocess.Popen(arguments, stdout=subprocess.PIPE) as process:
+                      data = process.stdout.read(limit + 1)
+                      if len(data) > limit:
+                          process.kill()
+                          raise SystemExit("Fix preview exceeds its byte limit.")
+                      if process.wait() != 0:
+                          raise SystemExit("Cannot capture a complete fix preview.")
+                      output.write(data)
+
+          capture(
+              ["git", "diff", "--binary", "--no-ext-diff", "--no-textconv", event_head, "--"],
+              preview / "tracked.patch",
+              8 * 1024 * 1024,
+          )
+          capture(
+              ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+              preview / "status.txt",
+              1024 * 1024,
+          )
+          require_event_head()
+          (preview / "README.txt").write_text(
+              "UNTRUSTED FIX PREVIEW: review or reproduce locally before applying.\n"
+              "The capture step does not commit or push. This is not a CI approval.\n"
+              "tracked.patch excludes untracked files; inspect status.txt and reproduce "
+              "those outputs locally. Rerun all required checks on the final commit.\n"
+              f"Head: {event_head}\n"
+              f"Ref: {os.environ['GITHUB_REF']}\n"
+              f"Run: {os.environ['GITHUB_RUN_ID']}\n"
+              f"Native pre-commit exit: {os.environ['HOOK_EXIT']}\n",
+              encoding="utf-8",
+          )
+
+      # See: https://github.com/actions/upload-artifact/releases/latest
+      - name: Upload untrusted fix preview
+        if: ${{ !cancelled() && steps.preview.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: untrusted-precommit-fix-preview-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/precommit-fix-preview/tracked.patch
+            ${{ runner.temp }}/precommit-fix-preview/status.txt
+            ${{ runner.temp }}/precommit-fix-preview/README.txt
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Preserve pre-commit failure
+        if: ${{ !cancelled() && steps.hooks.outcome == 'failure' }}
+        run: |
+          echo "Pre-commit failed. Review the untrusted preview and fix the final commit."
+          exit 1

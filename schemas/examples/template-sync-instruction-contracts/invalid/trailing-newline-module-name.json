@@ -1,0 +1,13 @@
+{
+  "instruction_contracts": [
+    {
+      "path": "AGENTS.md",
+      "requires_modules": [
+        "agent-instructions\n"
+      ],
+      "required_headings": [
+        "## GitHub Plugin Usage"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+instruction_contracts:
+  - path: CLAUDE.md
+    requires_modules:
+      - agent-instructions
+    required_headings:
+      - '## Handling Code Review Comments'
+      - '## Automated Review Loop'
+    required_phrases:
+      - 'Protected-file authorization checkpoint'
+  - path: GEMINI.md
+    requires_modules:
+      - agent-instructions
+      - azure-devops-collaboration
+    required_headings:
+      - '## Azure DevOps PR Review Protocol'

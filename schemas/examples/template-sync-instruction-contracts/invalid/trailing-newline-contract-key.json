@@ -1,0 +1,25 @@
+{
+  "instruction_contracts": [
+    {
+      "path": "AGENTS.md",
+      "requires_modules": [
+        "agent-instructions"
+      ],
+      "required_headings": [
+        "## GitHub Plugin Usage"
+      ]
+    }
+  ],
+  "protected_guide_section_obligations": [
+    {
+      "key": "agents-azure-devops-pr-review-protocol\n",
+      "path": "AGENTS.md",
+      "target_modules": [
+        "azure-devops-collaboration"
+      ],
+      "stale_headings": [
+        "## Azure DevOps PR Review Protocol"
+      ]
+    }
+  ]
+}

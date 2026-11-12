@@ -1,0 +1,11 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+    - github-platform
+    - azure-pipelines
+    - github-templates
+  host_provider: dual
+  azure_devops_organization: contoso
+  azure_devops_project: Platform
+  azure_devops_repository: downstream-template

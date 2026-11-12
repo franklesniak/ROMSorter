@@ -1,0 +1,5 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  discussions_policy: deferred-planned-render

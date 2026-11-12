@@ -1,0 +1,46 @@
+# Starter YAML configuration (template starter content)
+#
+# This file is a minimal human-authored YAML config example shipped under
+# templates/yaml/. It demonstrates the conservative YAML subset documented
+# in `.github/instructions/yaml.instructions.md`: 2-space indentation,
+# lowercase booleans, quoted version pins, quoted YAML 1.1 truthy-looking
+# strings, and short block scalars. It is starter content (not an active
+# config); it is not consumed as a runtime or application configuration
+# by any tool in this repository. (The repository's `check-yaml` and
+# `yamllint` pre-commit hooks do still parse and lint this file as YAML
+# like every other YAML file in the tree; the carve-out is about whether
+# the file drives a tool's runtime behavior, not about whether it is
+# validated as YAML.)
+#
+# All values are obviously fake. Do not commit real secrets, tokens, or
+# credentials when adapting this file in a downstream repository.
+
+service:
+  name: example-service
+  enabled: true
+  shutdownAfterStart: false
+
+  # Version pins are quoted so they cannot be coerced to floats or integers.
+  # Without quotes, "3.13" would parse as the float 3.13 (== 3.130) and
+  # "1.0" would lose its trailing zero.
+  pythonVersion: "3.13"
+  apiVersion: "1.0"
+  nodeVersion: "24"
+
+  # YAML 1.1 truthy-looking strings MUST be quoted when they are intended
+  # as strings; otherwise many widely-deployed YAML parsers (including
+  # GitHub Actions, default js-yaml, and some legacy PyYAML configurations)
+  # resolve them as booleans.
+  retry: "no"
+  mode: "on"
+
+  description: |
+    Short literal block scalar describing the example service.
+    Newlines inside this block are preserved exactly as written.
+    Authors SHOULD prefer block scalars over long quoted strings with
+    embedded "\n" sequences.
+
+  tags:
+    - example
+    - template
+    - not-real

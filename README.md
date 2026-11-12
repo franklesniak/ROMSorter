@@ -14,16 +14,16 @@ If you are analyzing or sorting ROM packages, or if you are building a ROM list 
 1. Create a new, empty folder.
 In PowerShell, switch the working directory to the new folder (`cd C:\ROMSorter`).
 Set the script execution policy to bypass (or equivalent, e.g.: `Set-ExecutionPolicy Bypass -Scope Process`).
-1. Run `Convert-MAMEDATToCSV.ps1` to automatically download the newest-released MAME DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [The MAME team's website](https://www.mamedev.org/release.html), and the output file of this script is `MAME_DAT.csv`.
-1. Run `Convert-MAME2003PlusDATToCSV.ps1` to automatically download the libretro team's cloned version of MAME 2003 Plus's DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/mame2003-plus-libretro), and the output file of this script is `MAME_2003_Plus_DAT.csv`.
-1. Run `Convert-MAME2010DATToCSV.ps1` to automatically download the libretro team's cloned version of MAME 2010's DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/mame2010-libretro), and the output file of this script is `MAME_2010_DAT.csv`.
-1. Run `Convert-FBNeoArcadeDATToCSV.ps1` to automatically download the libretro team's cloned version of FinalBurn Neo's (FBNeo's) Arcade ROM DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/FBNeo), and the output file of the script is `FBNeo_Arcade_DAT.csv`.
+2. Run `Convert-MAMEDATToCsv.ps1` to automatically download the newest-released MAME DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [The MAME team's website](https://www.mamedev.org/release.html), and the output file of this script is `MAME_DAT.csv`.
+3. Run `Convert-MAME2003PlusDATToCSV.ps1` to automatically download the libretro team's cloned version of MAME 2003 Plus's DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/mame2003-plus-libretro), and the output file of this script is `MAME_2003_Plus_DAT.csv`.
+4. Run `Convert-MAME2010DATToCSV.ps1` to automatically download the libretro team's cloned version of MAME 2010's DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/mame2010-libretro), and the output file of this script is `MAME_2010_DAT.csv`.
+5. Run `Convert-FBNeoArcadeDATToCSV.ps1` to automatically download the libretro team's cloned version of FinalBurn Neo's (FBNeo's) Arcade ROM DAT XML file and convert it to a tabular (CSV) data format. The DAT is downloaded from [GitHub](https://github.com/libretro/FBNeo), and the output file of the script is `FBNeo_Arcade_DAT.csv`.
 
 ### Use the `RenameSet` to Time-Advance MAME 2003 Plus and MAME 2010 To Match ROM Names to the Current Version of MAME
 
 1. Run `Convert-ProgettoSnapsRenameSetIniToCsv.ps1` to download the renameSET.ini file from [AntoPISA's website](https://www.progettosnaps.net/renameset/) and convert it to a tabular (CSV) data format. The output file of the script is `Progetto_Snaps_RenameSet.csv`.
-1. Run `Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1` to time-advance the ROM names in the MAME 2003 Plus ROMset to match those of the current version of MAME. Additional files are downloaded from the [ROMSorter project](https://github.com/franklesniak/ROMSorter), and the output file of the script is `MAME_2003_Plus_DAT_With_Time-Advanced_ROM_Package_Names.csv`.
-1. Run `Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1` to time-advance the ROM names in the MAME 2010 ROMset to match those of the current version of MAME. Additional files are downloaded from the [ROMSorter project](https://github.com/franklesniak/ROMSorter), and the output file of the script is `MAME_2010_DAT_With_Time-Advanced_ROM_Package_Names.csv`.
+2. Run `Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1` to time-advance the ROM names in the MAME 2003 Plus ROMset to match those of the current version of MAME. Additional files are downloaded from the [ROMSorter project](https://github.com/franklesniak/ROMSorter), and the output file of the script is `MAME_2003_Plus_DAT_With_Time-Advanced_ROM_Package_Names.csv`.
+3. Run `Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1` to time-advance the ROM names in the MAME 2010 ROMset to match those of the current version of MAME. Additional files are downloaded from the [ROMSorter project](https://github.com/franklesniak/ROMSorter), and the output file of the script is `MAME_2010_DAT_With_Time-Advanced_ROM_Package_Names.csv`.
 
 ### Use File Hashes to Match the FinalBurn Neo ROMs to the Current Version of MAME
 
@@ -34,10 +34,25 @@ Set the script execution policy to bypass (or equivalent, e.g.: `Set-ExecutionPo
 ### Join MAME, MAME 2003 Plus, MAME 2010, and FinalBurn Neo DATs Into a Single CSV File
 
 1. Run `Copy-MAMEDATToMAMEDatabase.ps1` to make a working copy of the tabular (CSV) MAME DAT file. The output file of the script is `MAME_Database.csv`
-1. Run `Join-TimeAdvancedMAME2003PlusWithMAMEDatabase.ps1` to join the time-advanced MAME 2003 Plus ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
-1. Run `Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1` to join the time-advanced MAME 2010 ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
-1. Run `Join-FBNeoCRCMatchedToMAMEWithMAMEDatabase.ps1` to join the CRC-matched FinalBurn Neo (FBNeo) Arcade ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
+2. Run `Join-TimeAdvancedMAME2003PlusWithMAMEDatabase.ps1` to join the time-advanced MAME 2003 Plus ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
+3. Run `Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1` to join the time-advanced MAME 2010 ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
+4. Run `Join-FBNeoCRCMatchedToMAMEWithMAMEDatabase.ps1` to join the CRC-matched FinalBurn Neo (FBNeo) Arcade ROMset with the working copy of the MAME DAT file. The output file of the script is `MAME_Database.csv`
 
 ### Work in progress
 
 More to come!
+
+## Development and Support
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and validation.
+The first-adoption helper includes the retained support regression suite when
+`pytest.ini` is present. Use `python .template-sync/scripts/run_first_adoption_checks.py --plan-only`
+to inspect the commands, or `--check` to run them. A failed pytest command fails
+the adoption check.
+Use [GitHub Discussions](https://github.com/franklesniak/ROMSorter/discussions) for
+usage help and troubleshooting. Report reproducible bugs and enhancement requests
+through [GitHub Issues](https://github.com/franklesniak/ROMSorter/issues).
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+Supported hosts are Windows PowerShell 5.1 and Microsoft-supported PowerShell 7
+release lines on Windows, macOS, and Linux.

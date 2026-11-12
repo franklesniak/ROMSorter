@@ -1,0 +1,19 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  last_reviewed_template_commit: 0123456789abcdef0123456789abcdef01234567
+  included_modules:
+    - baseline
+    - agent-instructions
+    - template-sync-support
+  protected_guide_contract_waivers:
+    - path: AGENTS.md
+      contract_key: agents-azure-devops-pr-review-protocol
+      target_module: azure-devops-collaboration
+      reason: GitHub-only adoption retains the protected Codex Azure protocol for owner review.
+      authorization_basis: Owner authorized this protected-guide waiver on 2026-06-29.
+    - path: AGENTS.md
+      contract_key: agents-azure-devops-support-guide-path
+      target_path: docs/azure-devops-support.md
+      linked_local_override_path: AGENTS.md
+      reason: GitHub-only adoption records the retained protected guide reference explicitly.
+      authorization_basis: Owner authorized this protected-guide reference waiver on 2026-06-29.

@@ -1,0 +1,15 @@
+# Project-scoped Codex configuration.
+#
+# Enables the OpenAI-curated GitHub plugin for trusted Codex checkouts of this
+# repository. Enabling the plugin here does not, by itself, grant GitHub
+# authorization: actual access still depends on the GitHub app/connector
+# installation, the Codex account performing the operation, and the
+# repository's permissions.
+#
+# Allow room for the root and nested instruction chain. This is a byte limit,
+# not a guarantee that every possible parent or nested instruction will fit.
+project_doc_max_bytes = 65536
+
+# Quoted key required because the plugin name contains "@".
+[plugins."github@openai-curated"]
+enabled = true

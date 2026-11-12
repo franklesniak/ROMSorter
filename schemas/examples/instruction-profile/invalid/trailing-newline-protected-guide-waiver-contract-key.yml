@@ -1,0 +1,14 @@
+version: 1
+mode: standalone
+modules:
+  - agent-instructions
+  - instruction-enforcement
+  - baseline
+exceptions: []
+source_decisions:
+  protected_guide_contract_waivers:
+    - path: AGENTS.md
+      contract_key: "agents-azure-devops-pr-review-protocol\n"
+      target_module: azure-devops-collaboration
+      reason: A final line break after the contract key must be rejected in both regex dialects.
+      authorization_basis: Owner authorized this protected-guide waiver on 2026-06-29.

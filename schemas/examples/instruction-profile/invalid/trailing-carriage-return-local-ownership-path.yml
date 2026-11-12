@@ -1,0 +1,11 @@
+version: 1
+mode: standalone
+modules:
+  - agent-instructions
+  - instruction-enforcement
+  - baseline
+exceptions: []
+source_decisions:
+  local_path_ownership:
+    - path: "docs/\r"
+      reason: A final carriage return after the path must be rejected in both regex dialects.

@@ -1,0 +1,10 @@
+instruction_contracts:
+  - path: AGENTS.md
+    requires_modules:
+      - agent-instructions
+    required_sections:
+      - heading: '## Optional protocol'
+        next_heading: null
+        requires_modules: []
+        required_paragraphs:
+          - Keep the protocol.

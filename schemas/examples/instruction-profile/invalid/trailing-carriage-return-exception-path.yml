@@ -1,0 +1,12 @@
+version: 1
+mode: standalone
+modules:
+  - agent-instructions
+  - instruction-enforcement
+  - baseline
+exceptions:
+  - path: "AGENTS.md\r"
+    anchor: '## Rules'
+    content_sha256: a789f19adf728f77afad280f08cbc2c77514d08e85ec1dfa3d8bfb22a486e165
+    reason: A final carriage return after the path must be rejected in both regex dialects.
+    authorization_basis: Owner authorized this exception on 2026-06-29.

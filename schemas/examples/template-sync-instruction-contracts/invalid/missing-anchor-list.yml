@@ -1,0 +1,4 @@
+instruction_contracts:
+  - path: CLAUDE.md
+    requires_modules:
+      - agent-instructions

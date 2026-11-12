@@ -1,0 +1,9 @@
+{
+  "path-reference": {
+    "suppressions": [
+      {
+        "reason": "Suppressions must include at least one selector."
+      }
+    ]
+  }
+}

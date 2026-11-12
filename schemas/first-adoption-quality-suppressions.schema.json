@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/franklesniak/copilot-repo-template/HEAD/schemas/first-adoption-quality-suppressions.schema.json",
+  "title": "First-Adoption Quality Suppressions",
+  "description": "Schema for .template-sync/first-adoption/quality-suppressions.json, the downstream-created suppression file for first-adoption quality reports.",
+  "type": "object",
+  "required": ["path-reference"],
+  "additionalProperties": false,
+  "properties": {
+    "path-reference": {
+      "type": "object",
+      "description": "Suppressions for path-reference report findings.",
+      "required": ["suppressions"],
+      "additionalProperties": false,
+      "properties": {
+        "suppressions": {
+          "type": "array",
+          "description": "Path-reference findings to suppress. All populated selector fields must match for an entry to suppress a finding.",
+          "items": {
+            "$ref": "#/$defs/pathReferenceSuppression"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pathReferenceSuppression": {
+      "type": "object",
+      "required": ["reason"],
+      "anyOf": [
+        { "required": ["ruleId"] },
+        { "required": ["category"] },
+        { "required": ["path"] },
+        { "required": ["pathGlob"] },
+        { "required": ["literal"] },
+        { "required": ["literalPattern"] }
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "enum": [
+            "path-reference.case-mismatch",
+            "path-reference.missing-target"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": ["path-reference"]
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Exact report source path to match."
+        },
+        "pathGlob": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Repository-relative glob matched against the report source path."
+        },
+        "literal": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Exact path literal from the finding to match."
+        },
+        "literalPattern": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Regular expression matched against the path literal from the finding."
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Reviewer-readable justification for the suppression."
+        }
+      }
+    }
+  }
+}

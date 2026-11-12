@@ -1,0 +1,7 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  local_path_ownership:
+    - path: "docs/\n"
+      reason: A final line break after the path must be rejected in both regex dialects.

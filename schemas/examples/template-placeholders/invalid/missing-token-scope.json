@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "scanContexts": [
+    "retained-path",
+    "excluded-module-path",
+    "local-override",
+    "template-only-delete",
+    "unknown-path"
+  ],
+  "failureDispositions": [
+    "retained-hard-failure",
+    "pruned-informational",
+    "unknown-owner-review",
+    "waived-informational"
+  ],
+  "scanFindingKinds": [
+    {
+      "kind": "unresolved-placeholder",
+      "description": "A known placeholder remains."
+    }
+  ],
+  "replacementSources": {
+    "repository": {
+      "kind": "context-attribute",
+      "attribute": "repository"
+    }
+  },
+  "pathGroups": {
+    "docs": [
+      "README.md"
+    ]
+  },
+  "tokens": [
+    {
+      "name": "owner-repo token",
+      "placeholder": "OWNER/REPO",
+      "replacementSource": "repository",
+      "replacementStyle": "owner-repo-token",
+      "findingKind": "unresolved-placeholder"
+    }
+  ],
+  "rendererPathGroups": {}
+}

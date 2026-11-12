@@ -1,0 +1,81 @@
+# Setup prepares selected validation tools; retained CI remains authoritative.
+name: Copilot Setup Steps
+
+on:
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  copilot-setup-steps:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python for retained validation tools
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install shared validator dependencies
+        run: python -m pip install PyYAML==6.0.3 jsonschema==4.26.0
+
+      # template-sync: begin baseline-only
+      - name: Install pre-commit
+        shell: python
+        run: |
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          requirement = Path("requirements-pre-commit.txt").read_text(encoding="utf-8").strip()
+          if re.fullmatch(r"pre-commit==[0-9]+\.[0-9]+\.[0-9]+", requirement) is None:
+              raise SystemExit("requirements-pre-commit.txt must contain one exact pre-commit pin")
+          subprocess.run(
+              [sys.executable, "-m", "pip", "install", "--requirement", "requirements-pre-commit.txt"],
+              check=True,
+          )
+          expected = requirement.replace("==", " ", 1)
+          actual = subprocess.check_output(["pre-commit", "--version"], text=True).strip()
+          if actual != expected:
+              raise SystemExit(f"pre-commit version mismatch: expected {expected}, got {actual}")
+          print(actual)
+      # template-sync: end baseline-only
+
+      # template-sync: begin markdown-only
+      - name: Setup Node.js for Markdown
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install root Markdown dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Verify root Markdown dependencies
+        run: npm ls --depth=0
+      # template-sync: end markdown-only
+
+      # template-sync: begin powershell-only
+      - name: Install PowerShell validation modules
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -ErrorAction Stop
+          Install-Module -Name Pester -RequiredVersion 5.9.1 -Force -Scope CurrentUser -ErrorAction Stop
+          Import-Module PSScriptAnalyzer -ErrorAction Stop
+          Import-Module Pester -RequiredVersion 5.9.1 -ErrorAction Stop
+          Get-Module -Name PSScriptAnalyzer, Pester | Select-Object Name, Version
+      # template-sync: end powershell-only

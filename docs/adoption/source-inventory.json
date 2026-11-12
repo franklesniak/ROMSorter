@@ -1,0 +1,1820 @@
+[
+  {
+    "path": ".azuredevops/pipelines/README.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "ea222c25a6f1ad28aedff6dce9fb0c820631381c5495021d4a6f670f78c0429e"
+  },
+  {
+    "path": ".azuredevops/pipelines/check-placeholders.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e257fefa6f46ad05ae738c0c275cdb228b7812046a171340ee3ca82adcfc5de5"
+  },
+  {
+    "path": ".azuredevops/pipelines/data-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "1eb62d10292deae06d1c80aa9596383691eb233fdf5f05d24a4f46dfc8ee2ec6"
+  },
+  {
+    "path": ".azuredevops/pipelines/instruction-contracts.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "a30c3930102c5940cc4e9175101bc861eda43ac2b64798a376ae2395287320fa"
+  },
+  {
+    "path": ".azuredevops/pipelines/markdownlint.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "47d3d01b8a1246a0dcf330868afbb833cc54c77573b77ce8a71345141cd2cb05"
+  },
+  {
+    "path": ".azuredevops/pipelines/powershell-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "26ee2d62d14b9489429aab76b7ca4fa6d9a38b9570aa67c166beae88ca2dd298"
+  },
+  {
+    "path": ".azuredevops/pipelines/precommit.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "61e474e84c5915277e0c07a087af786d175c880638d8949cb72624128e00e4cf"
+  },
+  {
+    "path": ".azuredevops/pipelines/python-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "c3bff150aa274bf749cb7b69faf523aae238b29b9ca28d6ce3aa335b8f07547a"
+  },
+  {
+    "path": ".azuredevops/pipelines/terraform-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "d5de0e458e004a4c444b6f7de1c59b57eab8ef761cf5174edc2d7117b7796028"
+  },
+  {
+    "path": ".azuredevops/platform/adoption-guidance.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "2b2cf4052bb57b92893d62eea2522676fa3f90c01dc7d7b040a527c79f646171"
+  },
+  {
+    "path": ".azuredevops/pull_request_template.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "01184c7a902097b8854567f77298c134ea291664bd9dd1d2d4c1d467a64b30a3"
+  },
+  {
+    "path": ".claude/commands/review-loop.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e1fcf411cfde7e28971263f7815fa4a7f28d72eee63ceffab6022f881e379620"
+  },
+  {
+    "path": ".claude/hooks/session-start.sh",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "774d1b648963717a837d3c420b81dc29a67a8655c0ac5804871f3a29b467dd3b"
+  },
+  {
+    "path": ".claude/settings.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "a728ab3d3b8e3ec6be073c41c2063330a1018b1d16088d523e194b3e8b9f75eb"
+  },
+  {
+    "path": ".codex/config.toml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "cae3d09530b63699390668813ca84f6af66c7bef5fc4af98a5392379ccfc8b56"
+  },
+  {
+    "path": ".cursor/rules/repository-instructions.mdc",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "f2072a6ae9a3546068486dfee16696c34a564347806043c84a6ca9aeb4e97f0a"
+  },
+  {
+    "path": ".gitattributes",
+    "decision": "MERGE",
+    "reason": "Prune unselected Git LFS block; protect exact bytes of four public CSV inputs with -text.",
+    "source_sha256": "d2942cd2f5a929e2a86055eeadf99b6879a51b5ccf31c3f9d2e477a35be00e59"
+  },
+  {
+    "path": ".github/CODEOWNERS",
+    "decision": "MERGE",
+    "reason": "Sole owner @franklesniak; remove unused Azure-host path rule.",
+    "source_sha256": "6df68bccc809e5272713d81ae7f7ac2d1f240ceffc48118b7df92c3b189ff377"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+    "decision": "MERGE",
+    "reason": "Render identity and assumed labels; use current master branch.",
+    "source_sha256": "f474f14ecbb0578516c949921388f99ce29064304cf96294fb4b936c87710b7d"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/config.yml",
+    "decision": "MERGE",
+    "reason": "Render confirmed repository, private-security path and Discussions support destination.",
+    "source_sha256": "14e907f96d35f8c01d9895b86999b54bd23a32b4af3e1bcb29e90b3ebbab604b"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/documentation_issue.yml",
+    "decision": "MERGE",
+    "reason": "Render identity; use current master branch.",
+    "source_sha256": "a664e2466fd295bfadd74111daaed6cd44606144c547f90d38fb1e9bf10765e6"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "447a3d6996c1ce2cd320e2d852886f827c8117bc1d8f4b3c1cc0b9c3b80a37f7"
+  },
+  {
+    "path": ".github/TEMPLATE_DESIGN_DECISIONS.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "c92ba0d147eeb75afb94d1339d52b15658c89b2ace332790c6e9679e5f55e071"
+  },
+  {
+    "path": ".github/copilot-instructions.md",
+    "decision": "MERGE",
+    "reason": "Prune complete unselected module blocks and bump metadata; retain canonical anchors.",
+    "source_sha256": "ad9f24f55279fb56d1ed4c5fc46fea888b6e26697362a9eddf8371afd8edf4e2"
+  },
+  {
+    "path": ".github/dependabot.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "029dba42e7f73a569547f12e2567bea26c940dd18d7b3c5fe7a3dbeed28f684d"
+  },
+  {
+    "path": ".github/instruction-contracts.yml",
+    "decision": "MERGE",
+    "reason": "Materializer retains selected contracts with all selected anchors.",
+    "source_sha256": "41abf52341a291a7032a1f1953d703923320dfa9b8b89e4b97242f9d52649b60"
+  },
+  {
+    "path": ".github/instruction-profile.yml",
+    "decision": "MERGE",
+    "reason": "Marker-backed downstream profile.",
+    "source_sha256": "fc468d4953e6b2afb925872ab48d375c82496100ce0ab4bfb10604a03094b330"
+  },
+  {
+    "path": ".github/instructions/docs.instructions.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2c8c05b69cc5faa771c9d61cdac156c6fd4b053e9910b51c214f70a26d8a0d60"
+  },
+  {
+    "path": ".github/instructions/gitattributes.instructions.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "60b30c35c78042d71e46f25b0c8ed63046d25434af576bb86e54382a5e167723"
+  },
+  {
+    "path": ".github/instructions/json.instructions.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "5a99a8e8be2172ebf8e38202cab48f323f242e99bfdee1408eb90bdabd525632"
+  },
+  {
+    "path": ".github/instructions/powershell.instructions.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a349f6a6d69d4191df974412ab67b905e2a49b61fa99371d869e5b0bef2692a3"
+  },
+  {
+    "path": ".github/instructions/python.instructions.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "480da5d2a28ae279d692c7d35b49ee310bf2ec9364d38066c2cd2bf2eb843cac"
+  },
+  {
+    "path": ".github/instructions/terraform.instructions.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "583521d586c88b57c404e8e21f018454676d5f0edf34673184f0511737653747"
+  },
+  {
+    "path": ".github/instructions/yaml.instructions.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c2341d4c02b1f7ec3795ff3eff8d45c18bd4905a1903b08028ff9ffde031a643"
+  },
+  {
+    "path": ".github/linting/PSScriptAnalyzerSettings.psd1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "41d1dd80a2b786fb2a86892489374584db0ede96f3721afec2e3ee7d8d850593"
+  },
+  {
+    "path": ".github/pull_request_template.md",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "7a8fa6066f0fca004c339958a4d1b6a2b8b6844065e189d370f75f1130499510"
+  },
+  {
+    "path": ".github/scripts/check-prohibited-placeholders.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "645824b9629a4280cdb4d55b0a28d7f4ee4364164f14485b90ec58fa1218c4f9"
+  },
+  {
+    "path": ".github/scripts/check-toolchain-eol.js",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "98678cd0a962eee14ca41919734ce8a6f62bdfe6e937670ab6bc7d6d65309d9c"
+  },
+  {
+    "path": ".github/scripts/instruction_contract_core.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3766665b83324411173b59c5e74feb9b40e8336aa428852dba815efd1379203e"
+  },
+  {
+    "path": ".github/scripts/instruction_contract_support.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "0e0b631410f542d9b219acafb3ad48c63dbb748fb8635c2b0e692dcd282ff586"
+  },
+  {
+    "path": ".github/scripts/lint-nested-markdown.js",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9b906e938a7124c62fd8324b3b8d1265c1277ffd4b33a91b55527cb2e17e62b4"
+  },
+  {
+    "path": ".github/scripts/lint-nested-markdown.test.js",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a70ef788d44a268b393aa4688e58c2c6d53f3cc0b39f694ddfd3541445fde76d"
+  },
+  {
+    "path": ".github/scripts/lint_nested_markdown_hook.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "0bed3773dd16cbbb1eb66d6045bbe521fa1f16e435ce27b82e96528916dc5f0b"
+  },
+  {
+    "path": ".github/scripts/replace-template-placeholders.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "338f04c04fa036f8e03a1ca53f16ecdb90dd7084d1f12bf4bfa3ed93d68977ee"
+  },
+  {
+    "path": ".github/scripts/terraform_hooks.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "374617a0e6cf2e7213d26e4b576f8efd8dc5ba45d7c8ebb914dafba73c955c32"
+  },
+  {
+    "path": ".github/scripts/validate-placeholder-schema-examples.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "0da15ab6f3199c21ed09dc2febf2b0678f29c4b9554a3ebcedbb3327d93806a9"
+  },
+  {
+    "path": ".github/scripts/validate_instruction_profile.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "27a5f47d857f54dfa028dec5cc8083844f151ca94bf4139e4c65e5d61e8305d6"
+  },
+  {
+    "path": ".github/scripts/validate_workflow_security.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c11e586f4c3f2f437b04bc254113f4968cdabc5e3ae9f39d75a56c91f87b1018"
+  },
+  {
+    "path": ".github/template-placeholders.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "fe64c2a8af3e4a56406c62479cfe1a97ccdb3a755a864b994315ec87126cfa68"
+  },
+  {
+    "path": ".github/workflow-security-contract.yml",
+    "decision": "MERGE",
+    "reason": "Prune excluded workflows; update reviewed PowerShell controls and PowerShell/Copilot Pester fingerprints.",
+    "source_sha256": "a91b88940c191cd889e27c07d07922f185ee4ac3f61f7e6e7758a520ec3f50f9"
+  },
+  {
+    "path": ".github/workflows/auto-fix-precommit.yml",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "c049e69ebf6e28a744b2581e31d87f9323d536982e86d31c8d68bf712d72174d"
+  },
+  {
+    "path": ".github/workflows/check-placeholders.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "45566286be67603c43a4f51dcea748016a15e56137aac13050969c2a3ed72538"
+  },
+  {
+    "path": ".github/workflows/copilot-setup-steps.yml",
+    "decision": "MERGE",
+    "reason": "Prune unselected setup blocks and pin Pester 5.9.1 to the retained 5.x requirement.",
+    "source_sha256": "7a1035ec0660c6b578799d3da79e8daa7729df51bc234052ddb70593eadf66e7"
+  },
+  {
+    "path": ".github/workflows/data-ci.yml",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "5eecd64edf5ef62fdea13c291d103c5f0b9e6b1e8e2cb754b70105fcbc2449a4"
+  },
+  {
+    "path": ".github/workflows/instruction-contracts.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "be7f2b8f5997153fbfe7623afd27fa83e69bd5ec4f5bd9df0f30a7378d4da880"
+  },
+  {
+    "path": ".github/workflows/markdownlint.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "d9d6dcd8ad1bc55912b0a672df4e1109f1d477067610149a2f8d085a88b8cc1e"
+  },
+  {
+    "path": ".github/workflows/powershell-ci.yml",
+    "decision": "MERGE",
+    "reason": "Temporary analyzer gate; supported-host matrix; explicit UTF-8 workflow output for Windows PowerShell 5.1; unchanged trust boundary.",
+    "source_sha256": "6d50310e249be7b0d87f1c2256d01a0b1af49158dde8bc1479f2e0e10320f1c3"
+  },
+  {
+    "path": ".github/workflows/precommit-ci.yml",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "600a5cee1c8bbaedbfd95ecfc5a0085d36d72bf73ce13c08410c08f4c3fabcf1"
+  },
+  {
+    "path": ".github/workflows/python-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "7e6a47d258d5b8519d4ac07171c6bb4efd70d75482df95bc9fc9a7f9b8cddea0"
+  },
+  {
+    "path": ".github/workflows/terraform-ci.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "8d3e7099661cd76574678b42a8d319e3612192657d83e7e57103065a0a68187a"
+  },
+  {
+    "path": ".github/workflows/toolchain-eol.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "186ca690587392168405486df1763d298a5032afc1e08e699640cc4c2292b50c"
+  },
+  {
+    "path": ".github/workflows/workflow-security.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "124ed07be3a74cf7cd6811db2edf8a8720ccb0e8553a52674e65be0fb4e5320d"
+  },
+  {
+    "path": ".gitignore",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "084f21ec1edd7154a9305d98f1a8d199422f6f5a87e21b34d8fb3b7f0bbeda16"
+  },
+  {
+    "path": ".hermes.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "3372afcf5d1c5ea0764e365db6033eb053e220f504bf8e0d2287362a913d6a67"
+  },
+  {
+    "path": ".markdownlint.jsonc",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b029b6aed096bdfc7eac43a3c664a02e191d28287630fa32f904ea90490f20d6"
+  },
+  {
+    "path": ".pre-commit-config.yaml",
+    "decision": "MERGE",
+    "reason": "Prune unselected hooks; preserve exact four CSV inputs from whitespace/EOL formatters.",
+    "source_sha256": "f84352219c331f5ac4f8d5eb164d376f978cb97c0036f1837250a9f8f086df05"
+  },
+  {
+    "path": ".remarkignore",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "bc76c85cc3d1c345bfbbdd415447c90fd860d994c06494826c5e160bf026e512"
+  },
+  {
+    "path": ".remarkrc.mjs",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b59cfcb70040fad5c1b231d795cc95e9fbb868983bd4d7e7954f36cb3446377f"
+  },
+  {
+    "path": ".template-sync/instruction-contracts.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "41abf52341a291a7032a1f1953d703923320dfa9b8b89e4b97242f9d52649b60"
+  },
+  {
+    "path": ".template-sync/manifest.yml",
+    "decision": "MERGE",
+    "reason": "Retain upstream map plus exact template-support Python import helper mappings.",
+    "source_sha256": "d2752b221cb9e60a90aabc9015db504ada074be60ea2e0b99f722495795a723d"
+  },
+  {
+    "path": ".template-sync/scripts/bootstrap_first_adoption.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "12c5c3078f0ac55a3fd8a0bf3ff9bcd448ea41131fdaef2c1fcb836d30eb8a9b"
+  },
+  {
+    "path": ".template-sync/scripts/first_adoption_quality_reports.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2e76599a17350a17c314248266bcd42bd7b6d599334392f0a60e8a2d6bad125a"
+  },
+  {
+    "path": ".template-sync/scripts/first_adoption_state.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "451c96f6d0a6c9d82a582ec536d73492f856982b452aed5e05e4548d367614ea"
+  },
+  {
+    "path": ".template-sync/scripts/generate_sync_candidates.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e96d48085bb0f5c270c98b070a6e2532ae6d6d0fe98d77e3e3e320a7bbf5953a"
+  },
+  {
+    "path": ".template-sync/scripts/initialize_adoption_journal.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "629ad82ae1ad69597950a6cbe8f12ea6c3974b706ce0825842d915817eb52f3d"
+  },
+  {
+    "path": ".template-sync/scripts/instruction_profile_migration.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "82d1e5a1136148d05f313fe948537992621633579a1382d26a36125caae2ae9c"
+  },
+  {
+    "path": ".template-sync/scripts/materialize_downstream_adoption.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8aff9f0d168a0f8c1ed0d629113d5b4bd6a68a77026c2909f32d4f02fcdf8a8a"
+  },
+  {
+    "path": ".template-sync/scripts/report_excluded_module_references.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "36f054f9e448209e7a59f0cd7583427a1412b7c61f33eb8c3e3b19eedf87b462"
+  },
+  {
+    "path": ".template-sync/scripts/run_first_adoption_checks.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "212b5917a3ddb9d59004262c565a324d52f93acd6bb071ed9801f93db7767653"
+  },
+  {
+    "path": ".template-sync/scripts/template_sync_materialization_helpers.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8816bdd12314923379fb3653b401f0e075a6ec651d6ff3c97c6c24c049fd268a"
+  },
+  {
+    "path": ".template-sync/scripts/validate_downstream_adoption.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f29b3a80c51bd212f54e9e0cdd51676ea21770a970079d1446013d9222e2e42f"
+  },
+  {
+    "path": ".template-sync/scripts/validate_instruction_contracts.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3131d0e07410dba75f89150570cf23fdf9239a42d37faad4a1799298b97ddb72"
+  },
+  {
+    "path": ".template-sync/scripts/validate_marker.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "eba3e53aa4d046d72bfba8ccb85941591be0d8d7c8b81e7197bf745d1f78c146"
+  },
+  {
+    "path": ".tflint.hcl",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "230d8dd369d5aa0d7df473e39c1fbe595e176f72e15d5d0a5f3eed5d4addcad7"
+  },
+  {
+    "path": ".vscode/settings.json",
+    "decision": "SKIP",
+    "reason": "Retain exact pre-existing bytes, including ROMSorter-BF-Part3 window.title.",
+    "source_sha256": "7d445c3e518ac0ac5a7fa7301635b3ec5a93367c8291f74baa96693b13907b9b"
+  },
+  {
+    "path": ".yamllint.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9af396f12e4c860fa7ff53ae08116991dc1cb4d394d671223f3b67b449ce8c45"
+  },
+  {
+    "path": "AGENTS.md",
+    "decision": "MERGE",
+    "reason": "Prune complete unselected blocks and Azure host section; keep GitHub/Codex protocols and retained anchors; bump metadata.",
+    "source_sha256": "868af0e061c78361a6a94b434b05acd866efd5819bdc9366cad009a4716a5663"
+  },
+  {
+    "path": "CLAUDE.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "02764bc70cb9a59e04ec958ed97db138450c5f0f417f0c3e7b3d5d2c656d9e50"
+  },
+  {
+    "path": "CODE_OF_CONDUCT.md",
+    "decision": "MERGE",
+    "reason": "Direct reports to the maintainer using contact information on their GitHub profile.",
+    "source_sha256": "70fc1673a09f5613adb8421dd9398c498d67337cea819d1cc928539fe58e8365"
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "decision": "MERGE",
+    "reason": "Prune unselected stacks, render identity, route support to Discussions and document host/test/gate policy.",
+    "source_sha256": "7df0bf31971d5c7596c36af6a5a07a52a9eb1a65b66130ae0dbc2056b45369bb"
+  },
+  {
+    "path": "COPILOT_CHAT_PROMPTS.md",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "5b4ff5dc758bee1acc119339aa752e17cbc7fffdb332ade3554c7aedc8b1812c"
+  },
+  {
+    "path": "GEMINI.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "d9560ced5df60c8f55b61922a7d390944c553ae2b99e0d40f5955c727cbec27b"
+  },
+  {
+    "path": "GETTING_STARTED_EXISTING_REPO.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "50aef0c72a89d0f80f6992de0f657c7319606afa6d3313c3629423b14e4d425b"
+  },
+  {
+    "path": "GETTING_STARTED_NEW_REPO.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "9736faba412546950ae4256fd3d7b695976353f841165374407ee9c797952545"
+  },
+  {
+    "path": "LICENSE",
+    "decision": "MERGE",
+    "reason": "Rename the existing LICENSE.txt; retain its exact bytes, MIT text and Frank Lesniak author. It was already LF.",
+    "source_sha256": "92f60fd7d9711fb9c898af1b4781d2314e364bde7104090f3fbdd363f74199b9"
+  },
+  {
+    "path": "OPTIONAL_CONFIGURATIONS.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e47ef8bb4caf25693f811cbeef809a97526d6c6b55492b8b4f135cc3d7cc8d22"
+  },
+  {
+    "path": "README.md",
+    "decision": "MERGE",
+    "reason": "Preserve project identity and examples; fix filename case and add narrow development, support, security and compatibility guidance.",
+    "source_sha256": "f92a5c4fb67d2e413880a191797f31c12e88bb7daab62d6afb0d757fcbf2f5f4"
+  },
+  {
+    "path": "SECURITY.md",
+    "decision": "MERGE",
+    "reason": "PVR-only, 48h/7d response and latest-version support; content assumes enabled with immediate manual activation in TODO.",
+    "source_sha256": "711df017772864d00cee139c76b84fb708cdca9b995637ebaf3748da7ed95d7c"
+  },
+  {
+    "path": "TEMPLATE_MAINTENANCE.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "84b8071e706a7054eef19857038dcb6d81bc80da076c7ebfcf9fc149664fec3f"
+  },
+  {
+    "path": "TEMPLATE_UPDATE_PROCEDURE.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "41b847121aa778ab2ff697a2ee70e4b5decfce80a383b8933f96da127b196bce"
+  },
+  {
+    "path": "docs/ISSUE_EVALUATION_PROMPT.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "41985aecdc2d4f2d8aebf6ec13c83094dccb305b13aec639ba0e940b4c7c18df"
+  },
+  {
+    "path": "docs/PR_REVIEW_PROMPTS.md",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "ccce9a7ccc9eef2b5636abb970b12c5d25cd1067e8a13a3cc301129e1e796bcc"
+  },
+  {
+    "path": "docs/azure-devops-support.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "809d852aee07af1fcdf2e30563cca0a948b8948dfb0c196a4d33082a52a369d7"
+  },
+  {
+    "path": "docs/copilot-setup.md",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "1b2fc17d306b40730306b04ae8e5adc6ece2a2b713c298153004c756651c7d45"
+  },
+  {
+    "path": "docs/instruction-enforcement.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1105e37618378bff957f0b1861375791aca24f10bacc1824af4b6715090f71f0"
+  },
+  {
+    "path": "docs/terraform/TERRAFORM_COPILOT_INSTRUCTIONS_GUIDE.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "19bda0a3fd11f2d00dd526b82c7b845dd3cfc8657ae40694bcbb3cbbfd5f6723"
+  },
+  {
+    "path": "docs/terraform/TERRAFORM_LINTING_GUIDE.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "7cec8d911c1582cfc8b478d447c3e475fc19011da5f3d8856cc39ee7f8546bdf"
+  },
+  {
+    "path": "docs/terraform/TERRAFORM_TESTING_GUIDE.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "1b362717658e5418bc5f8402d87c609b6d9ab912831427ac5e9eb5e8842aa8a6"
+  },
+  {
+    "path": "docs/upstream-style-guides.md",
+    "decision": "MERGE",
+    "reason": "Reviewed deterministic selected-module pruning, identity substitution or companion rendering.",
+    "source_sha256": "610032604eb2a76857826e04abe512a5ae61c74fde553231dc428e1b34a0a397"
+  },
+  {
+    "path": "docs/workflow-security.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1af5114f1cf61c242ef01648ceab6733941110ae4c531d91fc4a7f7017aa7bc0"
+  },
+  {
+    "path": "package-lock.json",
+    "decision": "MERGE",
+    "reason": "Synchronize root package identity and Node minimum; preserve all dependency entries.",
+    "source_sha256": "aca08c363b5304a9579e48d68cc70496d0c6236608244ce80de6f882388e3717"
+  },
+  {
+    "path": "package.json",
+    "decision": "MERGE",
+    "reason": "Render ROMSorter development identity and align Node development minimum with CI at 24.",
+    "source_sha256": "6d02f6235d37aa822b709ebdd1ac3d3b73e684656cbc7238cb93ce4396693abf"
+  },
+  {
+    "path": "pyproject.toml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "068714740983a4ff776f9fdbdc8b4a0ab857ede86ceeda9cdf22e976e8d9ee1b"
+  },
+  {
+    "path": "pyrightconfig.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "9b816b72aec33c7a9f299836fa0a618ed16f9b667f23f9b77746a0ffcc7c9735"
+  },
+  {
+    "path": "requirements-pre-commit.txt",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2ef47e05168e86c3cdc43a54646949e9487d8dd02af3d493fe055967a31a9b73"
+  },
+  {
+    "path": "schemas/README.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "c858e034cc71851aef9ca123b3e227e2ba1732fa9e2c8d04bad5e27c5c355bc7"
+  },
+  {
+    "path": "schemas/example-config.schema.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "cb5c0eb9f6f0a5e0d87107317143c8a877a63af69d92f8255b7158f63279b417"
+  },
+  {
+    "path": "schemas/examples/example-config/invalid/extra-property.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e5bb8389f3f735dcb0078c878421f7cd63d3cdef32d221f2f57e26017159b6e7"
+  },
+  {
+    "path": "schemas/examples/example-config/invalid/missing-required.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "b2fccf89d8cdeb153a29757484d95604db7dfaead42cb31b3400c9695b5c94ba"
+  },
+  {
+    "path": "schemas/examples/example-config/invalid/wrong-type.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "992259e4f4ca31dddb999c65bc75d5bfeabe1650e5c70c582a2c9e827ffda490"
+  },
+  {
+    "path": "schemas/examples/example-config/valid/full.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "ee793f47cf0ff14241d1e1b4997ac27c2bcedfd704c935406473d51811b99586"
+  },
+  {
+    "path": "schemas/examples/example-config/valid/minimal.json",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "24cb102464f52ee6f3ea475a91e493f4a08e442dbb424e864d687b4755b0e733"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/invalid/missing-path-reference-section.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "d8ed0746d702fbb8406e7f7f2d714edb4bb14a47650ba6c7b609fdf57b3d6d62"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/invalid/missing-suppression-reason.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "499427381612d40f341a56b8c9307464758e4da17c64773047135e9f2f97f456"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/invalid/missing-suppression-selector.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e8b4a76e148e3f0a816e1e4afc6122699cc79dfdd67ca0ec2533ce122d68cfcd"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/invalid/unknown-path-reference-rule.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "467b4fb577859823d306294fd20807de15d19bd80654a9c3247ab33e323b1795"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/valid/full.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1ef5cbecde8da2ce0e141e32120079935f4ef3a01a3b31dfce8f470d622deade"
+  },
+  {
+    "path": "schemas/examples/first-adoption-quality-suppressions/valid/minimal.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "5210e50d71cd2792259a93f76f52f33d0941ce4e7aa6d56891199faafe8247cb"
+  },
+  {
+    "path": "schemas/examples/instruction-contracts/invalid/minimal.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "19f39e967567542f4f51b729125820b2993484047749140457081df227066b70"
+  },
+  {
+    "path": "schemas/examples/instruction-contracts/invalid/trailing-carriage-return-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "02646aa63e3ed183040fef35931bab179e06e356b8236122e0adbc4039c0f28c"
+  },
+  {
+    "path": "schemas/examples/instruction-contracts/invalid/trailing-newline-contract-key.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4a79c1468fa39bd4677b4128fd2d5ead4ee36c89ef374a4a63d2a304a8dd6b2f"
+  },
+  {
+    "path": "schemas/examples/instruction-contracts/invalid/trailing-newline-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9d1609831f0f5e7b0abad4fc30c8e93352ce1efbe0b96294de3246be59e1a2a3"
+  },
+  {
+    "path": "schemas/examples/instruction-contracts/valid/minimal.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1d5a7872560b47f5becb5aedf80b8605d14bd32763547a5f02aa1fb584b511aa"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/missing-modules.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2a641a90afcc728ca2604bb8eaef111b7939e856a75d2f99a85ff46e3d6fb82b"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-carriage-return-exception-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "622c14b01ad670698e1f7fee294c8e615348ade19d6d8b6b25396f925e3814fa"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-carriage-return-local-override-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "39de1c96208168670114cf584324f15ae328dd5258a08d3265404eef2f0bafd0"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-carriage-return-local-ownership-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "7221c64b3072ae2b389eb10f6dd6ad8c3c159f5800574afc9ce8b6b24e5432e6"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-newline-exception-content-sha256.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e406e94a95b468d7dc64d2ab6bf187d7ff4fb4f3d9bc33f067e1f5ed5825a989"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-newline-exception-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c42944f0ca4b35f6134abd60a0f903af9017c76deff8af6e47ceb3c036e39aff"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-newline-local-override-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "89b01a3b1139e0133323b0edfc4e28e008f1f2e7dcd984ee1e904ec0c2b171d4"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-newline-local-ownership-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3d05210fdd0280c0cbb4d2b6913dcce8a71bcddcfc729e4b5491d122d5fd971c"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/invalid/trailing-newline-protected-guide-waiver-contract-key.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "7e7431ef6f3bbe36d5d2a9e2488b5472c4cd28fb17a7baa94bce3371728e8d86"
+  },
+  {
+    "path": "schemas/examples/instruction-profile/valid/standalone.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "957333ccc29e3947bc112854797d51b20a739c771448a15cd259ab2f01ac48b8"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/missing-token-scope.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "50123d6be9f822aefccd82c70f3c95ccdaaea6977d85875aa0097f3a08526bb7"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/trailing-carriage-return-path-pattern.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1e4be7e4a508f22e0a1993b30fce7df387d86e0ed71e1d2adce88e08970de1e0"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/trailing-newline-path-pattern.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "6b0df41ece8866bf0b19e0dbc02eea8635cefb8a68169b32c79f9d898ccb4035"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/trailing-newline-source-attribute.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e553fcf3f7c955f3ad8625ffc62e0b18c879add8823021c99eea6b67a68c4aba"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/trailing-newline-source-name.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "815c8766e78e6237603feb652ebbea53b1708585c21e282cb613df89bbe93ebb"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/unknown-finding-kind.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f4d233cdc1267f0c7c17db83ac199c7eebc37b7c6639d072da1c3d240379eef3"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/invalid/unsafe-path.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3640344b53654317199d4a6daf937510ef39df7dbe77a38ffcd9d17222a57afe"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/valid/full.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9b4486225ca82e3f6f2c9ecacdb7c1ba145633af66512d77472c484866976f60"
+  },
+  {
+    "path": "schemas/examples/template-placeholders/valid/minimal.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a57a448c79673eba8c65697cb3bb08fa80a54436df280b352c24e2bb406fa993"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/duplicate-table-condition.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4281a668c750b63b376edf5745e536533db2a39addf6f9564a1ce991c0ca66ac"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/empty-scoped-policy.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "057ed1b2dc97ea6245cf65f06bc9b45a23e43e5b8cb5e36254deece510291541"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/empty-section-modules.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "37ec25e0cff66ccc9519c7cc31d5182cb0230bda64abc0187d590ab45c569171"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/missing-anchor-list.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "ce051677062535a7e484ff8a3d1e65fd0199763b479bd979821796cca2aaa946"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/noncanonical-table-cell.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c25871105cf08a9cc6ab47d8f4b992287b95b8f13ba9b66c6dd9f7fa337b6087"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/path-traversal.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "28d550628f43c283bd458c0569ecca7a18d78af82545893de6e2fe2547a96db2"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/protected-guide-reference-missing-target.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9f2115d22621e0a4563ad257a9d2fb4b95638f6e966a4dd788386020bc5a01a6"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-carriage-return-path.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "609ab5d55d84e8cbad63b166c70e9773e98e7f8c819e7bff33d8cdbfa8072972"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-heading-space.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f01fedf8067a0e86cc5e1c310f11eddd985b7eb7c7a98abe926358c14eeba112"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-newline-contract-key.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "244d0b149702a680e7c177e262ae4cc521ae4b24d0682b44318906fdc1816549"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-newline-module-name.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9e00a93861546cd64a3a4efd7f4941114e56de588ebfec910a871387dc7ed3ca"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-newline-path.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3a5473ce0ccee4f06babe01d21aaaa402ba933512b3c5532c1fbbe90e138a442"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/trailing-successor-newline.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "290df741bc42ddfeb052ad1ebb2f5eff513af888549848226a1c1081e6f9bd3b"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/invalid/unknown-block-kind.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9dc1330b335a60207d2eb08bb3c3c7bf9ce3e008f83d7ec4eb0eee9d7d120da9"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/valid/canonical-heading.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "fc8ff3ea346ddb392b1f2ed5afdbcb6f986e094607dff2dcef91928d34efaa39"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/valid/interleaved-blocks.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e89d57b113389d3ce67d45a1678cad8f537b71be5799235d38214f47a25a6ef5"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/valid/multi-agent.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e1c4d85e8f129cad43b78382918d36a3a751b23c886054792e70da65b32c095f"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/valid/protected-guide-obligations.yaml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "60c3dfd23b57cb1b0b25b135b8d2d42ac9523fde68ac896de22a2fcf8218f4eb"
+  },
+  {
+    "path": "schemas/examples/template-sync-instruction-contracts/valid/scoped-policy.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b5a44d0a2a175f025c8aa38fb5a94f71f97ff22852e978673593e3d6eb5ae2df"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-devops-credential-url.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "87a90e5ea50c5eb463a69f710d0c446c3532c1f965c0821a51fb21d0ed5156de"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-fields-without-azure-host.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2c6c4cdc97cfd0f6eafbcffedb26a59d6f06d7111856be9cc8b42d815e75883e"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-org-url-extra-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "69b889da0f2ac4fb9af165ed1d98c4f4d3c973cb25a73cd700c75af6d5be9159"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-project-url-missing-project.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9eb040a6e6e6f899ec7506cba41e0476dc7ad9d9b1d69ac3487219ff0ae43468"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-repository-url-missing-git.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f919e4e9a6e953388dc4973189a9589799dd4ba6cf1aaab4178b2b9e10d55203"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/azure-url-non-azure-host.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9bfd0a6ab33f76b6b45ae1fa185d519f42d877db9f5ee0541b4d7077be37a899"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/branch-last-reviewed-sha.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f111e55a51549574ae426bae9ebb2f328cb00af021eeef59330acf2d637375ff"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/deferred-candidate-directory-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b05bc6dda23c56e4f12cc94bd1be8bfa62ce756c9f96d9462fafe3b647a78087"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/duplicate-module.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e90408debea564dbf4a8a890c7b9849c8f024bbd25e2ee12330c390e254ddc88"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/empty-instruction-waiver-reason.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "22e1dce854addaef98271a334c1474719885a7267d0c036a34e39a38db577d17"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/invalid-protected-adoption-mode.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "edf3c96809d97b3c1f84f4c5373d2a1c74bcd9169d9eb2a138c9f9997b5fe968"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/local-ownership-extra-property.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "88b0b9bc59be62c04efce419733e69ba02e5d201a38779b2e665027f86ff3396"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/local-ownership-glob-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a658e3f6fc52021c194dca47a8ac9e00500ad85e82416d90edce19534bbe54d7"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/malformed-protected-decision.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "7f8e7c297c11dda785e8f831e82b7e07c5cbe44bade58fa940a65621956ed7d0"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/malformed-protected-guide-waiver-contract-key.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f443b619d9192a6f9d268e553c9fbc567f6a5f2f65205a3afbe9ba70809f41de"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-collaboration-policy-follow-up.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f46db6368df6d9b5ab766cc246b16075413508533900b254eb67a0b2b1abc0ab"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-instruction-waiver-authorization.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "fdad045c93ab6389ab864390f0f60bdd6e56fb06d79a6630709fdbc972acb8cf"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-placeholder-waiver-scope.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "09e3d0dba0133bb4a530c1b44d7c668a56f9923c3f297972a0c8a3ab0d19dbab"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-protected-decision-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "66145b6f53f8a9d4105d1690152b16497e4bc635622b45c5046af3de08b5db12"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-protected-edit-authorization.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9b212d6a7438afa97b0a53099bb765f2609cbbfe0ea9794706213cbc0129bb41"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-protected-guide-waiver-target.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "db930ca5e100caaac2b2532595be172285924420aa6f28014b6957eed54053be"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-remove-local-reason.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1e3cb802ffccbbf1009cef478db1a9fe68fa89460e0b3f2e79a0fe605f71ccb0"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/missing-tailored-authorization.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "bdd98d964c53fd05b8e1119d25a9117230b81e3f41902da90362eed771ef41a4"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/multiline-issue-label.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "50d5d8b460d592a28a7087be98f6278c23440e2fb2b57a12def106e54d442d68"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/protected-decision-directory-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a47d07a240e924e1ce906d0b3502911c6fb255c39833c7bb1cb36dd896dd39df"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/protected-decision-path-traversal.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4147fdcc4b263eb3eef1e63b82ce5c451482012d5cdcd45c369cc0cf12795d5c"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/short-deferred-source-commit.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3875351c378ed9069a58f69fb9e5fcb6f97a1d41c082c493d39a572e9742bfc6"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/short-last-reviewed-sha.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c85024ee76d858dc21fea2f46e071d51747e28435848ae9389e9d46cb3376a86"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/tailored-non-content-decision.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4214e4500c7df53a3b89bf2e91845484babc1cdebabb401b76f3350b7d810a9c"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-carriage-return-local-override-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "781327f13b3525a6701eb0f8af1fd1e0618dc06758b86af9a60fb0a1831075a4"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-carriage-return-local-ownership-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a54af36f2198052f3cf93923b1f217a741ecbfcb697e215c177c7a9000b798c7"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-carriage-return-protected-decision-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8d5a94ce10a5102b73155fa3a251f058442ba6a3093ff3aa9e858a25a62f9494"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-azure-organization-url.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "231f889c38a30447719bfbaee68bfc3877ca725b2cff49a1b1c94cb9c506b7be"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-azure-project-url.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4df3e306777519a510f29bcece80f045a8927bf5fdf946e26e8d7fbc6f5da800"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-azure-repository-url.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a5ca15a030522ee72dfbc2a2ed297527e0ebd095ca5382832427dca6117c67c8"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-last-reviewed-sha.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "ddbb5d6f9377066852908f815ce239e20a8725337a4787a25b30a7ad635f9e28"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-local-override-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3804a2effaa6fa88daa17525357f16c1c8c89da12df929755033bc626c912d73"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-local-ownership-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "5f4e5da9e6128064216490b095d432fd52f6ed40d2ba1b4797246dfd2e5e8292"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-protected-decision-path.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "182ad0f43d5eb806b83ce915d1952cbb75c2e5dc7c148a6560d3d4afe7d7b680"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/trailing-newline-protected-guide-waiver-contract-key.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "da75bc52ea6c3d7caca997204749883773c4f04a52a42c070bbe15b4d7405809"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/unknown-azure-module.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "839ce949603c629852a9c02953ab1fbaa2b38fbcd1f7d56fcd3b5561330be86e"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/unknown-default-decision.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "77ea7f979a319b9f06a373981395a2e850ea5f98857becc10c48747a76eb909a"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/unknown-module.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "01df1930df7640e41d789f60c44d61a92256ffb4b1049f5858f1eef1e765ffe5"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/invalid/unknown-template-sync-field.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "5b746ee537b17a370915015ad105d5605f665296b1d3e731f9cb4b2f364a9d54"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/azure-devops-only-host-modules.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "83a8c15b1f635b1a96e6456afede359547c9a0140ff79bb07eb6cfac1ec27cd1"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/full-reconciliation-in-progress.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c9e907930cd81786a7b7bfb52f95a33580d3fb2bb2614c8a2da132f5f658ba4d"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/full.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8dd3a1404a68f5608e63e22f6573a101a43307c25ab89ded9b9420e6ab0803c5"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/github-only-host-modules.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "172bc4144539b9be67c1f08514419290caa97f9e1a0cd6d9da4c8332203ca6c4"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/instruction-contract-waiver.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "0242186e79aeda44feebd2b1a7b7228aec71e1cb4a7bd4b49876f2339893a89e"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/minimal.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "25ad93b3d32c18314f38c0f88c667414096ca72b51c3de94b513dab1a601c3fd"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/mixed-host-modules.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c3286f9bb9187688541c3d6650572ea5585edf4c715e785147f015937d50b38f"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/placeholder-waiver.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f50f905a4cc3a828cc86d3177d25ed24b1777eef63dd4b88b7293c31776f95e7"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/protected-decisions.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "98e881ee7b1a7a8a77e9ca49c261d76e46d0d49037bc470c6655717a76f88ede"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/protected-guide-contract-waiver.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "188c4975bdbde46368c261192f40fb9f3992960ba2882f4532bc3fe3c47352ef"
+  },
+  {
+    "path": "schemas/examples/template-sync-marker/valid/source-ref-first-adoption.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "d265a22ef38d62e01f8e237748d5afd9ba5d902187a143dcfeab063c6525d4c8"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/absolute-example.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a6b7d99bb391e86360ced3f0e4415b1b606f310bbf6bcaf599ea59042f400620"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/contract.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9d5e2180341029f79f8c963707ca5d76b23a1b3a343a72e393ad6e5840e2bf86"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/empty-component-example.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4d5ac0ef9e68c106a3d9a1de2286e386d3a688f982322c8e6a9e563a9026bed1"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/interior-dot-example.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "dc69cee33c9f81e6cf459120016398c062d0a3b6e236722bf3c24999d22be670"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/leading-dot-example.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e215e4650e4da474a5a43655249673232a8445ced5a2bf2df1ee6ae02d5308de"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/trailing-newline-example.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "bfab62324acefe8a3fe9fbd96c1a08d7b849b4c814f2e151e940642e64c54bca"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/trailing-newline-run-sha256.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "5e814d295a139aa869ee2f522a55fc6476cd0e72b9698c40da6b0fd85fb1435b"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/invalid/trailing-newline-workflow-path.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b73deebdd40dc111a9cff27aeea735af2035b46742d91fa80ccdc224981929dd"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/valid/contract.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "6d216be73be861b5742d730f2b2bc27c3301c5a30bdcaa8f9bc8ce37b5594517"
+  },
+  {
+    "path": "schemas/examples/workflow-security-contract/valid/example-paths.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8fc87d043fb5bc61065382c51a80eb61d62ce7f77259eb7af37e53988d8d5c84"
+  },
+  {
+    "path": "schemas/first-adoption-quality-suppressions.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9577a610727f3073dd466fadab73eb5571b52ad9fad94a487bd3747e8ad59694"
+  },
+  {
+    "path": "schemas/instruction-contracts.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "eec7b26b6c6cdb6dcfacedfa7ff38c436858248abb8e20c047e49a9c6c7691d3"
+  },
+  {
+    "path": "schemas/instruction-profile.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "d900329b303d299694ed43e895c66711974ac1377b4d5d3cd60995aa730d0cda"
+  },
+  {
+    "path": "schemas/template-placeholders.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "963cec9b7ce7aad4952a1696cab0e0dfb9f92fd16dc78be80fffedceb699f684"
+  },
+  {
+    "path": "schemas/template-sync-instruction-contracts.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c1f5430f77bc3f30100072e04f020c82e05a9e904640c004f8e05bd7d13c5bc6"
+  },
+  {
+    "path": "schemas/template-sync-manifest.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "15aae64b2a22fe22b72943fc707c2a08ab8fc6d7c6d6829abbc93f13ebdba7ef"
+  },
+  {
+    "path": "schemas/template-sync-marker.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8c1fac7bb03e10116e51674d3cc7842b01441785f8e1a734db66023c26c5fa09"
+  },
+  {
+    "path": "schemas/workflow-security-contract.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "ffcd8062245dbb4e93a2f78f282f4ab996132033c38396886e7602509030a433"
+  },
+  {
+    "path": "src/copilot_repo_template/__init__.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e1605e50a562d36eb6236f15df64d46596760bcdac50d5a8ef11b2e0cfcc41d5"
+  },
+  {
+    "path": "src/copilot_repo_template/example.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "a8b0b24b5ee709c3ef8ed75e1d4f3349f46fdc9512d95c991221b90bf302b3d7"
+  },
+  {
+    "path": "src/tools/Resolve-PSScriptAnalyzerCandidate.ps1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f1de58add19fac9fc5487a9162cde9fd4fd1c24be2c8d6227be629a2b9a98366"
+  },
+  {
+    "path": "src/tools/Resolve-PSScriptAnalyzerGate.ps1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8540a237fa25921ac9018948fd88de0827b4071bc00eac6be8d7bd2b21d2cbf2"
+  },
+  {
+    "path": "templates/adoption/_TEMPLATE-ADOPTION-DIFFICULTIES.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "f446fc3def24fa430a922f24fdb0138cf1fe133434770f5eac33ce9b8b2cf2a8"
+  },
+  {
+    "path": "templates/json/README.md",
+    "decision": "MERGE",
+    "reason": "Point schema-worked-example references to pinned upstream because schema module is excluded.",
+    "source_sha256": "f64eafb1b18af1e49b1560d86f1625761db49b315c90703ee676ecf62bc49f2c"
+  },
+  {
+    "path": "templates/json/examples/starter/invalid/missing-required.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b2fccf89d8cdeb153a29757484d95604db7dfaead42cb31b3400c9695b5c94ba"
+  },
+  {
+    "path": "templates/json/examples/starter/valid/minimal.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3d8916cc11da5b70163fe0280f6cd409d028019bdd485063687ba6fe32435ef7"
+  },
+  {
+    "path": "templates/json/starter.schema.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "aeebafa79f594f2f94a53ea3df51899f43a67bc8aa07621e6a0b3b21453325a1"
+  },
+  {
+    "path": "templates/markdown/.markdownlint-cli2.jsonc",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "33e2aa4977808bd9aa64c58d5b0244c11a692c5e59282d3a11f7da767a1a2528"
+  },
+  {
+    "path": "templates/powershell/Example.Tests.ps1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "379e4f9b8b009bbe6ccc2b4ee13f31364a5bb049ea0c7ce3861dc26bf72076c0"
+  },
+  {
+    "path": "templates/python/README.md",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "af6f25e639be949f76904b3c0f3d58be21649ef50907a9efc8a65b6e6781c304"
+  },
+  {
+    "path": "templates/python/pyproject.toml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "b22ac5eb6e8f26072feb318de2b1f50ee85a42e7fd69f028b475d2387a17fb7b"
+  },
+  {
+    "path": "templates/python/tests/__init__.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "f944f5616776f4ee218d5c6690c366b459b4516c0323880da1470719e6d76e70"
+  },
+  {
+    "path": "templates/python/tests/test_placeholder.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "a5c8e28fd0d5680f924e4fab296d31c2fc2a0c9b627fbb2a65719332895d1110"
+  },
+  {
+    "path": "templates/python/tests/test_schema_examples.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "f0fd74e5304bf873a410607fe0e1975d85e345d0eb30bf308a0dcab2de920574"
+  },
+  {
+    "path": "templates/terraform/Example.tftest.hcl",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "75df4af23260544054cb479e658e30edb994cf68200d810ebcbb64982c2161d9"
+  },
+  {
+    "path": "templates/yaml/README.md",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b31cbae5ebf903765f2689fae13c3eecf42e0e7ade9e2d98a70229c2b9606961"
+  },
+  {
+    "path": "templates/yaml/starter-config.yaml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "6b8a7083bb6fc8dfa1f5b47bb5a1ff6019452d8c07f404fd855208432b7993dc"
+  },
+  {
+    "path": "templates/yaml/yamllint.lenient.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "7fbc98a7ffbdb762873276ff0f5e12d250079015fd5e4fcbbe67337c640cdbc4"
+  },
+  {
+    "path": "templates/yaml/yamllint.strict.yml",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "163648b1ff61631f8b51ceb95804519d15c8891c997be9d10f06f8b70dc2d3a2"
+  },
+  {
+    "path": "tests/PowerShell/Placeholder.Tests.ps1",
+    "decision": "SKIP",
+    "reason": "Omit example assertions; use real offline ProductSyntax.Tests.ps1 instead.",
+    "source_sha256": "851f7bc05e37d23b0e0daa9ce084d7b6f05e718fc869d275fe43e670f6a13949"
+  },
+  {
+    "path": "tests/PowerShell/Resolve-PSScriptAnalyzerCandidate.Tests.ps1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "402c3309efd662929a40478d686e300a3d5aba72f8ca4d4f66adb99e7899c0f3"
+  },
+  {
+    "path": "tests/PowerShell/Resolve-PSScriptAnalyzerGate.Tests.ps1",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3c959ff251b9d69da83f3d2fdbc6d1ec1f12ca9ccba3f3469bba3dae17dc9629"
+  },
+  {
+    "path": "tests/__init__.py",
+    "decision": "MERGE",
+    "reason": "Required test import package; describe retained tooling without Python example-product claims.",
+    "source_sha256": "f411fd76c27f614e804bf593f2ae9d3f39512ad3b3f77426f7336abcaece7787"
+  },
+  {
+    "path": "tests/_pytest_compat.py",
+    "decision": "TAKE",
+    "reason": "Required by retained support tests; narrow downstream manifest correction.",
+    "source_sha256": "119e25d647cb5fe81b3fe9a55781a9328c8f9d1aceea48bce72980ffc290ff5c"
+  },
+  {
+    "path": "tests/fixtures/dependabot/auto-assignment.yml",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "6dfa31186504697aba0060f51875302259d03cd95a721fc13e9d0bc25fac8cea"
+  },
+  {
+    "path": "tests/test_bootstrap_first_adoption.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "0c8b9a64557c8f2bf5d8b023489f2e3bc2d8a2cb4c805837808c9fc6c71ea2c5"
+  },
+  {
+    "path": "tests/test_check_prohibited_placeholders.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "6526c0bb2ea8ffe40e5d9a1a8d0a04069c4f3fca1658d73b3c666a54ca8de5eb"
+  },
+  {
+    "path": "tests/test_contract_wiring.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "4a6643b414d2ba8e303aa85e7edaf4554bb835291b7e75a0d7aac770e8415a6c"
+  },
+  {
+    "path": "tests/test_copilot_setup.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "8e784225d2f0b68b862c7d3e3b5dff684e801bceeff790bf0a3cf468c16ab712"
+  },
+  {
+    "path": "tests/test_dependabot_schema.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "b0495211e7a6bc6efd22b72ab29b0cc36f9164deb203e599c771309e887c10d6"
+  },
+  {
+    "path": "tests/test_example.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "e97f1415c958557cc5a7ec3db90d92241f3f99e1becda9ea5f30f32fb6a39224"
+  },
+  {
+    "path": "tests/test_first_adoption_quality_reports.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e76f9b8f34233ee51ac6c6a419bd4554d0b31ff9ebb26a9fc13f5d864a24bfc7"
+  },
+  {
+    "path": "tests/test_first_adoption_state.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "97d70bceaa15667ea4a672263b6890fe994e0cc85e847c652ca2f91facc4d880"
+  },
+  {
+    "path": "tests/test_generate_sync_candidates.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9c52095cbc8cf2d7c302d57a8ee928e069c515089999688454ee2cb21d8472c2"
+  },
+  {
+    "path": "tests/test_gitattributes.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "1b35ce3b8a16ceea50c8c39b4ce57e597485bd6dc435848cd7c53364b19f4a75"
+  },
+  {
+    "path": "tests/test_initialize_adoption_journal.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a61f13bf33f8e96e0dcadb8afad88d55e3bf9b0a94ca3924a8ccf0a326b5878c"
+  },
+  {
+    "path": "tests/test_instruction_input_limits.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "bba47dbdde3c747dac5ebc222a8b8a98220f91f43521e6448e75abe9dad738df"
+  },
+  {
+    "path": "tests/test_instruction_profile.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "705c11c4e02f6d548ca59a1ffaaaaae1681c7ac4cd041f6798f0b845299dfad3"
+  },
+  {
+    "path": "tests/test_instruction_profile_output.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9f4119b1b6196695a30e9afce87125a24ae11758e669880b38831b8b754ca1ce"
+  },
+  {
+    "path": "tests/test_instruction_profile_references.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e047e358bb753958fad1195388575757ab5b8e9d8793cab4c82ecec3ec23c414"
+  },
+  {
+    "path": "tests/test_instruction_yaml_duplicates.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "9ccaef5bf76fdbd554ed60fba56241fad5df6c65c01de60493c840171f4a810f"
+  },
+  {
+    "path": "tests/test_materialize_downstream_adoption.py",
+    "decision": "MERGE",
+    "reason": "Mark eight cases requiring the full upstream README or excluded Azure assets upstream_template_only; retain all applicable materialization and security coverage.",
+    "source_sha256": "32bc1743f06b5e92c9992adb46cc677d597b53ebb16d1a94f94ff4dfb9466a3b"
+  },
+  {
+    "path": "tests/test_precommit_runner.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "3c7a720b5ce2dc02ab7882ef251e66a33685a9d29136d79f6116e276acde3eae"
+  },
+  {
+    "path": "tests/test_replace_template_placeholders.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "bba619cc7d694124b0c1023b2d74a27c9d01e2a66302cc63da326e08b5de369a"
+  },
+  {
+    "path": "tests/test_report_excluded_module_references.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "c6713e90e1d9f86db67f6b8d7ba9d68f7c999a53c31df30cd9cd3ec21dcf9e08"
+  },
+  {
+    "path": "tests/test_run_first_adoption_checks.py",
+    "decision": "MERGE",
+    "reason": "Allow the retained downstream pytest.ini fixture configuration while preserving strict marker and selection assertions; retain upstream pyproject fallback.",
+    "source_sha256": "0e1035f99865d70b1ade9a391e74c88cb9d1618151b820c69bb0f811f3d837fa"
+  },
+  {
+    "path": "tests/test_schema_examples.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2b86225d89c988c131602207635bd0c6e67f947889ba4f238750862cbbed9cb5"
+  },
+  {
+    "path": "tests/test_template_manifest.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "2dbb5122d4b5bf6c437ddf4c4b30c9a9b13ce48d6febafa377a4682d80ebf995"
+  },
+  {
+    "path": "tests/test_template_sync_materialization_helpers.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "317d3aaad15af6bf91aec35f20c9495eb235e1301976380a21e2ada62eab8f8f"
+  },
+  {
+    "path": "tests/test_terraform_hooks.py",
+    "decision": "SKIP",
+    "reason": "Unselected module; do not create this upstream path.",
+    "source_sha256": "d007696f60180935d9679eb44640acdbba929836e7decd0de4ce64c6bba7e8bd"
+  },
+  {
+    "path": "tests/test_validate_downstream_adoption.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "a924180fbe57bbe2dabb45d21e4ec8cee3189084657c9bac9a71331364fc6b6f"
+  },
+  {
+    "path": "tests/test_validate_instruction_contracts.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "057e4a23d4bfc7401d21652521f283dd310c6e96c8dd4825fdab59f67c6c0990"
+  },
+  {
+    "path": "tests/test_validate_marker.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "1f7f3f3e99d2b1d1c056c6e5203caea8508301fc38607467c2ce23a9ac9897e1"
+  },
+  {
+    "path": "tests/test_workflow_security_contract.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "eccc110edfab1ab4b976b4ddeedc3f78857b6c81c9893a63fee30208e14f6e5e"
+  },
+  {
+    "path": "tests/test_workflow_security_lifecycle.py",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "d0061f5acae9ed24c58f8e888d9b3a7532de3be3d9dc49353a4c0cb1fa5cd268"
+  },
+  {
+    "path": "tests/toolchain-eol/check-toolchain-eol.test.js",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "e81b14e69d8dcc0496ca7ee4e47b21db99ce5d1b699e986c33c0c0103a579e38"
+  },
+  {
+    "path": "tests/toolchain-eol/fixtures/node-schedule.json",
+    "decision": "TAKE",
+    "reason": "Retain exact pinned upstream bytes.",
+    "source_sha256": "b65d94dc5d36733e681543fc2d360fe189b76cd3463e129db3bb9f9a7d9a6c52"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/starter.schema.json",
+  "title": "Starter Schema (template starter content)",
+  "description": "Minimal JSON Schema Draft 2020-12 starter shipped under templates/json/ for downstream consumers to copy into their own schemas/ directory and adapt. This file is starter content and is NOT an active contract while it remains under templates/. See templates/json/README.md for adoption guidance and schemas/README.md for schema conventions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "enabled"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable identifier for the example resource. Required and must be a non-empty string. Sample values are obviously fake (for example, \"example-service\")."
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether the example resource is active. Required."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional free-form description of what the resource represents."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "description": "Optional list of short string tags. Each tag must be a non-empty string and the list must not contain duplicates."
+    }
+  }
+}

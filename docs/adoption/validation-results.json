@@ -1,0 +1,135 @@
+{
+  "first_adoption": {
+    "command": "python .template-sync/scripts/run_first_adoption_checks.py --check",
+    "result": "PASS: final full run, 10 command groups, 132.161 seconds; no Git status changes. Post-stamp changed-file checks recorded separately."
+  },
+  "bootstrap_doctor_plan": {
+    "result": "PASS: bootstrap dry review, doctor and plan; helper omits pytest without pyproject.toml, so pytest was invoked explicitly"
+  },
+  "instruction_contracts": {
+    "result": "PASS: 5 selected contracts; pinned sync catalog byte-identical"
+  },
+  "workflow_security": {
+    "result": "PASS: 10 owned workflows, including release verification"
+  },
+  "pytest_windows_initial": {
+    "command": "python -m pytest -m \"not upstream_template_only\" -n 4",
+    "selected": 2362,
+    "passed": 2331,
+    "skipped": 20,
+    "failed": 11,
+    "deselected": 2915,
+    "seconds": 1827.1
+  },
+  "pytest_windows_profile_retry": {
+    "passed": 2,
+    "failed": 0,
+    "seconds": 3.59
+  },
+  "pytest_pinned_upstream_fixture_retry": {
+    "passed": 9,
+    "failed": 0,
+    "seconds": 33.0
+  },
+  "pytest_ubuntu_retry": {
+    "passed": 4,
+    "failed": 0,
+    "deselected": 7,
+    "seconds": 2.39,
+    "coverage": "Both Windows symlink failures and both repaired pytest configuration cases"
+  },
+  "pytest_final_collection": {
+    "selected": 2354,
+    "deselected": 2923,
+    "result": "PASS; exhaustive suite not rerun after narrow fixture/selection corrections"
+  },
+  "pytest_disposition": {
+    "downstream_local_fix": "Two tests now accept downstream pytest.ini with strict markers, preserving upstream pyproject fallback",
+    "upstream_only_scope": "Eight full-upstream README/Azure cases marked upstream_template_only, including seven prior failures and one prior pass",
+    "environment_limitation": "Two symlink cases fail on Windows without privilege, also reproduced upstream; both pass on isolated Ubuntu; no validator suppression added"
+  },
+  "node_regression": {
+    "tests": 124,
+    "passed": 122,
+    "skipped": 2,
+    "failed": 0,
+    "seconds": 123.858,
+    "skips": "Windows symlink privilege"
+  },
+  "pester_5_9_1": {
+    "powershell_7_6_9": {
+      "passed": 67,
+      "skipped": 2,
+      "failed": 0
+    },
+    "windows_powershell_5_1": {
+      "passed": 67,
+      "skipped": 2,
+      "failed": 0
+    },
+    "skips": "Windows symlink privilege; tests parse rather than execute product scripts"
+  },
+  "analyzer": {
+    "candidate_files": 31,
+    "warnings": 249,
+    "errors": 0,
+    "unknown_severities": 0,
+    "new_tool_findings": 0,
+    "gate": "PASS temporary first-adoption; strict gate remains follow-up"
+  },
+  "node_eol": {
+    "result": "PASS after Node development floor raised from 22 to 24, matching hosted CI"
+  },
+  "npm_audit": {
+    "development": {
+      "low": 3,
+      "moderate": 11,
+      "high": 1,
+      "total": 15
+    },
+    "production": 0,
+    "classification": "Inherited pinned dependency debt; tracked follow-up, no forced upgrade"
+  },
+  "markdown_rendering": {
+    "result": "PASS: rendered HTML unchanged by mechanical formatting in README, arcade background and Copilot prompts"
+  },
+  "eol": {
+    "normalized_original_files": 16,
+    "crlf_pairs_removed": 10402,
+    "unchanged_csv_files": 4
+  },
+  "git": {
+    "finalization": "Uncommitted local inspection; no staging, commits, pushes or GitHub writes",
+    "initial_head": "dcb2e4a42eabccc3ce3f4dc118781f570ccc65a4",
+    "initial_tree": "610221c03d0d62b34160f4cd70108772bb36b687"
+  },
+  "evidence_directory": "C:\\Users\\flesniak\\AppData\\Local\\Temp\\romsorter-adoption-record",
+  "npm_ci_final": "PASS: npm ci --ignore-scripts after Node root metadata synchronization",
+  "powershell_5_1_workflow_output": "PASS: extracted discovery step writes UTF-8 found=true; only its reviewed workflow fingerprint changed",
+  "post_stamp_checks": {
+    "precommit_changed_files": "All applicable hooks passed except initial status-table MD038; corrected code-span spacing and focused markdownlint retry passed",
+    "markdown_links": "PASS final repository-wide npm run lint:md:links",
+    "nested_markdown": "PASS final repository-wide npm run lint:md:nested",
+    "downstream_adoption": "PASS --require-marker with final full SHA",
+    "instruction_profile": "PASS final retained profile and instruction contracts",
+    "workflow_security": "PASS 10 owned workflows with release verification; actionlint passed",
+    "line_endings": {
+      "files": 291,
+      "lf": 287,
+      "crlf": 4,
+      "mixed": 0,
+      "risk": "none; four CSVs intentionally byte-preserved"
+    },
+    "diff_check": "PASS git diff --check",
+    "index": "CLEAN: git diff --cached --quiet returned zero",
+    "head": "UNCHANGED: dcb2e4a42eabccc3ce3f4dc118781f570ccc65a4",
+    "working_tree": {
+      "modified_tracked": 20,
+      "deleted_tracked": 1,
+      "new_untracked": 259,
+      "entries": 280
+    },
+    "reviewed_sha": "2f6aa17caa063eaa0b39afb3afb1d27757b4eec3",
+    "marker_durability": "Uncommitted working-tree record only"
+  }
+}

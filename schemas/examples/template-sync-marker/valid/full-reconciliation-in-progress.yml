@@ -1,0 +1,9 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+    - template-sync-support
+  local_overrides:
+    - path: README.md
+      reason: Full reconciliation is still reviewing local project identity.
+      default_decision: SKIP
