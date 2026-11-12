@@ -1,0 +1,56 @@
+# Toolchain end-of-life monitoring.
+#
+# Purpose: Compare checked-in Node.js runtime selectors and support floors
+# against the official Node.js release schedule. This complements Dependabot:
+# Dependabot updates dependency manifests and GitHub Actions `uses:` references,
+# but it does not provide runtime-line EOL monitoring for values such as
+# `node-version`, Azure Pipelines Node task inputs, or `engines.node`.
+
+name: Toolchain EOL
+
+on:
+  schedule:
+    - cron: "23 7 1 * *"
+  workflow_dispatch:
+    inputs:
+      warning-window-days:
+        description: "Days before EOL that should fail the check. Leave blank to use the TOOLCHAIN_EOL_WARNING_DAYS default."
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  NODE_RELEASE_SCHEDULE_URL: "https://raw.githubusercontent.com/nodejs/Release/main/schedule.json"
+  TOOLCHAIN_EOL_WARNING_DAYS: "180"
+
+jobs:
+  node-eol:
+    permissions:
+      contents: read
+    name: Node.js EOL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install Node.js dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check monitored Node.js selectors
+        env:
+          WARNING_WINDOW_DAYS: ${{ inputs['warning-window-days'] || env.TOOLCHAIN_EOL_WARNING_DAYS }}
+        run: |
+          node .github/scripts/check-toolchain-eol.js \
+            --schedule-url "$NODE_RELEASE_SCHEDULE_URL" \
+            --warning-window-days "$WARNING_WINDOW_DAYS"

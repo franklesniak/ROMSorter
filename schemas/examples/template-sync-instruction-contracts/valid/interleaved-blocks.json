@@ -1,0 +1,39 @@
+{
+  "instruction_contracts": [
+    {
+      "path": "AGENTS.md",
+      "requires_modules": [
+        "agent-instructions"
+      ],
+      "required_sections": [
+        {
+          "heading": "## Rules",
+          "next_heading": null,
+          "required_paragraphs": [
+            "Before.",
+            "After."
+          ],
+          "required_tables": [
+            {
+              "headers": [
+                "State",
+                "Action"
+              ],
+              "rows": [
+                [
+                  "Pending",
+                  "Wait"
+                ]
+              ]
+            }
+          ],
+          "required_block_order": [
+            "paragraph",
+            "table",
+            "paragraph"
+          ]
+        }
+      ]
+    }
+  ]
+}

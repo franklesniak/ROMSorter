@@ -1,0 +1,9 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  protected_file_decisions:
+    - path: GEMINI.md
+      decision: REMOVE-LOCAL
+      authorization_basis: Owner explicitly authorized removing GEMINI.md in issue 632.
+      authorized_scope: GEMINI.md only.

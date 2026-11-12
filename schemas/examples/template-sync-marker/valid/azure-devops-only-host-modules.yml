@@ -1,0 +1,22 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+    - azure-devops-platform
+    - azure-pipelines
+    - azure-devops-collaboration
+  host_provider: azure-devops-services
+  azure_devops_organization: contoso
+  azure_devops_organization_url: https://contoso.visualstudio.com
+  azure_devops_project: Template Adoption
+  azure_devops_project_url: https://contoso.visualstudio.com/Template%20Adoption
+  azure_devops_repository: downstream-template
+  azure_devops_repository_url: https://contoso.visualstudio.com/Template%20Adoption/_git/downstream-template
+  azure_devops_clone_url: https://contoso.visualstudio.com/Template%20Adoption/_git/downstream-template
+  azure_devops_default_branch: main
+  azure_boards_policy: work-items
+  azure_repos_pr_template_policy: materialize
+  azure_branch_policy_reviewer_guidance: manual-follow-up
+  azure_security_intake_policy: manual-follow-up
+  azure_security_product_enablement: github-secret-protection-and-code-security
+  azure_dependency_update_policy: manual-follow-up

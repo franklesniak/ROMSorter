@@ -1,0 +1,20 @@
+instruction_contracts:
+  - path: AGENTS.md
+    requires_modules:
+      - agent-instructions
+    required_sections:
+      - heading: '## Review decisions'
+        next_heading: null
+        requires_modules:
+          - azure-devops-collaboration
+        required_paragraphs:
+          - 'Agents MUST reject stale results.'
+        required_tables:
+          - headers:
+              - State
+              - Gate
+            rows:
+              - - Failed
+                - Not clean
+              - - Clean pair
+                - Complete

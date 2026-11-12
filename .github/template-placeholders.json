@@ -1,0 +1,391 @@
+{
+  "$schema": "../schemas/template-placeholders.schema.json",
+  "version": 1,
+  "scanContexts": [
+    "retained-path",
+    "excluded-module-path",
+    "local-override",
+    "template-only-delete",
+    "unknown-path"
+  ],
+  "failureDispositions": [
+    "retained-hard-failure",
+    "pruned-informational",
+    "unknown-owner-review",
+    "waived-informational"
+  ],
+  "scanFindingKinds": [
+    {
+      "kind": "unresolved-placeholder",
+      "description": "A known template placeholder token remains in an approved placeholder scope."
+    },
+    {
+      "kind": "possible-corruption",
+      "description": "Text appears to have been damaged by an overly broad placeholder replacement."
+    }
+  ],
+  "replacementSources": {
+    "repository": {
+      "kind": "context-attribute",
+      "attribute": "repository"
+    },
+    "codeowners_owner": {
+      "kind": "context-attribute",
+      "attribute": "codeowners_owner"
+    },
+    "conduct_contact": {
+      "kind": "context-attribute",
+      "attribute": "conduct_contact"
+    },
+    "security_contact": {
+      "kind": "context-attribute",
+      "attribute": "security_contact"
+    },
+    "security_todo_replacement": {
+      "kind": "context-property",
+      "attribute": "security_todo_replacement"
+    },
+    "vscode_title": {
+      "kind": "context-attribute",
+      "attribute": "vscode_title"
+    },
+    "azure_devops.organization": {
+      "kind": "azure-devops-attribute",
+      "attribute": "organization"
+    },
+    "azure_devops.organization_url": {
+      "kind": "azure-devops-attribute",
+      "attribute": "organization_url"
+    },
+    "azure_devops.project": {
+      "kind": "azure-devops-attribute",
+      "attribute": "project"
+    },
+    "azure_devops.project_url": {
+      "kind": "azure-devops-attribute",
+      "attribute": "project_url"
+    },
+    "azure_devops.repository": {
+      "kind": "azure-devops-attribute",
+      "attribute": "repository"
+    },
+    "azure_devops.repository_web_url": {
+      "kind": "azure-devops-attribute",
+      "attribute": "repository_web_url"
+    },
+    "azure_devops.clone_url": {
+      "kind": "azure-devops-attribute",
+      "attribute": "clone_url"
+    },
+    "azure_devops.default_branch": {
+      "kind": "azure-devops-attribute",
+      "attribute": "default_branch"
+    },
+    "azure_devops.boards_policy": {
+      "kind": "azure-devops-attribute",
+      "attribute": "boards_policy"
+    },
+    "azure_devops.pr_template_policy": {
+      "kind": "azure-devops-attribute",
+      "attribute": "pr_template_policy"
+    },
+    "azure_devops.branch_policy_reviewer_guidance": {
+      "kind": "azure-devops-attribute",
+      "attribute": "branch_policy_reviewer_guidance"
+    },
+    "azure_devops.security_intake_policy": {
+      "kind": "azure-devops-attribute",
+      "attribute": "security_intake_policy"
+    },
+    "azure_devops.security_product_enablement": {
+      "kind": "azure-devops-attribute",
+      "attribute": "security_product_enablement"
+    },
+    "azure_devops.dependency_update_policy": {
+      "kind": "azure-devops-attribute",
+      "attribute": "dependency_update_policy"
+    }
+  },
+  "pathGroups": {
+    "githubRepositoryUrls": [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/ISSUE_TEMPLATE/bug_report.yml",
+      ".github/pull_request_template.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md"
+    ],
+    "githubRepositoryToken": [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/ISSUE_TEMPLATE/bug_report.yml",
+      ".github/pull_request_template.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md"
+    ],
+    "azureDevOpsUrls": [
+      ".azuredevops/platform/adoption-guidance.md",
+      ".azuredevops/pull_request_template.md"
+    ],
+    "githubSecurityReporting": [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "SECURITY.md"
+    ],
+    "githubCollaborationPolicy": [
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/ISSUE_TEMPLATE/bug_report.yml"
+    ],
+    "azureProviderNeutralDocs": [
+      "CODE_OF_CONDUCT.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md"
+    ],
+    "azurePullRequestTemplate": [
+      ".azuredevops/pull_request_template.md"
+    ],
+    "packageMetadata": [
+      "package.json",
+      "package-lock.json"
+    ]
+  },
+  "tokens": [
+    {
+      "name": "github url private vulnerability reporting",
+      "placeholder": "https://github.com/OWNER/REPO/security/advisories/new",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url contributing",
+      "placeholder": "https://github.com/OWNER/REPO/blob/HEAD/CONTRIBUTING.md",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url security",
+      "placeholder": "https://github.com/OWNER/REPO/blob/HEAD/SECURITY.md",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url discussions",
+      "placeholder": "https://github.com/OWNER/REPO/discussions",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url security tab",
+      "placeholder": "https://github.com/OWNER/REPO/security",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url issues",
+      "placeholder": "https://github.com/OWNER/REPO/issues",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url clone",
+      "placeholder": "https://github.com/OWNER/REPO.git",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url support anchor",
+      "placeholder": "https://github.com/OWNER/REPO#support",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "github url repository root",
+      "placeholder": "https://github.com/OWNER/REPO",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryUrls"]
+    },
+    {
+      "name": "owner-repo token",
+      "placeholder": "OWNER/REPO",
+      "replacementSource": "repository",
+      "replacementStyle": "owner-repo-token",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["githubRepositoryToken"]
+    },
+    {
+      "name": "codeowners owner",
+      "placeholder": "@OWNER",
+      "replacementSource": "codeowners_owner",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": [".github/CODEOWNERS"]
+    },
+    {
+      "name": "code of conduct contact",
+      "placeholder": "[INSERT CONTACT METHOD]",
+      "replacementSource": "conduct_contact",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": ["CODE_OF_CONDUCT.md"]
+    },
+    {
+      "name": "security contact",
+      "placeholder": "[security contact email]",
+      "replacementSource": "security_contact",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": ["SECURITY.md"]
+    },
+    {
+      "name": "security contact todo",
+      "placeholder": "<!-- TODO: Replace with your security contact email -->",
+      "replacementSource": "security_todo_replacement",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": ["SECURITY.md"]
+    },
+    {
+      "name": "VS Code window title",
+      "placeholder": "Go to .vscode/settings.json and make this the name of the repo",
+      "replacementSource": "vscode_title",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": [".vscode/settings.json"]
+    },
+    {
+      "name": "azure devops organization",
+      "placeholder": "AZURE_DEVOPS_ORGANIZATION",
+      "replacementSource": "azure_devops.organization",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops organization url",
+      "placeholder": "AZURE_DEVOPS_ORGANIZATION_URL",
+      "replacementSource": "azure_devops.organization_url",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops project",
+      "placeholder": "AZURE_DEVOPS_PROJECT",
+      "replacementSource": "azure_devops.project",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops project url",
+      "placeholder": "AZURE_DEVOPS_PROJECT_URL",
+      "replacementSource": "azure_devops.project_url",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops repository",
+      "placeholder": "AZURE_DEVOPS_REPOSITORY",
+      "replacementSource": "azure_devops.repository",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops repository url",
+      "placeholder": "AZURE_DEVOPS_REPOSITORY_WEB_URL",
+      "replacementSource": "azure_devops.repository_web_url",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops clone url",
+      "placeholder": "AZURE_DEVOPS_CLONE_URL",
+      "replacementSource": "azure_devops.clone_url",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure devops default branch",
+      "placeholder": "AZURE_DEVOPS_DEFAULT_BRANCH",
+      "replacementSource": "azure_devops.default_branch",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure boards policy",
+      "placeholder": "AZURE_BOARDS_INTAKE_POLICY",
+      "replacementSource": "azure_devops.boards_policy",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure repos pr template policy",
+      "placeholder": "AZURE_REPOS_PR_TEMPLATE_POLICY",
+      "replacementSource": "azure_devops.pr_template_policy",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure branch policy reviewer guidance",
+      "placeholder": "AZURE_BRANCH_POLICY_REVIEWER_GUIDANCE",
+      "replacementSource": "azure_devops.branch_policy_reviewer_guidance",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure security intake policy",
+      "placeholder": "AZURE_SECURITY_INTAKE_POLICY",
+      "replacementSource": "azure_devops.security_intake_policy",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure security product enablement",
+      "placeholder": "AZURE_SECURITY_PRODUCT_ENABLEMENT",
+      "replacementSource": "azure_devops.security_product_enablement",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    },
+    {
+      "name": "azure dependency update policy",
+      "placeholder": "AZURE_DEPENDENCY_UPDATE_POLICY",
+      "replacementSource": "azure_devops.dependency_update_policy",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": ["azureDevOpsUrls"]
+    }
+  ],
+  "rendererPathGroups": {
+    "githubSecurityReporting": ["githubSecurityReporting"],
+    "githubCollaborationPolicy": ["githubCollaborationPolicy"],
+    "azureProviderNeutralDocs": ["azureProviderNeutralDocs"],
+    "azurePullRequestTemplate": ["azurePullRequestTemplate"],
+    "packageMetadata": ["packageMetadata"]
+  }
+}

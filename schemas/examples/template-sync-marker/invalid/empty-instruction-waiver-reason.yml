@@ -1,0 +1,10 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  last_reviewed_template_commit: 0123456789abcdef0123456789abcdef01234567
+  included_modules:
+    - agent-instructions
+  instruction_contract_waivers:
+    - path: CLAUDE.md
+      anchor: '## Handling Code Review Comments'
+      reason: ''
+      authorization_basis: 'Owner authorized waiving this CLAUDE.md anchor on 2026-05-27.'

@@ -1,0 +1,393 @@
+# ============================================================================
+# CRITICAL: Pre-commit Discipline
+# ============================================================================
+# ALWAYS run `pre-commit run --all-files` before committing code.
+#
+# Pre-commit hooks are enforced in CI. Running locally prevents push failures
+# and wasted CI cycles.
+#
+# Auto-fixes: When pre-commit modifies files (formatting, trailing whitespace,
+# etc.), you MUST commit those fixes as part of the SAME commit as your code
+# changes. Do NOT create separate "fix pre-commit" commits.
+#
+# CI is a safety net, not a substitute for local checks.
+# ============================================================================
+
+# Pre-commit configuration
+# Install: python -m pip install -r requirements-pre-commit.txt
+# Activate: pre-commit install
+# Run:  pre-commit run --all-files
+#
+# Note: This file configures pre-commit hooks for all projects. Module-specific
+# hooks are wrapped in template-sync inline blocks so downstream repositories
+# can remove unused language stacks while retaining the shared hook pipeline.
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^MAME_(2003_Plus|2010)_RenameSet_(Exclusions|Prerequisites)\.csv$
+      - id: end-of-file-fixer
+        exclude: ^MAME_(2003_Plus|2010)_RenameSet_(Exclusions|Prerequisites)\.csv$
+      # .gitattributes pins LF, but a tool can still write CRLF to the
+      # working tree. This hook rewrites that CRLF to LF before the commit.
+      # It reads no .gitattributes rule: it rewrites every CR in any file
+      # that pre-commit detects as text. Exclude any path that must keep
+      # CR bytes: one pinned to eol=crlf, one marked -text or binary, a
+      # fixture that holds a lone CR, or a file committed with CRLF.
+      - id: mixed-line-ending
+        exclude: ^MAME_(2003_Plus|2010)_RenameSet_(Exclusions|Prerequisites)\.csv$
+        args: [--fix=lf]
+      - id: check-yaml
+      # check-json validates strict JSON only. The anchored pattern below
+      # excludes .jsonc; downstream repos that need JSONC validation should
+      # add JSONC-aware tooling rather than retrofitting check-json.
+      - id: check-json
+        files: \.json$
+      # check-toml validates TOML syntax. Its built-in `types: [toml]`
+      # already restricts the hook to *.toml, so no `files:` argument is
+      # needed (and no anchored-pattern treatment like check-json above).
+      - id: check-toml
+      - id: check-added-large-files
+
+  # Baseline placeholder manifest validation:
+  #
+  #   A. Placeholder manifest live-file validation
+  #      Validates `.github/template-placeholders.json`, the source of truth for
+  #      runtime placeholder tokens, replacement sources, scan finding kinds,
+  #      and approved path scopes.
+  #
+  #   B. Placeholder manifest valid examples
+  #      Validates valid fixtures under
+  #      `schemas/examples/template-placeholders/valid/`.
+  #
+  #   C. Placeholder manifest schema self-validation
+  #      Validates the placeholder manifest schema against its declared JSON
+  #      Schema Draft 2020-12 metaschema.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.38.2"
+    hooks:
+      - id: check-jsonschema
+        alias: validate-template-placeholders-manifest
+        name: Validate template placeholder manifest
+        files: ^\.github/template-placeholders\.json$
+        args:
+          - --schemafile
+          - schemas/template-placeholders.schema.json
+      - id: check-jsonschema
+        alias: validate-template-placeholders-valid-examples
+        name: Validate template placeholder valid examples
+        files: ^schemas/examples/template-placeholders/valid/.*\.json$
+        args:
+          - --schemafile
+          - schemas/template-placeholders.schema.json
+      - id: check-metaschema
+        alias: validate-template-placeholders-schema
+        name: Self-validate template placeholder schema
+        files: ^schemas/template-placeholders\.schema\.json$
+
+  # Invalid placeholder-manifest examples are expected to fail validation, so
+  # they are exercised through an assert-fails helper rather than a normal
+  # check-jsonschema hook over invalid fixtures.
+  - repo: local
+    hooks:
+      - id: validate-template-placeholders-invalid-examples
+        name: Validate template placeholder invalid examples fail
+        entry: python .github/scripts/validate-placeholder-schema-examples.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - jsonschema>=4.18.0
+
+  # template-sync: begin yaml-only
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: [-c, .yamllint.yml]
+  # template-sync: end yaml-only
+
+  # template-sync: begin github-actions-only
+  # GitHub Actions workflow linting
+  # Note: First-run hook environment setup may fail on restricted networks
+  # (actionlint downloads a Go toolchain to build the binary). CI is the
+  # shared enforcement environment, so contributors who hit a network
+  # restriction locally can rely on CI to enforce this hook.
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+  - repo: local
+    hooks:
+      - id: validate-workflow-security
+        name: Validate workflow security contract
+        entry: python .github/scripts/validate_workflow_security.py
+        language: python
+        additional_dependencies: [PyYAML==6.0.3, jsonschema==4.26.0]
+        pass_filenames: false
+        always_run: true
+  # template-sync: end github-actions-only
+
+  # JSON Schema validation is split by module ownership so downstream
+  # repositories can strip module-specific hooks without affecting unrelated
+  # validation surfaces.
+  #
+
+  # template-sync: begin template-sync-support-only
+  # Template sync support validation:
+  #
+  #   A. Template sync schema example validation
+  #      Validates the valid marker examples under
+  #      `schemas/examples/template-sync-marker/valid/` against
+  #      `schemas/template-sync-marker.schema.json`, and the valid
+  #      instruction-contract examples under
+  #      `schemas/examples/template-sync-instruction-contracts/valid/` against
+  #      `schemas/template-sync-instruction-contracts.schema.json`, and the
+  #      valid first-adoption quality suppression examples under
+  #      `schemas/examples/first-adoption-quality-suppressions/valid/` against
+  #      `schemas/first-adoption-quality-suppressions.schema.json`. See
+  #      `schemas/README.md` for template sync schema documentation.
+  #
+  #      Invalid template sync and first-adoption quality example data files
+  #      under the matching `schemas/examples/*/invalid/` directories are
+  #      intentionally NOT wired into a normal pre-commit hook because they are
+  #      expected to fail validation. They are exercised by
+  #      `tests/test_schema_examples.py`.
+  #
+  #   B. Template sync runtime schema self-validation
+  #      Validates the schemas loaded by `.template-sync/scripts/` at runtime
+  #      against their declared JSON Schema Draft 2020-12 metaschema.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.38.2"
+    hooks:
+      - id: check-jsonschema
+        alias: validate-template-sync-marker-valid-examples
+        name: Validate template sync marker valid examples
+        files: ^schemas/examples/template-sync-marker/valid/.*\.yml$
+        args:
+          - --schemafile
+          - schemas/template-sync-marker.schema.json
+      - id: check-jsonschema
+        alias: validate-template-sync-instruction-contracts-valid-examples
+        name: Validate template sync instruction contract valid examples
+        files: ^schemas/examples/template-sync-instruction-contracts/valid/.*\.ya?ml$
+        args:
+          - --schemafile
+          - schemas/template-sync-instruction-contracts.schema.json
+      - id: check-jsonschema
+        alias: validate-first-adoption-quality-suppressions-valid-examples
+        name: Validate first-adoption quality suppression valid examples
+        files: ^schemas/examples/first-adoption-quality-suppressions/valid/.*\.json$
+        args:
+          - --schemafile
+          - schemas/first-adoption-quality-suppressions.schema.json
+      - id: check-metaschema
+        alias: validate-template-sync-manifest-schema
+        name: Self-validate template-sync-manifest schema
+        files: ^schemas/template-sync-manifest\.schema\.json$
+      - id: check-metaschema
+        alias: validate-template-sync-marker-schema
+        name: Self-validate template-sync-marker schema
+        files: ^schemas/template-sync-marker\.schema\.json$
+      - id: check-metaschema
+        alias: validate-template-sync-instruction-contracts-schema
+        name: Self-validate template-sync-instruction-contracts schema
+        files: ^schemas/template-sync-instruction-contracts\.schema\.json$
+      - id: check-metaschema
+        alias: validate-first-adoption-quality-suppressions-schema
+        name: Self-validate first-adoption quality suppressions schema
+        files: ^schemas/first-adoption-quality-suppressions\.schema\.json$
+
+  # Template sync live-file validation:
+  #
+  #   C. Template sync manifest validation
+  #      Validates `.template-sync/manifest.yml` against
+  #      `schemas/template-sync-manifest.schema.json`. The manifest is the
+  #      source-of-truth module taxonomy for downstream template syncs.
+  #
+  #   D. Template sync marker validation
+  #      Validates `.template-sync/marker.yml` against
+  #      `schemas/template-sync-marker.schema.json`. This repository does not
+  #      need to carry a marker, but downstream repositories that adopt one
+  #      get validation automatically when the marker file is present.
+  #
+  #   E. Instruction contract validation
+  #      Validates `.template-sync/instruction-contracts.yml` against
+  #      `schemas/template-sync-instruction-contracts.schema.json`, then runs
+  #      the upstream-template required-anchor validator against the template's
+  #      own protected instruction files.
+  #
+  #   F. First-adoption quality suppression validation
+  #      Validates `.template-sync/first-adoption/quality-suppressions.json`
+  #      when a downstream repository creates it. The upstream template does
+  #      not ship that downstream-owned suppression file.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.38.2"
+    hooks:
+      - id: check-jsonschema
+        alias: validate-template-sync-manifest
+        name: Validate template sync manifest
+        files: ^\.template-sync/manifest\.yml$
+        args:
+          - --schemafile
+          - schemas/template-sync-manifest.schema.json
+      - id: check-jsonschema
+        alias: validate-template-sync-marker
+        name: Validate template sync marker
+        files: ^\.template-sync/marker\.yml$
+        args:
+          - --schemafile
+          - schemas/template-sync-marker.schema.json
+      - id: check-jsonschema
+        alias: validate-template-sync-instruction-contracts
+        name: Validate template sync instruction contracts
+        files: ^\.template-sync/instruction-contracts\.yml$
+        args:
+          - --schemafile
+          - schemas/template-sync-instruction-contracts.schema.json
+      - id: check-jsonschema
+        alias: validate-first-adoption-quality-suppressions
+        name: Validate first-adoption quality suppressions
+        files: ^\.template-sync/first-adoption/quality-suppressions\.json$
+        args:
+          - --schemafile
+          - schemas/first-adoption-quality-suppressions.schema.json
+  - repo: local
+    hooks:
+      - id: validate-instruction-contracts-upstream
+        name: Validate upstream instruction contracts
+        entry: >-
+          python .template-sync/scripts/validate_instruction_contracts.py
+          --mode upstream-template
+          --skip-if-marker-present
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - jsonschema>=4.18.0
+          - PyYAML>=6.0.3
+      - id: validate-instruction-contracts-downstream
+        name: Validate downstream instruction contracts
+        entry: >-
+          python .template-sync/scripts/validate_instruction_contracts.py
+          --mode downstream
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - jsonschema>=4.18.0
+          - PyYAML>=6.0.3
+  # template-sync: end template-sync-support-only
+
+  # template-sync: begin github-platform-only
+  # GitHub platform schema validation:
+  #
+  #   A. Real load-bearing repository configuration validation
+  #      Validates real, load-bearing configuration files against built-in
+  #      vendor schemas shipped with `check-jsonschema`. Built-in schemas
+  #      do not require network access at hook runtime; they are bundled
+  #      in the `check-jsonschema` package itself.
+  #
+  #      Currently wired:
+  #        - `.github/dependabot.yml` against `vendor.dependabot`.
+  #        - `tests/fixtures/dependabot/*.yml` (documented optional-field
+  #          fixtures) against `vendor.dependabot`.
+  #
+  #      The documented Dependabot auto-assignment guidance is intentionally
+  #      limited to fields accepted by the pinned `vendor.dependabot` schema.
+  #      The live `.github/dependabot.yml` does not use those optional fields,
+  #      so the `validate-dependabot-config-valid-examples` hook validates the
+  #      documented fixture at this same pinned `rev`; a vendored-schema
+  #      regression therefore fails in CI. `tests/test_dependabot_schema.py`
+  #      re-validates the fixture under pytest with the `check-jsonschema`
+  #      dev dependency from `pyproject.toml`. That pip pin and this `rev`
+  #      are updated by separate Dependabot ecosystems (pip and pre-commit)
+  #      and do not need to match.
+  #
+  #      Evaluated but NOT currently wired (no verified built-in schema
+  #      available in the pinned `check-jsonschema` version below; the
+  #      `--builtin-schema` catalog reported by `check-jsonschema --help`
+  #      does not include the candidate names noted here):
+  #        - `.pre-commit-config.yaml` — no `vendor.pre-commit-config`
+  #          builtin schema is shipped. pre-commit itself enforces the
+  #          file's structure when it loads its configuration, so an
+  #          additional schema check would have minimal marginal value
+  #          even if one became available.
+  #        - `package.json` — no `vendor.package` (or equivalent) builtin
+  #          schema is shipped. npm validates this file when it parses
+  #          dependency manifests, so it is not unguarded.
+  #        - `.markdownlint.jsonc` — no `vendor.markdownlint` builtin
+  #          schema is shipped. The file is intentionally JSONC (it
+  #          contains comments); it MUST NOT be converted to strict JSON
+  #          merely to satisfy a validator. markdownlint's own config
+  #          loader remains the enforcement mechanism for this file.
+  #        - `.yamllint.yml` — no `vendor.yamllint` builtin schema is
+  #          shipped. The file MUST NOT be weakened to satisfy an
+  #          incomplete external schema; yamllint itself enforces its
+  #          configuration shape when it loads `.yamllint.yml`.
+  #
+  #      If a future `check-jsonschema` release adds builtin schemas for
+  #      any of the above, add a narrowly scoped hook with an anchored
+  #      `files:` pattern at that time. Do not vendor third-party
+  #      schemas into this repository to fill the gap.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.38.2"
+    hooks:
+      - id: check-jsonschema
+        alias: validate-dependabot-config
+        name: Validate Dependabot configuration
+        files: ^\.github/dependabot\.yml$
+        args:
+          - --builtin-schema
+          - vendor.dependabot
+      - id: check-jsonschema
+        alias: validate-dependabot-config-valid-examples
+        name: Validate Dependabot configuration valid examples
+        files: ^tests/fixtures/dependabot/.*\.yml$
+        args:
+          - --builtin-schema
+          - vendor.dependabot
+  # template-sync: end github-platform-only
+
+  # template-sync: begin markdown-only
+  # Markdown placeholder checks
+  - repo: local
+    hooks:
+      - id: check-prohibited-placeholders
+        name: Check prohibited Markdown placeholders
+        entry: python .github/scripts/check-prohibited-placeholders.py
+        language: python
+        types: [markdown]
+        files: ^docs/.*\.md$
+      - id: lint-nested-markdown
+        name: Lint nested Markdown
+        entry: python .github/scripts/lint_nested_markdown_hook.py
+        language: python
+        types: [file]
+        files: '\.(md|mdc)$'
+
+  # Markdown linting
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.23.3
+    hooks:
+      - id: markdownlint-cli2
+        language_version: "lts"
+  # template-sync: end markdown-only
+
+  # template-sync: begin instruction-enforcement-only
+  - repo: local
+    hooks:
+      - id: validate-instruction-profile
+        name: Validate retained instruction profile
+        entry: python .github/scripts/validate_instruction_profile.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - PyYAML==6.0.3
+          - jsonschema==4.26.0
+  # template-sync: end instruction-enforcement-only

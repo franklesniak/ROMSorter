@@ -1,0 +1,8 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  local_overrides:
+    - path: README.md
+      reason: Project-specific reader-facing documentation.
+      default_decision: REVIEW-LATER

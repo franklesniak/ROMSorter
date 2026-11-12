@@ -1,0 +1,14 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+    - template-sync-support
+    - markdown
+  local_overrides:
+    - path: README.md
+      reason: First adoption keeps the downstream README until ledger review is complete.
+      default_decision: SKIP
+  deferred_protected_candidates:
+    - path: AGENTS.md
+      source_commit: 89abcdef0123456789abcdef0123456789abcdef
+      reason: Protected Codex instructions require explicit owner authorization.

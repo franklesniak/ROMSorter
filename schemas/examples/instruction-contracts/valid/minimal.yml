@@ -1,0 +1,6 @@
+instruction_contracts:
+  - path: AGENTS.md
+    requires_modules:
+      - agent-instructions
+    required_phrases:
+      - Agents MUST validate.

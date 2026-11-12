@@ -1,0 +1,1745 @@
+[
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 359,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 7,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 72,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 149,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 235,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 457,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 471,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 478,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 491,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 500,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 501,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 502,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 503,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 504,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 505,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 506,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 507,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 519,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 525,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 526,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 527,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 530,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 553,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 562,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 563,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 564,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 565,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeBelgiumNplayersIniToCsv.ps1",
+    "line": 566,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ArcadeManagerClassicsListToCsv.ps1",
+    "line": 6,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 74,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 5,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 69,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 112,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 140,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 155,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 191,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 258,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 470,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strOverallStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-FBNeoArcadeDATToCSV.ps1",
+    "line": 57,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 56,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 5,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 68,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 111,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 139,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 190,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 257,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 513,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolSamplePresent' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 633,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolFreePlaySupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 674,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strOverallStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 682,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strColorStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 690,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSoundStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003DATToCSV.ps1",
+    "line": 692,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strPaletteSize' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 192,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 175,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 4,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 110,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 187,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusCSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 285,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 56,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 5,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 68,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 111,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 139,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 190,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 257,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 513,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolSamplePresent' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 633,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolFreePlaySupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 674,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strOverallStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 682,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strColorStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 690,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSoundStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2003PlusDATToCSV.ps1",
+    "line": 692,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strPaletteSize' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 192,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 175,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 4,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 110,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 187,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010CSVToRenamedROMPackagesMatchingCurrentMAME.ps1",
+    "line": 285,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 56,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 5,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 68,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 111,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 139,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 190,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 257,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 521,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolSamplePresent' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 646,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolFreePlaySupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 691,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strOverallStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 699,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strEmulationStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 707,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strColorStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 715,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSoundStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 723,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strGraphicStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 732,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strCocktailStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 744,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strProtectionStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 750,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSaveStateSupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAME2010DATToCSV.ps1",
+    "line": 755,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strPaletteSize' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 74,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 57,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 5,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 69,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 104,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 171,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 217,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 245,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 260,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolCompletelyFunctionalROMPackage' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 563,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolSamplePresent' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 787,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolFreePlaySupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 827,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strOverallStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 835,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strEmulationStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 844,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strCocktailStatus' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 850,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSaveStateSupported' is assigned but never used."
+  },
+  {
+    "path": "Convert-MAMEDATToCsv.ps1",
+    "line": 855,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strPaletteSize' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 155,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 138,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 360,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 8,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 150,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 236,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 458,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 472,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 479,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 492,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 501,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 502,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 503,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 504,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 505,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 506,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 507,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 508,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 520,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 526,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 527,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 528,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 531,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 554,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 563,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 564,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 565,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 566,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoEmmaCatverIniToCsv.ps1",
+    "line": 567,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 7,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 72,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 149,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 235,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 457,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 359,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 471,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 478,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 491,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 500,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 501,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 502,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 503,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 504,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 505,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 506,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 507,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 519,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 525,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 526,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 527,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 530,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 553,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 562,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 563,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 564,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 565,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsBestGamesIniToCsv.ps1",
+    "line": 566,
+    "severity": "Warning",
+    "rule": "PSUseConsistentIndentation",
+    "message": "Indentation not consistent"
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 155,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 360,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 138,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 8,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 150,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 236,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCategoryIniFilesToCsv.ps1",
+    "line": 458,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 155,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 138,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 360,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 8,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 150,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 236,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsCatverIniToCsv.ps1",
+    "line": 458,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 7,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 72,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 149,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 235,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 457,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsLanguagesIniToCsv.ps1",
+    "line": 359,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 155,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 138,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 4,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 73,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 150,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 236,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsRenameSetIniToCsv.ps1",
+    "line": 450,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 154,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 359,
+    "severity": "Warning",
+    "rule": "PSUseSingularNouns",
+    "message": "The cmdlet 'Convert-OneSelectedHashTableOfAttributes' uses a plural noun. A singular noun should be used instead."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 7,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 72,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 149,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 235,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 457,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 693,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strPinball' is assigned but never used."
+  },
+  {
+    "path": "Convert-ProgettoSnapsSeriesIniToCsv.ps1",
+    "line": 702,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strSlotMachine' is assigned but never used."
+  },
+  {
+    "path": "Copy-MAMEDATToMAMEDatabase.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Create-ConsolidatedAllKillerNoFillerGameList.ps1",
+    "line": 7,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Create-ConsolidatedAllKillerNoFillerGameList.ps1",
+    "line": 74,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 39,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strMAMEDATROMDisplaNameColumnHeader' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 54,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'boolAlwaysAppendUnmatchedROMWithLocalDATToCompareToMAMEColumnPrefix' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 226,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'dateTimeStart' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 132,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 156,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingCRC.ps1",
+    "line": 120,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Find-MAMEAndFBNeoArcadeMatchUsingStringMatch.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 39,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strMAMEDATROMDisplaNameColumnHeader' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 226,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'dateTimeStart' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 132,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 156,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2003PlusMatchUsingCRC.ps1",
+    "line": 120,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 137,
+    "severity": "Warning",
+    "rule": "PSUseLiteralInitializerForHashtable",
+    "message": "Use literal initializer, @{{}}, for creating a hashtable as they are case-insensitive by default"
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 39,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strMAMEDATROMDisplaNameColumnHeader' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 226,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'dateTimeStart' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 132,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 156,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisFunctionVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Find-MAMEAndMAME2010MatchUsingCRC.ps1",
+    "line": 120,
+    "severity": "Warning",
+    "rule": "PSUseShouldProcessForStateChangingFunctions",
+    "message": "Function 'New-BackwardCompatibleCaseInsensitiveHashtable' has verb that could change system state. Therefore, the function has to support 'ShouldProcess'."
+  },
+  {
+    "path": "Join-FBNeoCRCMatchedToMAMEWithMAMEDatabase.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Join-TimeAdvancedMAME2003PlusWithMAMEDatabase.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  },
+  {
+    "path": "Join-TimeAdvancedMAME2010WithMAMEDatabase.ps1",
+    "line": 3,
+    "severity": "Warning",
+    "rule": "PSUseDeclaredVarsMoreThanAssignments",
+    "message": "The variable 'strThisScriptVersionNumber' is assigned but never used."
+  }
+]

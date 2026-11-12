@@ -1,0 +1,7 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  local_path_ownership:
+    - path: docs/**
+      reason: Glob-style local ownership is not accepted.

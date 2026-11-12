@@ -1,0 +1,8 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  protected_file_decisions:
+    - path: CLAUDE.md
+      adoption_mode: minimal-preservation
+      decision: MERGE

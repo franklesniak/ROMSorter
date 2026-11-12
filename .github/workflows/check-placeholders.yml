@@ -1,0 +1,157 @@
+# Placeholder Check Workflow
+#
+# Purpose: Verify that OWNER/REPO placeholders have been replaced in issue
+# templates and configuration files after cloning from the template repository.
+#
+# =============================================================================
+# IMPORTANT - WHY THIS WORKFLOW EXISTS
+# =============================================================================
+# When you create a repository from this template, several files contain
+# `OWNER/REPO` placeholders that MUST be replaced with your actual org/repo
+# name. If forgotten, users will encounter broken links in the issue chooser
+# and documentation.
+#
+# This workflow checks for these placeholders and fails if they are found,
+# ensuring you don't accidentally ship broken links to your users.
+# The hard-fail allowlist lives in `.github/scripts/replace-template-placeholders.py`
+# so the substitution helper and CI audit stay aligned.
+#
+# =============================================================================
+# HOW THIS WORKFLOW OPERATES
+# =============================================================================
+# This workflow runs AUTOMATICALLY in all repositories created from this
+# template. It is automatically DISABLED in the template repository itself
+# to avoid spurious failures.
+#
+# Implementation:
+#   if: github.repository != 'franklesniak/copilot-repo-template'
+#
+# This means:
+#   - ✅ Zero configuration required for adopters
+#   - ✅ Workflow activates automatically on first push/PR
+#   - ✅ Template maintainers don't get spurious failures
+#
+# NO CONFIGURATION REQUIRED - the workflow runs automatically on:
+#   - Pull requests to any branch
+#   - Pushes to any branch
+#   - Manual workflow_dispatch triggers
+#
+# =============================================================================
+# HISTORICAL CONTEXT
+# =============================================================================
+# Previous versions of this template required setting a `TEMPLATE_INITIALIZED`
+# repository variable to enable this workflow. That approach was replaced with
+# automatic detection to:
+#   - Reduce adoption friction (no configuration step to remember)
+#   - Eliminate the "forgot to configure" failure mode
+#   - Provide better out-of-box experience for template adopters
+# =============================================================================
+
+name: Check Placeholders
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-placeholders:
+    permissions:
+      contents: read
+    name: Check for OWNER/REPO Placeholders
+    runs-on: ubuntu-latest
+
+    # Run automatically in all repos EXCEPT the template repository itself
+    # This removes the need for adopters to set any configuration variable
+    if: github.repository != 'franklesniak/copilot-repo-template'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Check for unresolved placeholders
+        run: >-
+          python .github/scripts/replace-template-placeholders.py scan
+          --repo-root .
+          --repository "$GITHUB_REPOSITORY"
+
+      - name: Additional placeholder patterns check
+        run: |
+          echo "Checking for other common placeholder patterns..."
+          echo ""
+
+          # =============================================================================
+          # WARNING-ONLY CHECKS
+          # =============================================================================
+          # These checks produce warnings, not errors. They help nudge adopters to
+          # customize templates without blocking CI. This is intentional because:
+          #
+          # 1. Some projects may intentionally keep certain placeholders temporarily
+          # 2. "Project Name" in README may be acceptable for early-stage projects
+          # 3. PR template placeholders don't break user-facing functionality
+          #
+          # The goal is visibility without friction—adopters see the warnings and can
+          # decide whether to address them.
+          # =============================================================================
+
+          # Check for other patterns that might indicate uncustomized templates
+          # These are warnings, not errors
+
+          PATTERNS=(
+            "your-org"
+            "your-repo"
+            "YOUR_ORG"
+            "YOUR_REPO"
+          )
+
+          FOUND_WARNINGS=false
+
+          echo "=== Checking issue templates for placeholder patterns ==="
+          for pattern in "${PATTERNS[@]}"; do
+            if grep -rn "$pattern" .github/ISSUE_TEMPLATE/ 2>/dev/null | grep -v "^[[:space:]]*#"; then
+              echo "::warning::Found potential placeholder pattern '$pattern' in issue templates"
+              FOUND_WARNINGS=true
+            fi
+          done
+
+          echo ""
+          echo "=== Checking README for 'Project Name' placeholder ==="
+          if [ -f "README.md" ]; then
+            # Check for the default "# Project Name" header that should be customized
+            if grep -n "^# Project Name$" README.md; then
+              echo "::warning file=README.md::Found 'Project Name' placeholder in README.md - consider updating with your actual project name"
+              FOUND_WARNINGS=true
+            fi
+          fi
+
+          echo ""
+          echo "=== Checking PR template for potential placeholders ==="
+          PR_TEMPLATE=".github/pull_request_template.md"
+          if [ -f "$PR_TEMPLATE" ]; then
+            for pattern in "${PATTERNS[@]}"; do
+              if grep -n "$pattern" "$PR_TEMPLATE" | grep -v "^[0-9]*:[[:space:]]*<!--"; then
+                echo "::warning file=$PR_TEMPLATE::Found potential placeholder pattern '$pattern' in PR template"
+                FOUND_WARNINGS=true
+              fi
+            done
+          fi
+
+          echo ""
+
+          if [ "$FOUND_WARNINGS" = true ]; then
+            echo ""
+            echo "⚠️  Additional placeholder patterns found (warnings only)"
+            echo "Review the above and replace with your actual values if needed."
+          else
+            echo "✅ No additional placeholder patterns found."
+          fi

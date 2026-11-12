@@ -1,0 +1,288 @@
+# PowerShell CI Workflow
+#
+# Purpose: Run PSScriptAnalyzer linting and Pester tests for PowerShell files
+# Runs on: push and pull_request events
+#
+# Jobs:
+#   - powershell-lint: Runs PSScriptAnalyzer on .ps1, .psm1, and .psd1 files (skips if no analyzer inputs are selected after policy classification)
+#   - test: Runs Pester tests on Windows, macOS, and Linux (skips if no *.Tests.ps1 files found)
+#
+# Note: This workflow is OPTIONAL and can be removed for non-PowerShell projects.
+# To remove PowerShell support entirely, delete:
+#   - .github/workflows/powershell-ci.yml (this file)
+#   - .github/instructions/powershell.instructions.md
+#   - .github/linting/PSScriptAnalyzerSettings.psd1
+#   - src/tools/Resolve-PSScriptAnalyzerCandidate.ps1 (PSScriptAnalyzer path helper)
+#   - src/tools/Resolve-PSScriptAnalyzerGate.ps1 (PSScriptAnalyzer gate-mode helper)
+#   - tests/PowerShell/ directory
+#   - templates/powershell/ directory
+#
+# Configuration:
+#   - Linting: .github/linting/PSScriptAnalyzerSettings.psd1
+#   - Analyzer gate mode: PSSCRIPTANALYZER_GATE_MODE
+#       - strict: fail Error, Warning, and unknown-severity findings
+#       - first-adoption: fail Error and unknown-severity findings, but
+#         annotate Warning and Information findings as temporary debt
+#   - Testing: Pester configuration is inline in the workflow steps below
+#
+# Template Repository Consideration:
+# This workflow does NOT use path-based filtering (on.push.paths or
+# on.pull_request.paths) because this is a template repository. Path
+# filtering would prevent the workflow from being properly tested and
+# copied by users of the template. Template repositories should run all
+# workflows on all changes to ensure accuracy when the template is used.
+
+name: PowerShell CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-lint:
+    permissions:
+      contents: read
+    name: Lint (PSScriptAnalyzer)
+    runs-on: ubuntu-latest
+    env:
+      # Keep strict as the template default. Existing repositories with
+      # warning debt may temporarily opt into first-adoption and should record
+      # that debt before tightening this value back to strict.
+      PSSCRIPTANALYZER_GATE_MODE: first-adoption
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+          $settingsPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath ".github/linting/PSScriptAnalyzerSettings.psd1"
+          $candidateHelperPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "src/tools/Resolve-PSScriptAnalyzerCandidate.ps1"
+          $gateHelperPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "src/tools/Resolve-PSScriptAnalyzerGate.ps1"
+
+          foreach ($requiredPath in @($settingsPath, $candidateHelperPath, $gateHelperPath)) {
+            if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
+              throw ("Required PowerShell lint dependency missing: {0}" -f $requiredPath)
+            }
+          }
+
+          . $candidateHelperPath
+          . $gateHelperPath
+
+          $candidateRecords = @(
+            Get-PSScriptAnalyzerCandidate -RepositoryRoot $env:GITHUB_WORKSPACE -DirectoryVisibility All
+          )
+          $candidateSummary = Get-PSScriptAnalyzerCandidateSummary -Candidate $candidateRecords
+          foreach ($summaryLine in @(ConvertTo-PSScriptAnalyzerCandidateSummaryLine -CandidateSummary $candidateSummary)) {
+            Write-Output $summaryLine
+          }
+
+          foreach ($unsafeCandidate in @($candidateSummary.Unsafe)) {
+            Write-Output (ConvertTo-PSScriptAnalyzerCandidateGitHubErrorCommand -Candidate $unsafeCandidate)
+          }
+
+          if ($candidateSummary.SummaryCounts.Unsafe -gt 0) {
+            Write-Output "::error::Unsafe PSScriptAnalyzer candidate path(s) found. See annotations and summary above."
+            exit 1
+          }
+
+          if ($candidateSummary.SummaryCounts.Selected -eq 0) {
+            Write-Output "Skipping PSScriptAnalyzer - no selected PowerShell analyzer inputs found."
+            exit 0
+          }
+
+          # PSGallery installs intermittently fail with transient errors (for
+          # example, "No match was found for the specified search criteria").
+          # Retry with exponential backoff so a single flaky response does not
+          # fail the whole job.
+          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
+            $maxAttempts = 5
+            $delaySeconds = 5
+            for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+              try {
+                Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -ErrorAction Stop
+                break
+              } catch {
+                if ($attempt -eq $maxAttempts) {
+                  Write-Error "Install-Module PSScriptAnalyzer failed after $maxAttempts attempt(s): $($_.Exception.Message)"
+                  throw
+                }
+                Write-Warning "Install-Module PSScriptAnalyzer attempt $attempt of $maxAttempts failed: $($_.Exception.Message). Retrying in $delaySeconds second(s)..."
+                Start-Sleep -Seconds $delaySeconds
+                $delaySeconds = $delaySeconds * 2
+              }
+            }
+          }
+          Import-Module PSScriptAnalyzer
+
+          $analyzerFindings = [System.Collections.Generic.List[object]]::new()
+
+          foreach ($candidate in @($candidateSummary.Selected)) {
+            $displayPath = ConvertTo-PSScriptAnalyzerCandidateSingleLineText -Value $candidate.RepositoryRelativePath
+            Write-Output ("Analyzing: {0}" -f $displayPath)
+            $analyzerFindings.AddRange(@(
+              Invoke-ScriptAnalyzer -Path $candidate.EscapedAnalyzerPath -Settings $settingsPath
+            ))
+          }
+
+          $gateResult = Resolve-PSScriptAnalyzerGate `
+            -Mode $env:PSSCRIPTANALYZER_GATE_MODE `
+            -AnalyzerFinding $analyzerFindings `
+            -RepositoryRoot $env:GITHUB_WORKSPACE
+
+          foreach ($annotationCommand in $gateResult.AnnotationCommands) {
+            Write-Output $annotationCommand
+          }
+
+          Write-Output ""
+          foreach ($summaryLine in $gateResult.SummaryLines) {
+            Write-Output $summaryLine
+          }
+
+          if ($gateResult.IssueReadyMarkdown.Count -gt 0) {
+            Write-Output ""
+            Write-Output "Issue-ready PSScriptAnalyzer cleanup text:"
+            foreach ($issueLine in $gateResult.IssueReadyMarkdown) {
+              Write-Output $issueLine
+            }
+          }
+
+          if ($gateResult.ShouldFail) {
+            Write-Output "::error::PSScriptAnalyzer gate failed. See annotations and summary above."
+            exit 1
+          }
+
+          Write-Output "PowerShell lint gate passed."
+
+  # Pester Test Job
+  #
+  # Purpose: Run Pester 5.x tests across multiple operating systems
+  #
+  # Customization:
+  #   - To change test location, update PESTER_TEST_ROOT in the test job env
+  #   - To change output format, update $config.TestResult.OutputFormat
+  #   - To add test filters, use $config.Filter.* properties
+  #
+  # Requirements:
+  #   - Pester test files must use *.Tests.ps1 naming convention
+  #   - Tests should be placed in tests/PowerShell/ or tests/ directory
+  #   - See templates/powershell/Example.Tests.ps1 for test template
+  test:
+    permissions:
+      contents: read
+    name: PowerShell Tests (${{ matrix.os }}, ${{ matrix.shell }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    env:
+      PESTER_TEST_ROOT: tests/
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            shell: pwsh
+          - os: windows-latest
+            shell: pwsh
+          - os: macos-latest
+            shell: pwsh
+          - os: windows-latest
+            shell: powershell
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify supported PowerShell host
+        run: |
+          $version = $PSVersionTable.PSVersion
+          if ($PSVersionTable.PSEdition -eq 'Desktop') {
+            if ($version.Major -ne 5 -or $version.Minor -ne 1) {
+              throw "Windows PowerShell 5.1 is required."
+            }
+          } elseif ($version.Major -ne 7 -or $version.Minor -ne 6) {
+            throw "PowerShell 7.6 is required; review the supported-release matrix."
+          }
+          Write-Output "Testing PowerShell $version"
+
+      # Keep discovery scoped to PESTER_TEST_ROOT; the canonical rule lives in
+      # `.github/instructions/powershell.instructions.md` under "Running Pester Tests".
+      - name: Find Pester test files
+        id: find-tests
+        run: |
+          $testRoot = $env:PESTER_TEST_ROOT
+          if (Test-Path -LiteralPath $testRoot) {
+            $testFiles = Get-ChildItem -LiteralPath $testRoot -Filter "*.Tests.ps1" -Recurse -File |
+              Where-Object { $_.FullName -notmatch "node_modules" }
+          } else {
+            $testFiles = @()
+          }
+          if ($testFiles.Count -eq 0) {
+            Write-Host "No Pester test files found"
+            "found=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          } else {
+            Write-Host "Found $($testFiles.Count) Pester test file(s):"
+            $testFiles | ForEach-Object { Write-Host "  - $($_.FullName)" }
+            "found=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          }
+
+      - name: Install Pester
+        if: steps.find-tests.outputs.found == 'true'
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          # PSGallery installs intermittently fail with transient errors (for
+          # example, "No match was found for the specified search criteria and
+          # module name 'Pester'"). Retry with exponential backoff so a single
+          # flaky response does not fail the whole job.
+          $maxAttempts = 5
+          $delaySeconds = 5
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            try {
+              Install-Module -Name Pester -RequiredVersion 5.9.1 -Force -Scope CurrentUser -ErrorAction Stop
+              break
+            } catch {
+              if ($attempt -eq $maxAttempts) {
+                Write-Error "Install-Module Pester failed after $maxAttempts attempt(s): $($_.Exception.Message)"
+                throw
+              }
+              Write-Warning "Install-Module Pester attempt $attempt of $maxAttempts failed: $($_.Exception.Message). Retrying in $delaySeconds second(s)..."
+              Start-Sleep -Seconds $delaySeconds
+              $delaySeconds = $delaySeconds * 2
+            }
+          }
+          Import-Module Pester -RequiredVersion 5.9.1
+          Write-Host "Pester version: $((Get-Module Pester).Version)"
+
+      - name: Run Pester tests
+        if: steps.find-tests.outputs.found == 'true'
+        run: |
+          Import-Module Pester -RequiredVersion 5.9.1
+          $config = New-PesterConfiguration
+          # Run tests from the configured test root (includes subdirectories)
+          $config.Run.Path = $env:PESTER_TEST_ROOT
+          # Exit with non-zero code if tests fail
+          $config.Run.Exit = $true
+          # Enable test result output
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputFormat = "NUnitXml"
+          $config.TestResult.OutputPath = "testResults.xml"
+          # Show detailed output
+          $config.Output.Verbosity = "Detailed"
+
+          Invoke-Pester -Configuration $config
+
+      - name: Skip - No Pester tests
+        if: steps.find-tests.outputs.found != 'true'
+        run: echo "Skipping Pester tests - no *.Tests.ps1 files found in the configured test root"

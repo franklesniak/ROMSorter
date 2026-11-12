@@ -1,0 +1,29 @@
+instruction_contracts:
+  - path: AGENTS.md
+    requires_modules:
+      - agent-instructions
+    required_headings:
+      - '## GitHub Plugin Usage'
+protected_guide_section_obligations:
+  - key: agents-azure-devops-pr-review-protocol
+    path: AGENTS.md
+    target_modules:
+      - azure-devops-collaboration
+    stale_headings:
+      - '## Azure DevOps PR Review Protocol'
+protected_guide_reference_obligations:
+  - key: agents-azure-devops-support-guide-link
+    path: AGENTS.md
+    reference_kind: markdown-relative-link
+    target_path: docs/azure-devops-support.md
+    target_modules:
+      - azure-devops-platform
+      - azure-pipelines
+      - azure-devops-collaboration
+  - key: agents-terraform-command-token
+    path: AGENTS.md
+    reference_kind: prose-reference
+    target_modules:
+      - terraform
+    tokens:
+      - terraform test -verbose

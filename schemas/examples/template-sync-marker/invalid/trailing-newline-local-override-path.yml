@@ -1,0 +1,8 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  local_overrides:
+    - path: "README.md\n"
+      reason: A final line break after the path must be rejected in both regex dialects.
+      default_decision: SKIP

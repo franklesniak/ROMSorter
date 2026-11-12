@@ -1,0 +1,19 @@
+{
+  "instruction_contracts": [
+    {
+      "path": "AGENTS.md",
+      "requires_modules": [
+        "agent-instructions"
+      ],
+      "required_sections": [
+        {
+          "heading": "## Révision\t中文 ",
+          "next_heading": "### End",
+          "required_paragraphs": [
+            "Act."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+# =============================================================================
+# BUG REPORT TEMPLATE
+# =============================================================================
+# For detailed design decisions and customization options, see:
+# .github/TEMPLATE_DESIGN_DECISIONS.md > Issue Template Design Decisions > bug_report.yml
+#
+# CUSTOMIZE: markers below indicate actionable customization points.
+# Look for `# CUSTOMIZE:` comments throughout this file.
+# =============================================================================
+
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+# CUSTOMIZE: Adjust the title prefix to match your project's conventions
+title: "[Bug] "
+# CUSTOMIZE: Update these labels to match your repository's label taxonomy.
+# Template-sync issue-label policy: create-manual-follow-up
+# These labels are rendered before repository setup is complete.
+# Follow-up: _TODO-repo-init.md dependent-file status remains open:
+#   Owner-approved future-state content; @franklesniak completes settings immediately after adoption.
+labels:
+  - "bug"
+  - "triage"
+# CUSTOMIZE: Uncomment and update to specify an issue type (defined at the organization level).
+# See: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms#top-level-syntax
+# type: Bug
+# CUSTOMIZE: Uncomment and update to pre-populate the assignees field when opening bug reports
+# assignees:
+#   - maintainer-username
+# CUSTOMIZE: Uncomment and update to auto-add bug reports to a GitHub Project (uses project number)
+# projects:
+#   - org/1
+body:
+  # DESIGN DECISION: REDUNDANT SECURITY WARNINGS
+  # This template intentionally includes multiple security warnings (top-of-form,
+  # checkbox, severity dropdown). This defense-in-depth approach maximizes chance
+  # of catching accidental security disclosure. See .github/TEMPLATE_DESIGN_DECISIONS.md for rationale.
+  # NOTE: The Markdown links below use absolute URLs because relative paths
+  # (e.g., `[SECURITY.md](blob/HEAD/SECURITY.md)`) resolve against the
+  # rendering URL `/{owner}/{repo}/issues/new?...` and 404. See the
+  # "Issue and PR templates" carve-out in `.github/instructions/docs.instructions.md`
+  # (and the matching section in `.github/instructions/yaml.instructions.md`).
+  #
+  # CUSTOMIZE: Replace `franklesniak/ROMSorter` in all security URLs with your actual org/repo.
+  # If you keep `.github/workflows/check-placeholders.yml` (an optional adoption
+  # step), CI will fail until this substitution is made; if you do not adopt
+  # that workflow or you remove it after setup, no CI guardrail catches a
+  # missed substitution and you must verify the replacement manually.
+  # GHES users: Replace `github.com` with your GHES host (e.g., `github.company.com`).
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for reporting a bug!
+        Please fill out the form below to help us investigate and resolve the issue.
+
+        **Everyone who can see this repository can read this issue and its history.**
+        Keep personal information, passwords and tokens out of text and images.
+
+        **Security Notice:** If you are reporting a security vulnerability, do NOT use this form.
+        Report it through the repository's
+        [private vulnerability reporting form](https://github.com/franklesniak/ROMSorter/security/advisories/new)
+        after maintainers have enabled private vulnerability reporting in GitHub settings.
+        If that form is unavailable, review
+        [SECURITY.md](https://github.com/franklesniak/ROMSorter/blob/HEAD/SECURITY.md).
+
+  - type: checkboxes
+    id: pre_flight
+    attributes:
+      label: Pre-flight Checklist
+      description: >-
+        Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        # CUSTOMIZE: Consider changing to `required: true` for projects with
+        # comprehensive documentation that users should consult before filing bugs
+        - label: I have read the project documentation
+          required: false
+        - label: I am using a supported version of the project
+          required: true
+        - label: I have tested on the latest version or master branch
+          required: false
+        - label: This is NOT a security vulnerability (report those using SECURITY.md or the private reporting form)
+          required: true
+        # CUSTOMIZE: Remove if your project doesn't accept community contributions
+        - label: I am willing to submit a pull request to fix this issue
+          required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >-
+        Provide a clear and concise description of the bug
+      placeholder: Describe what the bug is...
+    validations:
+      required: true
+
+  # DESIGN DECISION: Area is optional by default for template portability.
+  # Small or single-language downstream repos may find "Area" redundant and
+  # friction-inducing. Downstream repos that rely on area-based routing can
+  # change this to `required: true` if needed.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: >-
+        What part of the project does this bug affect?
+        Tip: For documentation typos/missing info, prefer the 📚 Documentation Issue template.
+      # CUSTOMIZE: Update these options to match your project's languages/components (remove unused entries).
+      options:
+        - Python
+        - PowerShell
+        - Markdown / Documentation
+        - GitHub Actions / CI
+        - Cross-language / Integration
+        - Cross-cutting / Repo-wide
+        - Other (describe/specify in Additional Context)
+    validations:
+      required: false
+
+  # NOTE: render: text is used here because users frequently paste commands and output
+  # in reproduction steps. This prevents Markdown parsing from mangling CLI commands.
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: >-
+        Provide detailed steps to reproduce the behavior
+      render: text
+      placeholder: |
+        1. Go to '...'
+        2. Run '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: >-
+        Describe what you expected to happen
+      placeholder: What should have happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: >-
+        Describe what actually happened
+      placeholder: What actually happened...
+    validations:
+      required: true
+
+  # NOTE: render: text is used here to prevent Markdown parsing from mangling stack traces,
+  # CLI output, and scripts. This ensures logs are displayed as plain text regardless of content.
+  # Prefer render: text for technical textareas as it's the safest default for mixed content
+  # (Python tracebacks, PowerShell errors, JSON, etc.).
+  - type: textarea
+    id: logs_output
+    attributes:
+      label: Logs/Error Output
+      description: >-
+        Paste any error messages, stack traces, or relevant log output.
+        For longer outputs, attach log files by dragging and dropping.
+        ⚠️ Review logs for sensitive data (passwords, tokens, personal info) before submitting
+      render: text
+      placeholder: |
+        Paste logs here...
+
+        For very large logs, attach as a file by dragging and dropping below.
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: >-
+        If applicable, add screenshots to help explain the problem.
+        Drag and drop images directly into this field, or paste image URLs
+      placeholder: Drag and drop screenshots here...
+    validations:
+      required: false
+
+  # CUSTOMIZE: Library/framework projects should consider making this required.
+  # Projects that don't accept external reproductions can remove this field.
+  - type: input
+    id: minimal_reproduction
+    attributes:
+      label: Minimal Reproduction URL
+      description: >-
+        Link to a minimal reproduction (GitHub repo, CodeSandbox, StackBlitz, etc.).
+        For complex bugs, this greatly speeds up investigation.
+      placeholder: e.g., https://github.com/username/repo-name or https://codesandbox.io/s/...
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: "### Environment Information"
+
+  # NOTE: GitHub issue forms do NOT support `pattern` validation on input fields.
+  # See: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#validations-for-input
+  # For input validation, consider using a dropdown with predefined options,
+  # or validate programmatically via GitHub Actions on issue creation.
+  - type: input
+    id: project_version
+    attributes:
+      label: Project Version
+      description: >-
+        The version of the project (e.g., v1.2.3 or commit SHA)
+      placeholder: e.g., v1.2.3 or commit SHA abc1234
+    validations:
+      required: true
+
+  - type: input
+    id: operating_system
+    attributes:
+      label: Operating System
+      description: >-
+        Your operating system name and version
+      placeholder: e.g., Windows 11, Ubuntu 24.04 LTS, macOS 15.x
+    validations:
+      required: true
+
+  # CUSTOMIZE: Cross-platform projects should consider making this required.
+  # Single-platform projects can remove this field.
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: Architecture
+      description: >-
+        Your CPU architecture, if relevant to the issue
+      options:
+        - x64 (AMD64 / Intel 64)
+        - ARM64 (AArch64 / Apple Silicon)
+        - x86 (32-bit)
+        - Other (specify in Additional Context)
+    validations:
+      required: false
+
+  # CUSTOMIZE: Update placeholder examples to match your project's supported runtimes
+  # This template uses Python 3.13+ (current bugfix version) as example
+  # NOTE: render: text is used here because users paste multi-line version output.
+  # This prevents Markdown parsing from mangling version strings with special characters.
+  - type: textarea
+    id: runtime_version
+    attributes:
+      label: Language/Runtime Version(s)
+      description: >-
+        Relevant language or runtime versions for your environment.
+        List each on a separate line if multiple apply
+      render: text
+      placeholder: |
+        Python 3.13.1 (or your installed version)
+        PowerShell 7.4.6 or Windows PowerShell 5.1
+        Markdown tooling/renderer (if relevant): e.g., Pandoc 3.1.2
+    validations:
+      required: false
+
+  # CUSTOMIZE: CLI-focused projects should keep this field; others may remove it if not applicable
+  - type: input
+    id: shell_environment
+    attributes:
+      label: Shell/Terminal
+      description: >-
+        The shell or terminal you're using, if applicable
+      placeholder: e.g., PowerShell 7.4.x / Windows PowerShell 5.1, bash 5.2 (Linux/macOS), Windows Terminal / Command Prompt
+    validations:
+      required: false
+
+  # CUSTOMIZE: Update placeholder examples to match your project's dependency management approach
+  # NOTE: render: text is used here because users paste exact commands with flags.
+  # This is especially important for Python and PowerShell where execution context varies widely.
+  - type: textarea
+    id: how_ran
+    attributes:
+      label: How did you run it? (commands)
+      description: >-
+        Paste the exact commands you used to install and run the project (include flags).
+      render: text
+      placeholder: |
+        # Python (using pyproject.toml)
+        python -m venv .venv
+        source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+        pip install -e .
+        python -m your_package
+
+        # Python (using requirements.txt)
+        pip install -r requirements.txt
+        python script.py --flag
+
+        # PowerShell
+        pwsh -File .\script.ps1 -Param Value
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: "### Bug Characteristics"
+
+  - type: dropdown
+    id: reproducibility
+    attributes:
+      label: Reproducibility
+      description: >-
+        How consistently can you reproduce this bug?
+      options:
+        - Consistent (every time)
+        - Intermittent (sometimes)
+        - Unable to reproduce reliably
+        - Only happened once (haven't retried)
+    validations:
+      required: true
+
+  # CUSTOMIZE: Remove this field if version history is not tracked or not relevant
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Regression?
+      description: >-
+        Did this functionality work correctly in a previous version?
+      options:
+        - Unknown - I haven't used previous versions
+        - Yes - this worked before
+        - No - this never worked for me
+    validations:
+      required: false
+
+  # CUSTOMIZE: Remove if regression tracking is not relevant to your project
+  - type: input
+    id: last_working_version
+    attributes:
+      label: Last Working Version (only if Regression = "Yes")
+      description: >-
+        Only fill this out if you selected "Yes - this worked before" above.
+        Specify the last version where it worked correctly.
+      placeholder: e.g., v1.1.0
+    validations:
+      required: false
+
+  # CUSTOMIZE: Adjust severity options to match your project's triage workflow
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: >-
+        Select the severity level that best describes the impact from your perspective.
+        Note: This is your self-assessment; maintainers may adjust during triage.
+        For security vulnerabilities, do NOT use this form. Report privately
+        via the private vulnerability reporting form after maintainers enable it
+        in GitHub settings, or review SECURITY.md.
+      options:
+        - Critical (system crash, data loss)
+        - High (major feature broken, no workaround)
+        - Medium (feature impaired, workaround exists)
+        - Low (minor inconvenience, cosmetic issue)
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "### Additional Information"
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Possible Solution or Workaround
+      description: >-
+        If you have ideas on how to fix this or a workaround you're using,
+        describe it here
+      placeholder: Describe any workarounds or potential fixes...
+    validations:
+      required: false
+
+  # CUSTOMIZE: Update the cross-repo example in the placeholder to reference
+  # a related project in your ecosystem, or simplify to just `#123`
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: >-
+        Link any related issues that may provide additional context
+        (e.g., #123 for same-repo references or owner/repo-name#456 for cross-repo references)
+      placeholder: |
+        #123
+        owner/repo-name#456
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: >-
+        Add any other context about the problem here, such as configuration
+        details or environment specifics
+      placeholder: Add any other context here...
+    validations:
+      required: false

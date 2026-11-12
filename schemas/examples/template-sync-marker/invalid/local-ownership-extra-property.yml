@@ -1,0 +1,8 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  local_path_ownership:
+    - path: docs/
+      reason: Project documentation is downstream-owned.
+      owner: docs-team

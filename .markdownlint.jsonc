@@ -1,0 +1,103 @@
+{
+  // markdownlint configuration
+  // Based on https://github.com/DavidAnson/markdownlint
+  // MIT License - Copyright (c) David Anson
+  //
+  // COMPATIBILITY NOTE:
+  // This file uses the standard markdownlint JSON format and is compatible with:
+  //   - markdownlint-cli (https://github.com/igorshubovych/markdownlint-cli)
+  //   - markdownlint-cli2 (https://github.com/DavidAnson/markdownlint-cli2)
+  //
+  // For markdownlint-cli2 specific features (e.g., custom parsers, globs, ignores),
+  // rename this file to `.markdownlint-cli2.jsonc` and nest rules under "config":
+  //   { "config": { ...existing rules... }, "globs": [...], "ignores": [...] }
+  //
+  // This configuration prioritizes auto-fixable rules for practical enforcement.
+  // Rules that cannot be auto-fixed are disabled to avoid noise in CI.
+  //
+  // Run with: npm run lint:md
+  // Fix with: npx markdownlint-cli2 "**/*.md" "#node_modules" "#.pytest_cache" --fix
+
+  // Enable all rules by default
+  "default": true,
+
+  // ============================================================================
+  // DISABLED RULES (Not auto-fixable - would require manual intervention)
+  // ============================================================================
+
+  // MD013: Line length - disabled because it's not auto-fixable
+  // Long lines in code examples, URLs, and tables are common and acceptable
+  "MD013": false,
+
+  // MD034: Bare URLs - disabled because it's not auto-fixable
+  // Sometimes bare URLs are intentional (e.g., in example output or logs)
+  "MD034": false,
+
+  // MD036: Emphasis used instead of a heading - disabled because it's not auto-fixable
+  // Has false positives with bold text that isn't meant to be a heading
+  "MD036": false,
+
+  // MD041: First line should be a top-level heading - disabled because it's not auto-fixable
+  // Prevents files from starting with badges, metadata, or front matter
+  "MD041": false,
+
+  // ============================================================================
+  // CONFIGURED RULES (Auto-fixable style rules for consistency)
+  // ============================================================================
+
+  // MD003: Heading style - use ATX style (# Heading)
+  // ATX is more common and easier to read than setext (underline) style
+  "MD003": {
+    "style": "atx"
+  },
+
+  // MD004: Unordered list style - use dashes
+  // Dashes are the most common convention and work well with nested lists
+  "MD004": {
+    "style": "dash"
+  },
+
+  // MD012: Multiple consecutive blank lines
+  // Allow up to 2 consecutive blank lines for visual separation
+  "MD012": {
+    "maximum": 2
+  },
+
+  // MD024: Multiple headings with the same content
+  // Allow duplicate headings only in different sections (siblings)
+  // This permits "## Examples" under multiple top-level sections
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // MD029: Ordered list item prefix - use ordered numbers (1. 2. 3.)
+  // Makes diffs cleaner and intentions clearer than all-ones style
+  "MD029": {
+    "style": "ordered"
+  },
+
+  // MD035: Horizontal rule style - use three dashes
+  // Enabled to enforce consistency. Some projects disable this to allow LLM-generated
+  // content with varied hr styles, but for human-authored docs we enforce "---".
+  "MD035": {
+    "style": "---"
+  },
+
+  // MD048: Code fence style - use backticks
+  // Backticks are more common than tildes and render consistently
+  "MD048": {
+    "style": "backtick"
+  },
+
+  // MD049: Emphasis style - use asterisks
+  // Asterisks are more common than underscores for emphasis
+  "MD049": {
+    "style": "asterisk"
+  },
+
+  // MD050: Strong style - use asterisks
+  // Asterisks are more common than underscores for strong/bold
+  "MD050": {
+    "style": "asterisk"
+  }
+}

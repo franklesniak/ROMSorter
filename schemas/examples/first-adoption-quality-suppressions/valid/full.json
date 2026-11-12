@@ -1,0 +1,19 @@
+{
+  "path-reference": {
+    "suppressions": [
+      {
+        "ruleId": "path-reference.case-mismatch",
+        "category": "path-reference",
+        "pathGlob": "*.md",
+        "literalPattern": "^Csv/",
+        "reason": "Example suppression for an intentional fixture-style path literal."
+      },
+      {
+        "ruleId": "path-reference.missing-target",
+        "path": "README.md",
+        "literal": "docs/generated-report.md",
+        "reason": "Example suppression for a generated downstream report path."
+      }
+    ]
+  }
+}

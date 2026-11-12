@@ -1,0 +1,140 @@
+# Markdown and toolchain validation workflow.
+#
+# This workflow uses markdownlint by David Anson (@DavidAnson)
+# Licensed under MIT License
+# Source: https://github.com/DavidAnson/markdownlint
+#
+# Purpose: Enforce Markdown formatting, nested Markdown linting,
+# offline repository-local link validation, and the toolchain-EOL regression
+# test across the repository
+# Runs on: push and pull_request events
+
+name: Markdown and Toolchain Checks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # template-sync: begin template-sync-support-only
+      # Python is required for source-template regressions when their tests and
+      # project dependencies are retained. The canonical upstream also runs the
+      # actual pre-commit hook regression with the root Node dependencies above.
+      - name: Setup Python
+        if: >-
+          ${{
+            github.repository == 'franklesniak/copilot-repo-template' ||
+            (hashFiles('pyproject.toml') != '' &&
+            hashFiles('tests/test_materialize_downstream_adoption.py') != '')
+          }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        if: >-
+          ${{
+            github.repository == 'franklesniak/copilot-repo-template' ||
+            (hashFiles('pyproject.toml') != '' &&
+            hashFiles('tests/test_materialize_downstream_adoption.py') != '')
+          }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Install pinned pre-commit runner
+        if: ${{ github.repository == 'franklesniak/copilot-repo-template' }}
+        run: python -m pip install --requirement requirements-pre-commit.txt
+
+      - name: Lint materialized generated output (nested Markdown)
+        if: >-
+          ${{
+            hashFiles('pyproject.toml') != '' &&
+            hashFiles('tests/test_materialize_downstream_adoption.py') != ''
+          }}
+        id: lint-generated
+        continue-on-error: true
+        run: pytest tests/test_materialize_downstream_adoption.py -k passes_nested_markdown_lint -v
+
+      - name: Run actual nested Markdown hook regression
+        if: ${{ github.repository == 'franklesniak/copilot-repo-template' }}
+        id: test-nested-hook
+        continue-on-error: true
+        run: >-
+          pytest
+          tests/test_precommit_runner.py::test_nested_markdown_hook_actual_invocation_and_mutation
+          -v
+      # template-sync: end template-sync-support-only
+
+      - name: Run markdownlint on outer files
+        id: lint-outer
+        continue-on-error: true
+        run: npm run lint:md
+
+      - name: Run markdownlint on nested Markdown code fences
+        id: lint-nested
+        continue-on-error: true
+        run: npm run lint:md:nested
+
+      - name: Validate Markdown links
+        id: lint-links
+        continue-on-error: true
+        run: npm run lint:md:links
+
+      - name: Run toolchain EOL regression tests
+        id: test-toolchain
+        continue-on-error: true
+        run: npm run test:toolchain-eol
+
+      - name: Run nested Markdown regression tests
+        id: test-nested
+        continue-on-error: true
+        run: npm run test:md:nested
+
+      # template-sync: begin template-sync-support-only
+      - name: Check source-template regression results
+        if: >-
+          steps.lint-generated.outcome == 'failure' ||
+          steps.test-nested-hook.outcome == 'failure'
+        run: |
+          echo "::error::Source-template Markdown regressions failed. Check the logs above for details."
+          exit 1
+      # template-sync: end template-sync-support-only
+
+      - name: Check validation results
+        if: >-
+          steps.lint-outer.outcome == 'failure' ||
+          steps.lint-nested.outcome == 'failure' ||
+          steps.lint-links.outcome == 'failure' ||
+          steps.test-nested.outcome == 'failure' ||
+          steps.test-toolchain.outcome == 'failure'
+        run: |
+          echo "::error::Markdown and toolchain checks failed. Check the logs above for details."
+          exit 1

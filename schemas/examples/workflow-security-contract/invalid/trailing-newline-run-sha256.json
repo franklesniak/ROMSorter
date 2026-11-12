@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "workflows": {
+    ".github/workflows/example.yml": {
+      "concurrency": {
+        "group": "example-${{ github.ref }}",
+        "cancel-in-progress": false
+      },
+      "events": [
+        "push"
+      ],
+      "permissions": {},
+      "defaults": {},
+      "env": {},
+      "jobs": {
+        "check": {
+          "controls": {
+            "name": "Example check",
+            "concurrency": "example-check-${{ github.ref }}",
+            "permissions": {}
+          },
+          "steps": [
+            {
+              "run_sha256": "a789f19adf728f77afad280f08cbc2c77514d08e85ec1dfa3d8bfb22a486e165\n"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "examples": [
+    "docs/guide.md"
+  ]
+}

@@ -1,0 +1,9 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  placeholder_waivers:
+    - token: security contact todo
+      reason: Missing required path scope.
+      authorization_basis: Owner approved the temporary unresolved placeholder on 2026-06-28.
+      reviewed_scope: SECURITY.md security-contact rollout note.

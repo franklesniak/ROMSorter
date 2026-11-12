@@ -445,7 +445,7 @@ $arrSortedOutput | ForEach-Object {
     $strThisMAMEROMName = ($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value
     $strColumnName = ($strLocalDATToCompareToMAMEColumnPrefix + '_MatchedTo' + $strMAMEDATColumnPrefix + '_1_AveragePercentMatch')
     $doubleAveragePercentMatch = [double](($arrMatchedROMProperties | Where-Object { $_.Name -eq $strColumnName }).Value)
-    
+
     $boolUnmatched = $true
     if ($doubleAveragePercentMatch -ge 0.5) {
         if ($hashtableAllMappings.ContainsValue($strThisMAMEROMName) -eq $true) {

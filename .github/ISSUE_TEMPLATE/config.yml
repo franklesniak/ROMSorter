@@ -1,0 +1,48 @@
+# =============================================================================
+# ISSUE TEMPLATE CONFIG
+# =============================================================================
+# For detailed design decisions and customization options, see:
+# .github/TEMPLATE_DESIGN_DECISIONS.md > Issue Template Design Decisions > config.yml
+#
+# CUSTOMIZE: markers below indicate actionable customization points.
+# Look for `# CUSTOMIZE:` comments throughout this file.
+#
+# IMPORTANT: contact_links URLs MUST be absolute URLs (relative paths do not work).
+# You MUST replace franklesniak/ROMSorter with your actual org/repo or links will 404.
+# - GHES users: Replace github.com with your GHES host (e.g., github.company.com)
+# =============================================================================
+
+# CUSTOMIZE: Set to `true` (default) to allow users flexibility in creating issues
+# without a template. Set to `false` to require template usage—useful once you have
+# comprehensive templates covering all issue types and want structured data collection.
+# Consider setting to false once you have comprehensive templates and want structured intake.
+# A blank issue shows none of a form's notices.
+blank_issues_enabled: true
+
+contact_links:
+  # CUSTOMIZE: Update the URL below by replacing `franklesniak/ROMSorter` with your org/repo name.
+  # NOTE: blob/HEAD is used instead of blob/main to support repos with non-main default branches.
+  - name: 📝 Contributing Guide
+    url: https://github.com/franklesniak/ROMSorter/blob/HEAD/CONTRIBUTING.md
+    about: Read the contributing guide before opening an issue
+
+  # =============================================================================
+  # SECURITY LINK CONFIGURATION
+  # =============================================================================
+  # CUSTOMIZE: Replace `franklesniak/ROMSorter` with your org/repo name.
+  # GHES users must also replace github.com with their GHES host.
+  # The issue chooser links to SECURITY.md, which is always reachable and
+  # documents the reporting path for the configured security reporting mode.
+  - name: Security Vulnerabilities
+    url: https://github.com/franklesniak/ROMSorter/blob/HEAD/SECURITY.md
+    about: Report security issues privately using the instructions in SECURITY.md. Do not open a public issue.
+
+  # =============================================================================
+  # DISCUSSIONS LINK (OPTIONAL)
+  # =============================================================================
+  # Template-sync Discussions policy: deferred-planned-render.
+  # Follow-up: _TODO-repo-init.md dependent-file status remains open:
+  #   Owner-approved future-state content; @franklesniak completes settings immediately after adoption.
+  - name: Questions & Discussions
+    url: https://github.com/franklesniak/ROMSorter/discussions
+    about: Get support, usage help, and general troubleshooting. Use Issues for reproducible bugs and enhancements.

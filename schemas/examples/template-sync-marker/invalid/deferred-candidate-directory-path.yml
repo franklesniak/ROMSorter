@@ -1,0 +1,8 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  deferred_protected_candidates:
+    - path: .github/instructions/
+      source_commit: "89abcdef0123456789abcdef0123456789abcdef"
+      reason: Protected governance directory needs explicit owner authorization.

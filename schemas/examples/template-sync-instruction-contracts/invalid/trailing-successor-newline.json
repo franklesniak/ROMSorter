@@ -1,0 +1,19 @@
+{
+  "instruction_contracts": [
+    {
+      "path": "AGENTS.md",
+      "requires_modules": [
+        "agent-instructions"
+      ],
+      "required_sections": [
+        {
+          "heading": "## Rules",
+          "next_heading": "## End\n",
+          "required_paragraphs": [
+            "Act."
+          ]
+        }
+      ]
+    }
+  ]
+}

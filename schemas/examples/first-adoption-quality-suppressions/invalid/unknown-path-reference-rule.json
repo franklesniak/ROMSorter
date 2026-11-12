@@ -1,0 +1,10 @@
+{
+  "path-reference": {
+    "suppressions": [
+      {
+        "ruleId": "path-reference.not-real",
+        "reason": "Unknown rule identifiers must be rejected."
+      }
+    ]
+  }
+}

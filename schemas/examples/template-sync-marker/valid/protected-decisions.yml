@@ -1,0 +1,33 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  last_reviewed_template_commit: 0123456789abcdef0123456789abcdef01234567
+  included_modules:
+    - baseline
+    - agent-instructions
+  protected_file_decisions:
+    - path: CLAUDE.md
+      adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner authorized protected instruction file edits on 2026-05-27.
+      authorized_scope: Remove unadopted stack references and fix broken links only.
+    - path: .github/copilot-instructions.md
+      adoption_mode: tailored
+      decision: TAKE
+      authorization_basis: Owner authorized protected instruction file edits on 2026-05-27.
+      authorized_scope: .github/copilot-instructions.md only.
+      tailored_authorization_basis: Owner authorized a tailored rewrite for this protected path.
+    - path: GEMINI.md
+      decision: REMOVE-LOCAL
+      authorization_basis: Owner explicitly authorized removing GEMINI.md in issue 632.
+      authorized_scope: GEMINI.md only; no other protected files.
+      reason: Gemini agent not used by this downstream repository.
+    - path: .hermes.md
+      adoption_mode: minimal-preservation
+      decision: SKIP
+      reason: Hermes agent not used by this downstream repository.
+    - path: AGENTS.md
+      decision: PROTECTED-REVIEW
+      reason: Owner authorization is pending.
+    - path: .github/instructions/python.instructions.md
+      decision: DEFER
+      reason: Python stack selection is unresolved.

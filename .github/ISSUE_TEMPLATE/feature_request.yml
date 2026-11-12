@@ -1,0 +1,223 @@
+# =============================================================================
+# FEATURE REQUEST TEMPLATE
+# =============================================================================
+# For detailed design decisions and customization options, see:
+# .github/TEMPLATE_DESIGN_DECISIONS.md > Issue Template Design Decisions
+#
+# CUSTOMIZE: markers below indicate actionable customization points.
+# Look for `# CUSTOMIZE:` comments throughout this file.
+# =============================================================================
+
+name: 💡 Feature Request
+description: Suggest a new feature or enhancement
+# CUSTOMIZE: Adjust the title prefix to match your project's conventions
+title: "[Feature] "
+# CUSTOMIZE: Update these labels to match your repository's label taxonomy.
+# Ensure these labels exist in your repository or create them before using this template.
+# Common patterns include:
+#   - Type labels: enhancement, feature, improvement
+#   - Status labels: triage, accepted, planned
+#   - Priority labels: priority:critical, priority:high, priority:medium, priority:low
+#   - Area labels: area:api, area:cli, area:docs
+labels:
+  - enhancement
+  # - triage  # ACTION ITEM: Uncomment after creating the `triage` label in your repository
+# CUSTOMIZE: Uncomment and update to specify an issue type (defined at the organization level).
+# See: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms#top-level-syntax
+# type: Feature
+# CUSTOMIZE: Uncomment and update to pre-populate the assignees field when opening feature requests
+# assignees:
+#   - maintainer-username
+# CUSTOMIZE: Uncomment and update to auto-add feature requests to a GitHub Project (uses project number)
+# projects:
+#   - org/1
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for your feature suggestion!
+        Please fill out the form below to help us understand and evaluate your request.
+
+        **Everyone who can see this repository can read this issue and its history.**
+        Keep personal information, passwords and tokens out of text and images.
+
+  - type: checkboxes
+    id: pre_flight
+    attributes:
+      label: Pre-flight Checklist
+      description: >-
+        Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues and this feature has not been requested
+          required: true
+        # CUSTOMIZE: Consider changing to `required: true` for projects with
+        # comprehensive documentation that users should consult before requesting features
+        - label: I have read the project documentation
+          required: false
+        # NOTE: This checkbox is worded generically to be portable across projects.
+        # Many downstream repos won't have a formal roadmap, so "existing issues/discussions/README"
+        # covers common places where planned work might be documented.
+        - label: I have checked existing issues, discussions, or README for planned work
+          required: false
+        # CUSTOMIZE: Remove if your project doesn't accept community contributions
+        - label: I am willing to submit a pull request to implement this feature
+          required: false
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: Problem Statement / Motivation
+      description: >-
+        Describe the problem you're trying to solve or the motivation for this feature.
+        A clear problem statement helps maintainers understand the need
+      placeholder: |
+        I'm frustrated when...
+        Currently, I have to...
+        This would help by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: >-
+        Describe the solution you'd like to see implemented.
+        Be as specific as possible about the desired behavior
+      placeholder: |
+        I would like...
+        The feature should...
+        Expected behavior:
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives_considered
+    attributes:
+      label: Alternatives Considered
+      description: >-
+        Describe any alternative solutions or workarounds you've considered.
+        This helps maintainers understand the problem space
+      placeholder: |
+        I considered...
+        Current workaround:
+        Why alternatives don't work:
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case / User Story
+      description: >-
+        Describe who benefits from this feature and how.
+        Use the format "As a [type of user], I want [goal] so that [benefit]"
+      placeholder: |
+        As a [developer/user/admin], I want [feature]
+        so that [benefit/outcome].
+
+        Example scenarios:
+        - Scenario 1: ...
+        - Scenario 2: ...
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: "### Feature Classification"
+
+  # Trade-off notes on area field being optional:
+  # - Optional (used here): Reduces friction for feature requesters.
+  # - Required: Improves categorization for repos that rely on area-based routing/automation.
+  # Recommended: Keep optional by default. Downstream repos can make it required if they
+  # use area-based routing or have automation that depends on this field.
+  # NOTE: Options match the bug report template for consistency.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: What part of the project would this feature impact?
+      # CUSTOMIZE: Update these options to match your project's languages/components (remove unused entries).
+      options:
+        - Python
+        - PowerShell
+        - Markdown / Documentation
+        - GitHub Actions / CI
+        - Cross-language / Integration
+        - Cross-cutting / Repo-wide
+        - Other (describe/specify in Additional Context)
+    validations:
+      required: false
+
+  # CUSTOMIZE: Adjust priority options to match your project's triage workflow
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: >-
+        Select the priority level that best describes the urgency from your perspective.
+        Note: This is your self-assessment; maintainers may adjust during triage
+      options:
+        - Critical (blocking my adoption/usage)
+        - High (significant impact on my workflow)
+        - Medium (would improve my experience)
+        - Low (nice to have)
+    validations:
+      required: false
+
+  # CUSTOMIZE: Adjust scope options to match your project's feature categories
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: >-
+        Select the scope that best describes the size of this feature
+      options:
+        - Major feature (new capability, significant change)
+        - Minor enhancement (improvement to existing feature)
+        - Quality of life (small improvement, polish)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: "### Additional Information"
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria (optional)
+      description: What needs to be true for this feature to be considered complete?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: >-
+        Add any other context, mockups, screenshots, or examples about the feature request.
+        Drag and drop images directly into this field
+      placeholder: |
+        Additional context...
+
+        For mockups or detailed designs, you can include images:
+        (drag and drop images here)
+    validations:
+      required: false
+
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: >-
+        Link any related issues that may provide additional context
+        (e.g., #123 for same-repo references or owner/repo-name#456 for cross-repo references)
+      placeholder: |
+        #123
+        owner/repo-name#456
+    validations:
+      required: false

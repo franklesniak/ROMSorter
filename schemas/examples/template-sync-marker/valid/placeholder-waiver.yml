@@ -1,0 +1,11 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  last_reviewed_template_commit: 0123456789abcdef0123456789abcdef01234567
+  included_modules:
+    - baseline
+  placeholder_waivers:
+    - path: SECURITY.md
+      token: security contact todo
+      reason: Downstream owner reviewed and intentionally keeps the placeholder during staged rollout.
+      authorization_basis: Owner approved the temporary unresolved placeholder on 2026-06-28.
+      reviewed_scope: SECURITY.md security-contact rollout note.

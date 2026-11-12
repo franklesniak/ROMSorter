@@ -1,0 +1,9 @@
+template_sync:
+  source_repo: https://github.com/franklesniak/copilot-repo-template.git
+  included_modules:
+    - baseline
+  protected_file_decisions:
+    - adoption_mode: minimal-preservation
+      decision: MERGE
+      authorization_basis: Owner authorized protected instruction file edits on 2026-05-27.
+      authorized_scope: CLAUDE.md only.

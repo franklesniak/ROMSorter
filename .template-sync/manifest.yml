@@ -1,0 +1,984 @@
+template_manifest:
+  version: 3
+  modules:
+    - name: instruction-enforcement
+      description: Explicit optional instruction-enforcement selection.
+    - name: agent-copilot
+      description: Explicit optional agent-copilot selection.
+    - name: agent-codex
+      description: Explicit optional agent-codex selection.
+    - name: agent-claude
+      description: Explicit optional agent-claude selection.
+    - name: agent-cursor
+      description: Explicit optional agent-cursor selection.
+    - name: agent-gemini
+      description: Explicit optional agent-gemini selection.
+    - name: agent-hermes
+      description: Explicit optional agent-hermes selection.
+    - name: baseline
+      description: >-
+        Core repository scaffolding, community files, starter identity files,
+        and repository-level configuration not owned by a narrower module.
+    - name: git-lfs
+      description: >-
+        Opt-in Git LFS-managed attributes for selected opaque authoring and
+        project formats in the baseline root `.gitattributes`.
+    - name: agent-instructions
+      description: >-
+        Agent entry points, Copilot instructions, Cursor rules, reusable prompt
+        guidance, and modular instruction docs.
+    - name: github-platform
+      description: >-
+        Repository-level GitHub platform configuration that is not itself an
+        issue template, PR template, CODEOWNERS file, or workflow. Includes
+        Dependabot configuration, repository funding metadata, security-advisory
+        configuration, code-scanning configuration outside of workflows, and
+        similar repository-scope GitHub-only settings. Current example:
+        `.github/dependabot.yml`. Likely future inhabitants include
+        `.github/FUNDING.yml`, `.github/security/*`, and other repository-scope
+        GitHub configuration files.
+    - name: azure-devops-platform
+      description: >-
+        Azure DevOps Services project, security, and service configuration
+        guidance that is not itself an Azure Pipelines file or Azure Repos
+        collaboration template.
+    - name: github-actions
+      description: GitHub Actions workflow files under `.github/workflows/**`.
+    - name: azure-pipelines
+      description: Azure Pipelines CI assets and setup guidance under `.azuredevops/pipelines/**`.
+    - name: github-templates
+      description: >-
+        GitHub issue templates, PR templates, CODEOWNERS, and GitHub
+        collaboration surfaces.
+    - name: azure-devops-collaboration
+      description: >-
+        Azure Repos PR templates, Azure Boards intake guidance, reviewer
+        policies, and Azure DevOps Services security intake guidance.
+    - name: template-onboarding
+      description: >-
+        Template adoption and template maintainer guidance that downstream
+        repositories typically remove after adoption.
+    - name: template-sync-support
+      description: >-
+        Committed files used to perform future template syncs, such as the sync
+        procedure, sync marker, sync manifest, sync validation helper scripts,
+        and future sync validation docs.
+    - name: markdown
+      description: >-
+        Markdown linting, Markdown templates, docs guidance, and Markdown-only
+        documentation assets.
+    - name: powershell
+      description: >-
+        PowerShell scripts, Pester tests, PSScriptAnalyzer configuration, and
+        PowerShell CI.
+    - name: json
+      description: >-
+        JSON and JSONC guidance, examples, validation commands, and
+        JSON-oriented template files.
+    - name: yaml
+      description: >-
+        YAML guidance, YAML template files, and YAML validation not owned by a
+        narrower module.
+    - name: schema
+      description: >-
+        JSON Schema contracts, schema examples, schema validation docs, and
+        schema-specific tests.
+    - name: python
+      description: >-
+        Python package scaffolding, Python tests, Python CI, and Python tooling
+        configuration.
+    - name: terraform
+      description: Terraform modules, tests, linting, documentation, and template files.
+  compatibility_groups:
+    - name: ci-host
+      description: >-
+        CI host modules. GitHub remains the default through `github-actions`;
+        Azure DevOps Services support is additive through `azure-pipelines`.
+      default_modules:
+        - github-actions
+      alternatives:
+        - host: github
+          modules:
+            - github-actions
+        - host: azure-devops
+          modules:
+            - azure-pipelines
+      mixed_hosts: allowed
+    - name: platform-security-host
+      description: >-
+        Platform and security host modules. GitHub remains the default through
+        `github-platform`; Azure DevOps Services support is additive through
+        `azure-devops-platform`.
+      default_modules:
+        - github-platform
+      alternatives:
+        - host: github
+          modules:
+            - github-platform
+        - host: azure-devops
+          modules:
+            - azure-devops-platform
+      mixed_hosts: allowed
+    - name: collaboration-host
+      description: >-
+        Collaboration host modules. GitHub remains the default through
+        `github-templates`; Azure DevOps Services support is additive through
+        `azure-devops-collaboration`.
+      default_modules:
+        - github-templates
+      alternatives:
+        - host: github
+          modules:
+            - github-templates
+        - host: azure-devops
+          modules:
+            - azure-devops-collaboration
+      mixed_hosts: allowed
+  path_mappings:
+    - pattern: '.claude/commands/review-loop.md'
+      requires_all:
+        - agent-instructions
+        - agent-claude
+        - github-actions
+      notes: >-
+        Local Claude GitHub review wrapper; remove with either the agent or host.
+    - pattern: '.github/workflows/copilot-setup-steps.yml'
+      requires_all:
+        - agent-instructions
+        - agent-copilot
+        - github-actions
+      notes: >-
+        Selected validation prerequisites only. Inline blocks follow baseline,
+        python, markdown, powershell, and terraform selections. Omit this file
+        for non-Copilot or Azure-only profiles.
+    - pattern: 'docs/copilot-setup.md'
+      requires_all:
+        - agent-instructions
+        - agent-copilot
+        - github-actions
+    - pattern: 'tests/test_copilot_setup.py'
+      requires_all:
+        - template-sync-support
+        - github-actions
+    - pattern: '.github/scripts/instruction_contract_core.py'
+      requires_any:
+        - instruction-enforcement
+        - template-sync-support
+    - pattern: '.github/scripts/instruction_contract_support.py'
+      requires_any:
+        - instruction-enforcement
+        - template-sync-support
+        - github-actions
+    - pattern: '.github/scripts/validate_instruction_profile.py'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: '.github/instruction-profile.yml'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: '.github/instruction-contracts.yml'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: 'schemas/instruction-profile.schema.json'
+      requires_any:
+        - instruction-enforcement
+        - template-sync-support
+    - pattern: 'schemas/instruction-contracts.schema.json'
+      requires_any:
+        - instruction-enforcement
+        - template-sync-support
+    - pattern: 'schemas/examples/instruction-contracts/**'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: 'schemas/examples/instruction-profile/**'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: 'docs/instruction-enforcement.md'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+    - pattern: 'tests/test_instruction_profile.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_instruction_profile_output.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_instruction_profile_references.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_instruction_yaml_duplicates.py'
+      requires_all:
+        - template-sync-support
+    - pattern: '.github/workflows/instruction-contracts.yml'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+        - github-actions
+    - pattern: '.azuredevops/pipelines/instruction-contracts.yml'
+      requires_all:
+        - agent-instructions
+        - instruction-enforcement
+        - azure-pipelines
+    - pattern: '.template-sync/marker.yml'
+      requires_all:
+        - template-sync-support
+    - pattern: '.template-sync/manifest.yml'
+      requires_all:
+        - template-sync-support
+    - pattern: '.template-sync/instruction-contracts.yml'
+      requires_all:
+        - template-sync-support
+    - pattern: '.template-sync/first-adoption/**'
+      requires_all:
+        - template-sync-support
+    - pattern: '.template-sync/scripts/**'
+      requires_all:
+        - template-sync-support
+    - pattern: 'templates/adoption/**'
+      requires_all:
+        - template-sync-support
+    - pattern: '.github/copilot-instructions.md'
+      requires_all:
+        - agent-instructions
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in protected canonical guidance, including optional
+        instruction-file rows, lint/test command examples, module-owned
+        validator prose, and workflow tool-version examples. Baseline config
+        references use baseline-reference-only; the data-CI link uses
+        github-data-ci-reference-only and requires baseline plus github-actions.
+        Remove each
+        delimited reference-only block when its module is excluded while
+        preserving required shared protocol text.
+    - pattern: '.github/instructions/docs.instructions.md'
+      requires_all:
+        - markdown
+        - agent-instructions
+    - pattern: '.github/instructions/gitattributes.instructions.md'
+      requires_all:
+        - baseline
+        - agent-instructions
+    - pattern: '.github/instructions/json.instructions.md'
+      requires_all:
+        - json
+        - agent-instructions
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for baseline
+        Git-attribute guidance and the optional YAML companion guide. Remove
+        each delimited reference-only block when its module is excluded while
+        preserving JSON authoring requirements, including the final newline.
+    - pattern: '.github/instructions/powershell.instructions.md'
+      requires_all:
+        - powershell
+        - agent-instructions
+    - pattern: '.github/instructions/python.instructions.md'
+      requires_all:
+        - python
+        - agent-instructions
+    - pattern: '.github/instructions/terraform.instructions.md'
+      requires_all:
+        - terraform
+        - agent-instructions
+    - pattern: '.github/instructions/yaml.instructions.md'
+      requires_all:
+        - yaml
+        - agent-instructions
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for baseline
+        Git-attribute guidance and the optional JSON companion guide. Remove
+        each delimited reference-only block when its module is excluded while
+        preserving YAML authoring requirements.
+    - pattern: '.github/instructions/*.instructions.md'
+      requires_all:
+        - agent-instructions
+      notes: >-
+        Most-specific matching means exact instruction-file rows above take
+        precedence. Surface this catch-all for the owner to confirm or add
+        additional module mappings.
+    - pattern: '.cursor/rules/**'
+      requires_all:
+        - agent-instructions
+        - agent-cursor
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in the protected Cursor entry point. Remove each delimited
+        reference-only block when its module is excluded while preserving
+        required shared protocol text.
+    - pattern: '.hermes.md'
+      requires_all:
+        - agent-instructions
+        - agent-hermes
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in the protected Hermes entry point. Remove each delimited
+        reference-only block when its module is excluded while preserving
+        required shared protocol text.
+    - pattern: 'AGENTS.md'
+      requires_all:
+        - agent-instructions
+        - agent-codex
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in the protected Codex entry point. Baseline commands and
+        config links use baseline-reference-only; github-data-ci-reference-only
+        requires both baseline and github-actions. Remove each delimited
+        reference-only block when its module is excluded while preserving
+        retained Codex platform protocol.
+    - pattern: 'CLAUDE.md'
+      requires_all:
+        - agent-instructions
+        - agent-claude
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in the protected Claude entry point. Baseline commands and
+        config links use baseline-reference-only; github-data-ci-reference-only
+        requires both baseline and github-actions. Remove each delimited
+        reference-only block when its module is excluded while preserving
+        retained Claude platform protocol.
+    - pattern: 'GEMINI.md'
+      requires_all:
+        - agent-instructions
+        - agent-gemini
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        references in the protected Gemini entry point. Remove each delimited
+        reference-only block when its module is excluded while preserving
+        required shared protocol text.
+    - pattern: 'COPILOT_CHAT_PROMPTS.md'
+      requires_all:
+        - agent-instructions
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional
+        Azure DevOps Services guide links in reusable adoption prompts. Remove
+        each delimited reference-only block when its module is excluded while
+        preserving retained prompt guidance.
+    - pattern: 'docs/ISSUE_EVALUATION_PROMPT.md'
+      requires_all:
+        - agent-instructions
+    - pattern: 'docs/PR_REVIEW_PROMPTS.md'
+      requires_all:
+        - agent-instructions
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks in reusable PR
+        review prompts: a github-actions-reference-only block for the Copilot
+        review recipe, a claude-review-command-reference-only block for the
+        local Claude review command, an azure-devops-guide-reference-only
+        OR-group block for the Azure DevOps Services guide link, and a
+        powershell-reference-only block for the PowerShell version-support
+        prompt. Remove each delimited reference-only block when its module is
+        excluded (the Claude command block when any module it names is
+        excluded, and the OR-group block only when every module it names is
+        excluded) while preserving retained PR review prompt guidance.
+    - pattern: '.codex/**'
+      requires_all:
+        - agent-instructions
+        - agent-codex
+    - pattern: '.claude/**'
+      requires_all:
+        - agent-instructions
+        - agent-claude
+      notes: >-
+        The session-start hook has a baseline-only pre-commit provisioning
+        block, a markdown-only locked Node dependency installation block, and
+        a terraform-only Terraform installation block. Strip each block when
+        its module is excluded.
+    - pattern: '.github/ISSUE_TEMPLATE/**'
+      requires_all:
+        - github-templates
+    - pattern: '.github/pull_request_template.md'
+      requires_all:
+        - github-templates
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional
+        stack-specific checklist sections. Remove each delimited reference-only
+        block when its module is excluded while preserving the retained
+        template checklist.
+    - pattern: '.github/CODEOWNERS'
+      requires_all:
+        - github-templates
+    - pattern: '.azuredevops/pull_request_template.*'
+      requires_all:
+        - azure-devops-collaboration
+    - pattern: '.azuredevops/pull_request_template/**'
+      requires_all:
+        - azure-devops-collaboration
+    - pattern: '.github/dependabot.yml'
+      requires_all:
+        - github-platform
+      notes: >-
+        Contains pip-dependencies-only blocks retained for baseline OR python
+        and baseline-only blocks for the pre-commit hook updater. Other
+        ecosystems follow the documented downstream tailoring procedure.
+    - pattern: '.azuredevops/platform/**'
+      requires_all:
+        - azure-devops-platform
+    - pattern: 'docs/azure-devops-support.md'
+      requires_any:
+        - azure-devops-platform
+        - azure-pipelines
+        - azure-devops-collaboration
+      notes: >-
+        Durable Azure DevOps Services support guide. Retain when any Azure
+        DevOps host module is adopted; remove for GitHub-only adoptions.
+    - pattern: 'tests/test_dependabot_schema.py'
+      requires_all:
+        - github-platform
+        - schema
+    - pattern: 'tests/fixtures/dependabot/auto-assignment.yml'
+      requires_all:
+        - github-platform
+        - schema
+    - pattern: 'docs/workflow-security.md'
+      requires_all:
+        - github-actions
+    - pattern: 'docs/upstream-style-guides.md'
+      requires_all:
+        - agent-instructions
+      requires_any:
+        - powershell
+        - terraform
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for imported
+        PowerShell and Terraform guide provenance. Remove each delimited
+        reference-only block when its module is excluded. Omit the whole file
+        unless agent-instructions and at least one imported language guide are
+        retained.
+    - pattern: '.github/workflow-security-contract.yml'
+      requires_all:
+        - github-actions
+    - pattern: '.github/scripts/validate_workflow_security.py'
+      requires_any:
+        - github-actions
+        - template-sync-support
+      notes: >-
+        Shared trusted parser for the Actions runtime and the running materializer.
+    - pattern: 'schemas/workflow-security-contract.schema.json'
+      requires_any:
+        - github-actions
+        - template-sync-support
+      notes: >-
+        Shared trusted schema for the Actions runtime and the running materializer.
+    - pattern: '.github/workflows/workflow-security.yml'
+      requires_all:
+        - github-actions
+    - pattern: 'schemas/examples/workflow-security-contract/**'
+      requires_all:
+        - github-actions
+        - template-sync-support
+    - pattern: 'tests/test_workflow_security_contract.py'
+      requires_all:
+        - github-actions
+        - template-sync-support
+    - pattern: 'tests/test_contract_wiring.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_workflow_security_lifecycle.py'
+      requires_all:
+        - github-actions
+        - template-sync-support
+    - pattern: '.github/workflows/markdownlint.yml'
+      requires_all:
+        - markdown
+        - github-actions
+      notes: >-
+        Contains two Template-sync-support-only inline blocks for source-template
+        Python setup, regressions, and their aggregate failure predicates. Remove
+        those blocks when the template-sync-support module is excluded while
+        retaining the workflow's Markdown checks.
+    - pattern: '.github/workflows/toolchain-eol.yml'
+      requires_all:
+        - markdown
+        - github-actions
+    - pattern: '.github/workflows/powershell-ci.yml'
+      requires_all:
+        - powershell
+        - github-actions
+    - pattern: '.github/workflows/python-ci.yml'
+      requires_all:
+        - python
+        - github-actions
+    - pattern: '.github/workflows/precommit-ci.yml'
+      requires_all:
+        - baseline
+        - github-actions
+      notes: >-
+        Runs the aggregate pre-commit gate. Contains a Terraform-only inline
+        block for setup required by repo-local Terraform hooks. Remove the
+        delimited block when the terraform module is excluded. A Markdown-only inline block
+        installs the root Node toolchain for nested lint; remove that block
+        when the markdown module is excluded.
+    - pattern: '.github/workflows/terraform-ci.yml'
+      requires_all:
+        - terraform
+        - github-actions
+    - pattern: '.github/workflows/data-ci.yml'
+      requires_all:
+        - baseline
+        - github-actions
+      notes: >-
+        Contains YAML-only inline blocks for yamllint-specific documentation and
+        the dedicated yamllint CI step. Contains Schema-only inline blocks for
+        worked-example schema validation documentation and alias-based CI steps.
+        Contains Template-sync-support-only inline blocks for template sync
+        schema example validation, runtime schema self-validation, manifest,
+        marker, and instruction-contract validation documentation and
+        alias-based CI steps. Contains a
+        github-platform-only inline block for Dependabot validation
+        documentation and the dedicated Dependabot validation steps. Remove the
+        delimited YAML blocks when the yaml module is excluded, remove the
+        delimited Schema-only inline blocks when the schema module is excluded,
+        and remove the delimited Template-sync-support-only inline blocks when
+        the template-sync-support module is excluded. Remove the delimited
+        github-platform-only inline block when the github-platform module is
+        excluded. Retain this workflow only when baseline and github-actions
+        are adopted, so its pre-commit configuration and runner are present.
+    - pattern: '.github/template-placeholders.json'
+      requires_any:
+        - baseline
+        - template-sync-support
+    - pattern: '.github/workflows/check-placeholders.yml'
+      requires_all:
+        - baseline
+        - github-actions
+    - pattern: '.github/scripts/replace-template-placeholders.py'
+      requires_any:
+        - baseline
+        - template-sync-support
+      notes: >-
+        Shared trusted replacement helper for baseline setup and materialization.
+    - pattern: '.github/scripts/validate-placeholder-schema-examples.py'
+      requires_all:
+        - baseline
+    - pattern: '.github/workflows/auto-fix-precommit.yml'
+      requires_all:
+        - baseline
+        - github-actions
+      notes: >-
+        Contains a Terraform-only inline block for aggregate pre-commit setup.
+        Remove the delimited block when the terraform module is excluded. A
+        Markdown-only inline block installs the root Node toolchain for nested
+        lint; remove that block when the markdown module is excluded.
+    - pattern: '.azuredevops/pipelines/README.md'
+      requires_all:
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/precommit.yml'
+      requires_all:
+        - baseline
+        - azure-pipelines
+      notes: >-
+        Runs the aggregate pre-commit gate in Azure Pipelines. Contains a
+        Terraform-only inline block for setup required by repo-local Terraform
+        hooks. Remove the delimited block when the terraform module is excluded. A
+        Markdown-only inline block installs the root Node toolchain for nested
+        lint; remove that block when the markdown module is excluded.
+    - pattern: '.azuredevops/pipelines/check-placeholders.yml'
+      requires_all:
+        - baseline
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/markdownlint.yml'
+      requires_all:
+        - markdown
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/powershell-ci.yml'
+      requires_all:
+        - powershell
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/python-ci.yml'
+      requires_all:
+        - python
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/terraform-ci.yml'
+      requires_all:
+        - terraform
+        - azure-pipelines
+    - pattern: '.azuredevops/pipelines/data-ci.yml'
+      requires_all:
+        - baseline
+        - azure-pipelines
+      notes: >-
+        Runs retained data-file and template-sync hooks in Azure Pipelines
+        without GitHub Actions-only actionlint validation. Contains YAML-only
+        inline blocks for yamllint-specific documentation and the dedicated
+        yamllint CI step. Contains Schema-only inline blocks for worked-example
+        schema validation documentation and alias-based CI steps. Contains
+        Template-sync-support-only inline blocks for template sync schema
+        example validation, runtime schema self-validation, manifest, marker,
+        and instruction-contract validation documentation and alias-based CI
+        steps. Contains a github-platform-only inline block for Dependabot
+        validation documentation and the dedicated Dependabot validation
+        steps. Remove the delimited YAML blocks when the yaml module is
+        excluded, remove the delimited Schema-only inline blocks when the
+        schema module is excluded, remove the delimited
+        Template-sync-support-only inline blocks when the template-sync-support
+        module is excluded, and remove the delimited github-platform-only
+        inline block when the github-platform module is excluded. Retain this
+        pipeline only when baseline and azure-pipelines are adopted, so its
+        pre-commit configuration and runner are present. Azure Pipelines
+        service-schema validation remains
+        service-backed through Azure DevOps pipeline creation, queued runs, or
+        Azure Repos branch policy build validation.
+    - pattern: '.azuredevops/pipelines/**'
+      requires_all:
+        - azure-pipelines
+    - pattern: '.yamllint.yml'
+      requires_all:
+        - yaml
+    - pattern: '.pre-commit-config.yaml'
+      requires_all:
+        - baseline
+      notes: >-
+        Contains a YAML-only inline block for yamllint, a GitHub-actions-only
+        inline block for actionlint, a Python-only inline block for Python
+        project hooks, a Schema-only inline block for schema worked-example
+        validators and schema self-validation hooks, a
+        Template-sync-support-only inline block for template sync schema example
+        validators, runtime schema self-validation hooks, manifest, marker, and
+        instruction-contract validators, a
+        github-platform-only inline block for Dependabot configuration
+        validation, a Markdown-only inline block for markdownlint-cli2, and a
+        Terraform-only inline block for repo-local Terraform hooks. Remove the
+        delimited YAML block when the yaml module is excluded, remove the
+        delimited GitHub-actions block when the github-actions module is
+        excluded, remove the delimited Python block when the python module is
+        excluded, remove the
+        delimited Schema-only inline block when the schema module is excluded,
+        remove the delimited Template-sync-support-only inline block when the
+        template-sync-support module is excluded, remove the delimited
+        github-platform-only inline block when the github-platform module is
+        excluded, remove the delimited Markdown block when the markdown module
+        is excluded, and remove the delimited Terraform block when the
+        terraform module is excluded.
+    - pattern: 'requirements-pre-commit.txt'
+      requires_all:
+        - baseline
+      notes: >-
+        Single exact pre-commit runner requirement for retained local, GitHub,
+        and Azure setup. Independent of the optional Python language module.
+    - pattern: '.markdownlint.jsonc'
+      requires_all:
+        - markdown
+    - pattern: '.remarkignore'
+      requires_all:
+        - markdown
+    - pattern: '.remarkrc.mjs'
+      requires_all:
+        - markdown
+    - pattern: 'package.json'
+      requires_all:
+        - markdown
+    - pattern: 'package-lock.json'
+      requires_all:
+        - markdown
+    - pattern: '.github/scripts/lint-nested-markdown.js'
+      requires_all:
+        - markdown
+    - pattern: '.github/scripts/lint-nested-markdown.test.js'
+      requires_all:
+        - markdown
+    - pattern: '.github/scripts/lint_nested_markdown_hook.py'
+      requires_all:
+        - baseline
+        - markdown
+    - pattern: '.github/scripts/check-toolchain-eol.js'
+      requires_all:
+        - markdown
+    - pattern: '.github/scripts/check-prohibited-placeholders.py'
+      requires_all:
+        - markdown
+    - pattern: 'tests/test_replace_template_placeholders.py'
+      requires_all:
+        - baseline
+    - pattern: 'tests/test_check_prohibited_placeholders.py'
+      requires_all:
+        - markdown
+    - pattern: 'tests/toolchain-eol/check-toolchain-eol.test.js'
+      requires_all:
+        - markdown
+    - pattern: 'tests/toolchain-eol/fixtures/**'
+      requires_all:
+        - markdown
+    - pattern: 'templates/markdown/**'
+      requires_all:
+        - markdown
+    - pattern: 'templates/powershell/**'
+      requires_all:
+        - powershell
+    - pattern: 'tests/PowerShell/**'
+      requires_all:
+        - powershell
+    - pattern: '.github/linting/PSScriptAnalyzerSettings.psd1'
+      requires_all:
+        - powershell
+    - pattern: 'src/tools/*.ps1'
+      requires_all:
+        - powershell
+    - pattern: 'templates/json/**'
+      requires_all:
+        - json
+    - pattern: 'templates/yaml/**'
+      requires_all:
+        - yaml
+    - pattern: 'schemas/template-sync-manifest.schema.json'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/template-sync-marker.schema.json'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/template-sync-instruction-contracts.schema.json'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/first-adoption-quality-suppressions.schema.json'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/template-placeholders.schema.json'
+      requires_any:
+        - baseline
+        - template-sync-support
+    - pattern: 'schemas/examples/template-sync-marker/**'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/examples/template-sync-instruction-contracts/**'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/examples/first-adoption-quality-suppressions/**'
+      requires_all:
+        - template-sync-support
+    - pattern: 'schemas/examples/template-placeholders/**'
+      requires_all:
+        - baseline
+    - pattern: 'schemas/**'
+      requires_all:
+        - schema
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks, currently
+        github-platform-reference-only blocks for the optional GitHub Dependabot
+        built-in schema validation subsection in `schemas/README.md` and
+        azure-devops-guide-reference-only blocks for the optional Azure DevOps
+        Services guide link. Baseline blocks guard local hook execution and
+        placeholder assets; JSON and YAML blocks guard companion guide links.
+        Remove each delimited reference-only block when
+        its module is excluded while preserving retained schema guidance.
+    - pattern: 'tests/_pytest_compat.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/__init__.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_schema_examples.py'
+      requires_any:
+        - schema
+        - template-sync-support
+    - pattern: 'tests/test_generate_sync_candidates.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_bootstrap_first_adoption.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_first_adoption_state.*'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_initialize_adoption_journal.*'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_report_excluded_module_references.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_materialize_downstream_adoption.*'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_run_first_adoption_checks.*'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_first_adoption_quality_reports.*'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_template_manifest.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_template_sync_materialization_helpers.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_validate_marker.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_validate_downstream_adoption.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_validate_instruction_contracts.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_instruction_input_limits.py'
+      requires_all:
+        - template-sync-support
+    - pattern: 'tests/test_precommit_runner.py'
+      requires_all:
+        - template-sync-support
+    - pattern: '.github/scripts/terraform_hooks.py'
+      requires_all:
+        - terraform
+    - pattern: 'tests/test_terraform_hooks.py'
+      requires_all:
+        - terraform
+    - pattern: 'templates/python/**'
+      requires_all:
+        - python
+    - pattern: 'pyproject.toml'
+      requires_all:
+        - python
+    - pattern: 'pyrightconfig.json'
+      requires_all:
+        - python
+    - pattern: 'src/copilot_repo_template/**'
+      requires_all:
+        - python
+    - pattern: 'tests/*.py'
+      requires_all:
+        - python
+    - pattern: 'tests/**/*.py'
+      requires_all:
+        - python
+    - pattern: 'templates/terraform/**'
+      requires_all:
+        - terraform
+    - pattern: 'docs/terraform/**'
+      requires_all:
+        - terraform
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for baseline
+        pre-commit integration and its table of contents in the linting guide.
+        Remove each delimited reference-only block when its module is excluded
+        while preserving direct Terraform linting guidance.
+    - pattern: 'modules/**'
+      requires_all:
+        - terraform
+    - pattern: 'tests/**/*.tftest.hcl'
+      requires_all:
+        - terraform
+    - pattern: '.tflint.hcl'
+      requires_all:
+        - terraform
+    - pattern: '*.tf'
+      requires_all:
+        - terraform
+    - pattern: '*.tfvars'
+      requires_all:
+        - terraform
+    - pattern: '*.tftpl'
+      requires_all:
+        - terraform
+    - pattern: '*.tfbackend'
+      requires_all:
+        - terraform
+    - pattern: 'README.md'
+      requires_all:
+        - baseline
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        sections, rows, prose, and links in the shared baseline README,
+        including template-sync-support-reference-only blocks guarding the
+        .template-sync/ and template-sync schema surface rows and the
+        downstream partial-adoption validation section, and a
+        github-data-ci-reference-only block guarding the data-CI key-file
+        bullet that requires both baseline and github-actions, plus
+        azure-devops-guide-reference-only OR-group blocks
+        guarding Azure DevOps Services guide links. Remove each delimited
+        reference-only block when its module is excluded (and the OR-group
+        blocks only when every module they name is excluded) while preserving
+        retained baseline guidance and any retained Markdown, PowerShell, GitHub
+        platform, GitHub Actions, GitHub templates, and template-sync support
+        guidance.
+    - pattern: 'TEMPLATE_UPDATE_PROCEDURE.md'
+      requires_all:
+        - template-sync-support
+    - pattern: 'GETTING_STARTED_NEW_REPO.md'
+      requires_all:
+        - template-onboarding
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks. The data-CI
+        validation bullet uses github-data-ci-reference-only and requires
+        both baseline and github-actions. Remove this block when either
+        required module is excluded. Baseline, JSON, and YAML references use
+        their corresponding blocks. Remove each delimited reference-only block
+        when its module is excluded while preserving retained onboarding.
+    - pattern: 'GETTING_STARTED_EXISTING_REPO.md'
+      requires_all:
+        - template-onboarding
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for JSON and YAML
+        companion guide links. Remove each delimited reference-only block when
+        its module is excluded while preserving retained onboarding guidance.
+    - pattern: 'OPTIONAL_CONFIGURATIONS.md'
+      requires_all:
+        - template-onboarding
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks, currently
+        github-platform-reference-only blocks for GitHub Dependabot optional
+        configuration guidance and azure-devops-guide-reference-only blocks for
+        optional Azure DevOps Services guide links. Baseline, Python, and YAML
+        blocks guard local hook and companion-template references.
+        Remove each delimited
+        reference-only block when its module is excluded while preserving
+        retained onboarding guidance and Azure DevOps security/dependency
+        automation choices.
+    - pattern: 'TEMPLATE_MAINTENANCE.md'
+      requires_all:
+        - template-onboarding
+    - pattern: '.github/TEMPLATE_DESIGN_DECISIONS.md'
+      requires_all:
+        - template-onboarding
+    - pattern: 'CONTRIBUTING.md'
+      requires_all:
+        - baseline
+      notes: >-
+        Contains Markdown-safe *-reference-only inline blocks for optional stack
+        contributor guidance, validation commands, workflow rows, and links in
+        the shared baseline contributing guide, including a
+        github-data-ci-reference-only block guarding the Data CI workflow row
+        that requires both baseline and github-actions, a
+        template-sync-support-reference-only block guarding the Template-Sync
+        Validation section, and an
+        azure-devops-guide-reference-only OR-group block guarding the Azure
+        DevOps Services guide link. Remove each delimited reference-only block
+        when its module is excluded (and the OR-group blocks only when every
+        module they name is excluded) while preserving retained pre-commit,
+        no-secrets, pull-request, template-sync support, and retained
+        language/tooling guidance.
+    - pattern: 'SECURITY.md'
+      requires_all:
+        - baseline
+    - pattern: 'CODE_OF_CONDUCT.md'
+      requires_all:
+        - baseline
+    - pattern: 'LICENSE'
+      requires_all:
+        - baseline
+    - pattern: '.gitignore'
+      requires_all:
+        - baseline
+    - pattern: '.gitattributes'
+      requires_all:
+        - baseline
+      notes: >-
+        Contains a git-lfs-only inline block for optional Git LFS-managed
+        opaque authoring and project formats. Remove the delimited block when
+        the git-lfs module is excluded so downstream repositories without Git
+        LFS adoption receive no LFS attributes.
+    - pattern: '.vscode/**'
+      requires_all:
+        - baseline
+  filtering:
+    default_semantics: AND
+    requires_any_semantics: OR
+    path_matching: most_specific_match_wins
+    same_specificity_action: union_modules
+    unmapped_action: surface_for_owner
+  notes:
+    downstream_retention: |
+      Downstream repositories keep .template-sync/marker.yml when they use this
+      sync procedure. Downstream repositories do not need to retain
+      .template-sync/manifest.yml unless they intentionally want
+      machine-assisted future syncs.

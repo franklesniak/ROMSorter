@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../template-placeholders.schema.json",
+  "version": 1,
+  "scanContexts": [
+    "retained-path",
+    "excluded-module-path",
+    "local-override",
+    "template-only-delete",
+    "unknown-path"
+  ],
+  "failureDispositions": [
+    "retained-hard-failure",
+    "pruned-informational",
+    "unknown-owner-review",
+    "waived-informational"
+  ],
+  "scanFindingKinds": [
+    {
+      "kind": "unresolved-placeholder",
+      "description": "A known placeholder remains."
+    },
+    {
+      "kind": "possible-corruption",
+      "description": "A replacement appears to have corrupted surrounding text."
+    }
+  ],
+  "replacementSources": {
+    "repository": {
+      "kind": "context-attribute",
+      "attribute": "repository"
+    },
+    "vscode_title": {
+      "kind": "context-attribute",
+      "attribute": "vscode_title"
+    }
+  },
+  "pathGroups": {
+    "repositoryDocs": [
+      "README.md",
+      ".github/pull_request_template.md"
+    ],
+    "settings": [
+      ".vscode/settings.json"
+    ]
+  },
+  "tokens": [
+    {
+      "name": "github url issues",
+      "placeholder": "https://github.com/OWNER/REPO/issues",
+      "replacementSource": "repository",
+      "replacementStyle": "github-url",
+      "findingKind": "unresolved-placeholder",
+      "pathGroups": [
+        "repositoryDocs"
+      ]
+    },
+    {
+      "name": "VS Code window title",
+      "placeholder": "Go to .vscode/settings.json and make this the name of the repo",
+      "replacementSource": "vscode_title",
+      "replacementStyle": "literal",
+      "findingKind": "unresolved-placeholder",
+      "pathPatterns": [
+        ".vscode/settings.json"
+      ]
+    }
+  ],
+  "rendererPathGroups": {
+    "packageMetadata": [
+      "repositoryDocs"
+    ]
+  }
+}

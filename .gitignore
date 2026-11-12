@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Personal Claude project memory (root and nested directories)
+CLAUDE.local.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+
+# Pre-commit
+.pre-commit-cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Lock files (optional - uncomment to exclude)
+# package-lock.json

@@ -1,0 +1,12 @@
+version: 2
+workflows:
+  .github/workflows/example.yml:
+    events:
+      - push
+    defaults: {}
+    env: {}
+    jobs:
+      check:
+        controls: {}
+        steps: []
+examples: []

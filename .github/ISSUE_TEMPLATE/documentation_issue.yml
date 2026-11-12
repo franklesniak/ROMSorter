@@ -1,0 +1,105 @@
+# =============================================================================
+# DOCUMENTATION ISSUE TEMPLATE
+# =============================================================================
+# For detailed design decisions and customization options, see:
+# .github/TEMPLATE_DESIGN_DECISIONS.md > Issue Template Design Decisions
+#
+# CUSTOMIZE: markers below indicate actionable customization points.
+# Look for `# CUSTOMIZE:` comments throughout this file.
+#
+# NOTE: The `documentation` label is a GitHub DEFAULT LABEL that exists in all
+# new repositories. If your org has renamed/deleted it, update accordingly.
+# =============================================================================
+
+name: 📚 Documentation Issue
+description: Report a typo, unclear instructions, broken link, or suggest documentation improvements
+# CUSTOMIZE: Adjust the title prefix to match your project's conventions
+title: "[Docs] "
+# CUSTOMIZE: Update these labels to match your repository's label taxonomy.
+# Ensure these labels exist in your repository or create them before using this template.
+labels:
+  - documentation
+  # - triage  # ACTION ITEM: Uncomment after creating the `triage` label in your repository
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the documentation!
+
+        **Everyone who can see this repository can read this issue and its history.**
+        Keep personal information, passwords and tokens out of text and images.
+
+  - type: checkboxes
+    id: pre_flight
+    attributes:
+      label: Pre-flight Checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues for this documentation problem
+          required: true
+        - label: This is about documentation content, not a functional code bug
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong or missing?
+      description: Describe the documentation issue clearly and concisely.
+    validations:
+      required: true
+
+  # NOTE: Placeholder uses simple file paths rather than full URLs with OWNER/REPO
+  # to avoid reporters pasting literal placeholders. Relative paths work for most
+  # documentation issues.
+  # ACTION ITEM: After setting up your repository, you may optionally update this
+  # placeholder to include a literal URL example from your repository (e.g.,
+  # "e.g., https://github.com/your-org/your-repo/blob/HEAD/README.md#usage or docs/guide.md").
+  - type: input
+    id: location
+    attributes:
+      label: Where is it?
+      description: >-
+        Link to the file/section/page (URL or path) where the issue exists.
+        Providing a location greatly speeds up investigation—please include if possible.
+      placeholder: e.g., README.md#usage or docs/guide.md
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggested_change
+    attributes:
+      label: Suggested change (optional)
+      description: If you know what should change, propose wording/structure here.
+    validations:
+      required: false
+
+  # CUSTOMIZE: Remove if your project doesn't maintain versioned documentation
+  - type: input
+    id: doc_version
+    attributes:
+      label: Documentation Version (optional)
+      description: >-
+        If the documentation is versioned, which version are you viewing?
+      placeholder: e.g., v1.2.3, latest, master branch
+    validations:
+      required: false
+
+  # CUSTOMIZE: Adjust options to match your project's documentation structure.
+  # This field is optional by default. Downstream repos can make it required if
+  # they do structured documentation triage.
+  - type: dropdown
+    id: doc_issue_type
+    attributes:
+      label: Issue Type (optional)
+      description: What type of documentation issue is this?
+      options:
+        - Typo / Grammar
+        - Unclear / Confusing
+        - Missing Information
+        - Broken Link
+        - Outdated Information
+        - Code Example Issue
+        - Formatting / Rendering
+        - Other
+    validations:
+      required: false

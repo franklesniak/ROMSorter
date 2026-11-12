@@ -1,0 +1,121 @@
+# Dependabot Configuration
+#
+# Purpose: Automatically monitor and create PRs for dependency updates
+#
+# This configuration monitors:
+#   - npm (package.json) - Markdown tooling dependencies, not a Node app
+# template-sync: begin pip-dependencies-only
+#   - pip - Baseline pre-commit runner and retained Python dependencies
+# template-sync: end pip-dependencies-only
+#   - GitHub Actions (workflows) - Action version updates
+# template-sync: begin baseline-only
+#   - pre-commit (.pre-commit-config.yaml) - Pre-commit hook updates
+# template-sync: end baseline-only
+#
+# Tailoring note: this file is owned by the github-platform module, but each
+# ecosystem should be kept only when its scanned manifest/config/workflow
+# surface is retained. See GETTING_STARTED_EXISTING_REPO.md#dependabot.
+#
+# Update schedule: Weekly (reduces PR noise while maintaining currency)
+#
+# Grouping strategy: Minor and patch updates are grouped to reduce PR volume.
+# Major updates create individual PRs since they may contain breaking changes.
+#
+# Workflow Version Pinning rule:
+#   The repo-wide rule for how third-party action versions and tool versions
+#   are referenced inside .github/workflows/*.yml lives in the "Workflow
+#   Version Pinning" section of .github/copilot-instructions.md, with rationale
+#   captured in the "Workflow Version Pinning and Dependabot Coherence" ADR in
+#   .github/TEMPLATE_DESIGN_DECISIONS.md. In short: action versions live only
+#   in `uses:` lines (Dependabot rewrites those); they MUST NOT be mirrored
+#   into workflow-level `env:` values, cache keys, file paths, shell literals,
+#   image tags, or comments presented as authoritative version state, because
+#   Dependabot will not rewrite the mirror and the workflow will silently drift.
+#   Exception: a same-line release tag/link beside a SHA-pinned uses reference
+#   is descriptive version documentation that Dependabot updates. Version
+#   updates support SHA pins; vulnerability alerts for those actions do not.
+#
+# When an `ignore:` entry is appropriate:
+#   Add an `ignore:` entry below ONLY when a Dependabot-managed dependency
+#   genuinely cannot be expressed without duplication and Dependabot would
+#   otherwise produce partial updates. Each `ignore:` entry MUST include a
+#   YAML comment explaining why the dependency is intentionally not auto-updated.
+#   Do NOT use `ignore:` to silence routine update noise; use the grouping or
+#   schedule controls for that instead.
+#
+# TEMPLATE NOTE: This is enabled by default because security-conscious defaults
+# are appropriate for template repositories. To disable Dependabot, delete this
+# file. To customize, see: https://docs.github.com/en/code-security/dependabot
+
+version: 2
+updates:
+  # npm dependencies for Markdown tooling (package.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 10
+
+  # template-sync: begin pip-dependencies-only
+  # requirements-pre-commit.txt and any retained Python project dependencies.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      pip-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 10
+  # template-sync: end pip-dependencies-only
+
+  # template-sync: begin github-actions-only
+  # GitHub Actions (workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 10
+
+  # template-sync: end github-actions-only
+
+  # template-sync: begin baseline-only
+  # Pre-commit hooks (.pre-commit-config.yaml); the runner uses pip above.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      pre-commit-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 10
+  # template-sync: end baseline-only

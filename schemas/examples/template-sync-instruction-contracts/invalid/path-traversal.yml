@@ -1,0 +1,6 @@
+instruction_contracts:
+  - path: ../CLAUDE.md
+    requires_modules:
+      - agent-instructions
+    required_headings:
+      - '## Handling Code Review Comments'
